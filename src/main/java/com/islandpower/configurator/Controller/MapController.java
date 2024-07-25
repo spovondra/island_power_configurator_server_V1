@@ -1,4 +1,4 @@
-package com.islandpower.configurator.controller;
+package com.islandpower.configurator.Controller;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
