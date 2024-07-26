@@ -21,8 +21,11 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-json'  // Added JSON dependency
-	implementation 'org.json:json:20210307'  // JSON library
+	implementation 'org.json:json:20231013'
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+	// JSON library
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'org.springframework.security:spring-security-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 

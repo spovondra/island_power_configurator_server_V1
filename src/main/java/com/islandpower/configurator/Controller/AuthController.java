@@ -1,8 +1,9 @@
 package com.islandpower.configurator.Controller;
 
-import com.islandpower.configurator.Model.User;
-import com.islandpower.configurator.Service.UserServices;
+import com.islandpower.configurator.Model.MyUser;
+import com.islandpower.configurator.Service.MyUserDetailService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -10,23 +11,26 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
 
      @Autowired
-     private UserServices userServices;
+     private MyUserDetailService userServices;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @PostMapping("/register")
-    public String registerUser (@RequestBody User users) {
-        userServices.saveUser(users);
-        return users.getId();
+    public MyUser registerUser (@RequestBody MyUser user) {
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        return userServices.saveUser(user);
     }
 
     @GetMapping("/getAll")
-    public Iterable<User> getAllUsers() {
+    public Iterable<MyUser> getAllUsers() {
         return userServices.getAll();
     }
 
     @PutMapping(value="/edit/{id}")
-    public String updateUser(@PathVariable("id") String userId, @RequestBody User updatedUser) {
-        updatedUser.setId(userId);
-        userServices.saveUser(updatedUser);
+    public String updateUser(@PathVariable("id") String userId, @RequestBody MyUser updatedMyUser) {
+        updatedMyUser.setId(userId);
+        userServices.saveUser(updatedMyUser);
         return userId;
     }
 
@@ -36,7 +40,12 @@ public class AuthController {
     }
 
     @RequestMapping(value="user/{id}")
-    public User getUserById(@PathVariable("id") String userId) {
+    public MyUser getUserById(@PathVariable("id") String userId) {
         return userServices.getUserById(userId);
+    }
+
+    @PostMapping("/authenticate")
+    public boolean authenticateUser(@RequestParam String userId, @RequestParam String password) {
+        return userServices.authenticateUser(userId, password);
     }
 }
