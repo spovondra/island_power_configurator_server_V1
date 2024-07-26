@@ -4,14 +4,15 @@ import com.islandpower.configurator.Model.MyUser;
 import com.islandpower.configurator.Service.MyUserDetailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
 
-     @Autowired
-     private MyUserDetailService userServices;
+    @Autowired
+    private MyUserDetailService userServices;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
