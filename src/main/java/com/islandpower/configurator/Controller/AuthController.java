@@ -2,13 +2,17 @@ package com.islandpower.configurator.Controller;
 
 import com.islandpower.configurator.Model.OneUser;
 import com.islandpower.configurator.Service.OneUserDetailService;
+import com.islandpower.configurator.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -20,6 +24,9 @@ public class AuthController {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private JwtUtil jwtUtil;
 
     @PostMapping("/register")
     public OneUser registerUser (@RequestBody OneUser user) {
@@ -49,15 +56,20 @@ public class AuthController {
         return userServices.getUserById(userId);
     }
 
-    @PostMapping("/authenticate")
-    public OneUser authenticateUser(@RequestParam String username, @RequestParam String password) {
+    @PostMapping("/login")
+    public ResponseEntity<?> authenticateUser(@RequestParam String username, @RequestParam String password) {
         if (userServices.authenticateUser(username, password)) {
-            Optional<OneUser> userOptional = userServices.getUserByUsername(username);
-            return userOptional.orElse(null);
+            UserDetails userDetails = userServices.loadUserByUsername(username);
+            String jwt = jwtUtil.generateToken(userDetails);
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("jwt", jwt);
+            response.put("userId", userServices.getUserByUsername(username).get().getId());
+            response.put("role", userServices.getUserByUsername(username).get().getRole());
+
+            return ResponseEntity.ok(response);
         } else {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid credentials");
         }
     }
-
-
 }

@@ -1,5 +1,6 @@
 package com.islandpower.configurator.config;
 
+import com.islandpower.configurator.filter.JwtRequestFilter;
 import com.islandpower.configurator.Service.OneUserDetailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -14,6 +15,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -22,17 +24,21 @@ public class SecurityConfiguration {
     @Autowired
     private OneUserDetailService userDetailService;
 
+    @Autowired
+    private JwtRequestFilter jwtRequestFilter;
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
-        return httpSecurity
+        httpSecurity
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(registry -> {
-                    registry.requestMatchers("/api/map/**", "/api/auth/register/**", "/api/auth/authenticate/**").permitAll();
+                    registry.requestMatchers("/api/map/**", "/api/auth/register/**", "/api/auth/login/**").permitAll();
                     registry.requestMatchers("/api/components/**").hasRole("USER");
                     registry.requestMatchers("/api/**").hasRole("ADMIN");
-        })
-            .httpBasic(Customizer.withDefaults())
-            .build();
+                })
+                .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class)
+                .httpBasic(Customizer.withDefaults());
+        return httpSecurity.build();
     }
 
     @Bean
