@@ -29,7 +29,7 @@ public class AuthController {
     private JwtUtil jwtUtil;
 
     @PostMapping("/register")
-    public OneUser registerUser (@RequestBody OneUser user) {
+    public OneUser registerUser(@RequestBody OneUser user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         return userServices.saveUser(user);
     }
@@ -39,19 +39,33 @@ public class AuthController {
         return userServices.getAll();
     }
 
-    @PutMapping(value="/update/{id}")
+    @PutMapping("/update/{id}")
     public String updateUser(@PathVariable("id") String userId, @RequestBody OneUser updatedOneUser) {
-        updatedOneUser.setId(userId);
-        userServices.saveUser(updatedOneUser);
+        OneUser existingUser = userServices.getUserById(userId);
+        if (existingUser == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
+        }
+
+        existingUser.setUsername(updatedOneUser.getUsername());
+        existingUser.setFirstName(updatedOneUser.getFirstName());
+        existingUser.setLastName(updatedOneUser.getLastName());
+        existingUser.setEmail(updatedOneUser.getEmail());
+
+        // Only update password if it is provided
+        if (updatedOneUser.getPassword() != null && !updatedOneUser.getPassword().isEmpty()) {
+            existingUser.setPassword(passwordEncoder.encode(updatedOneUser.getPassword()));
+        }
+
+        userServices.saveUser(existingUser);
         return userId;
     }
 
-    @DeleteMapping(value="/delete/{id}")
+    @DeleteMapping("/delete/{id}")
     public void deleteUser(@PathVariable("id") String userId) {
         userServices.deleteById(userId);
     }
 
-    @RequestMapping(value="/user/{id}")
+    @GetMapping("/user/{id}")
     public OneUser getUserById(@PathVariable("id") String userId) {
         return userServices.getUserById(userId);
     }

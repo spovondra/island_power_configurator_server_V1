@@ -32,9 +32,21 @@ public class SecurityConfiguration {
         httpSecurity
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(registry -> {
-                    registry.requestMatchers("/api/map/**", "/api/auth/register/**", "/api/auth/login/**").permitAll();
-                    registry.requestMatchers("/api/components/**").hasRole("USER");
-                    registry.requestMatchers("/api/**").hasRole("ADMIN");
+                    registry.requestMatchers(
+                            "/api/map/**",
+                            "/api/auth/register/**",
+                            "/api/auth/login/**"
+                    ).permitAll();
+
+                    registry.requestMatchers(
+                            "/api/auth/user/{id}",
+                            "/api/auth/update/{id}",
+                            "/api/components/**"
+                    ).hasRole("USER");
+
+                    registry.requestMatchers(
+                            "/api/**"
+                    ).hasRole("ADMIN");
                 })
                 .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class)
                 .httpBasic(Customizer.withDefaults());

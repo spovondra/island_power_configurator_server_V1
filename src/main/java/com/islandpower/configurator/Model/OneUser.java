@@ -10,14 +10,21 @@ public class OneUser {
     private String username;
     private String password;
     private String role;
+    private String firstName;
+    private String lastName;
+    private String email;
 
-    public OneUser(String id, String role, String password, String username) {
+    public OneUser(String id, String username, String password, String role, String firstName, String lastName, String email) {
         this.id = id;
-        this.role = role;
-        this.password = password;
         this.username = username;
+        this.password = password;
+        this.role = role;
+        this.firstName = firstName != null ? firstName : "";
+        this.lastName = lastName != null ? lastName : "";
+        this.email = email != null ? email : "";
     }
 
+    // Getters and Setters
     public String getId() {
         return id;
     }
@@ -48,5 +55,29 @@ public class OneUser {
 
     public void setRole(String role) {
         this.role = role;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 }
