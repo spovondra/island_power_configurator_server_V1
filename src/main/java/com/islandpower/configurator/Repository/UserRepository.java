@@ -1,11 +1,11 @@
 package com.islandpower.configurator.Repository;
 
-import com.islandpower.configurator.Model.MyUser;
+import com.islandpower.configurator.Model.OneUser;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 import java.util.Optional;
 
-public interface UserRepository extends MongoRepository <MyUser, String> {
+public interface UserRepository extends MongoRepository <OneUser, String> {
 
-    Optional<MyUser> findByUsername(String username);
+    Optional<OneUser> findByUsername(String username);
 }

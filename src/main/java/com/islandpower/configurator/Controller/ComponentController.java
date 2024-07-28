@@ -1,6 +1,5 @@
 package com.islandpower.configurator.Controller;
 
-import com.islandpower.configurator.Model.MyUser;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;

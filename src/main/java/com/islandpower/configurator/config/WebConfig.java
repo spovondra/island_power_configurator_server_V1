@@ -1,4 +1,4 @@
-package com.islandpower.configurator;
+package com.islandpower.configurator.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
