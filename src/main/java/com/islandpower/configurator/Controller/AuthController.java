@@ -47,6 +47,7 @@ public class AuthController {
         }
 
         existingUser.setUsername(updatedOneUser.getUsername());
+        existingUser.setRole(updatedOneUser.getRole());
         existingUser.setFirstName(updatedOneUser.getFirstName());
         existingUser.setLastName(updatedOneUser.getLastName());
         existingUser.setEmail(updatedOneUser.getEmail());

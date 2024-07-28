@@ -42,7 +42,7 @@ public class SecurityConfiguration {
                             "/api/auth/user/{id}",
                             "/api/auth/update/{id}",
                             "/api/components/**"
-                    ).hasRole("USER");
+                    ).hasAnyRole("USER", "ADMIN");
 
                     registry.requestMatchers(
                             "/api/**"
