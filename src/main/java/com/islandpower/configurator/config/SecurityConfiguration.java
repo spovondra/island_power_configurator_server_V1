@@ -1,7 +1,7 @@
 package com.islandpower.configurator.config;
 
 import com.islandpower.configurator.filter.JwtRequestFilter;
-import com.islandpower.configurator.Service.OneUserDetailService;
+import com.islandpower.configurator.service.OneUserDetailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

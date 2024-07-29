@@ -1,4 +1,4 @@
-package com.islandpower.configurator.Service;
+package com.islandpower.configurator.service;
 
 
 import com.islandpower.configurator.model.OneUser;

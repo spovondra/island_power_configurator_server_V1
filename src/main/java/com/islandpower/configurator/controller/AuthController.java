@@ -1,6 +1,6 @@
 package com.islandpower.configurator.controller;
 
-import com.islandpower.configurator.Service.OneUserDetailService;
+import com.islandpower.configurator.service.OneUserDetailService;
 import com.islandpower.configurator.model.OneUser;
 import com.islandpower.configurator.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +13,6 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/auth")

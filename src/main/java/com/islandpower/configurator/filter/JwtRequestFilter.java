@@ -1,6 +1,6 @@
 package com.islandpower.configurator.filter;
 
-import com.islandpower.configurator.Service.OneUserDetailService;
+import com.islandpower.configurator.service.OneUserDetailService;
 import com.islandpower.configurator.util.JwtUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
