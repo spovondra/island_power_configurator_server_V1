@@ -1,7 +1,7 @@
-package com.islandpower.configurator.Controller;
+package com.islandpower.configurator.controller;
 
-import com.islandpower.configurator.Model.OneUser;
 import com.islandpower.configurator.Service.OneUserDetailService;
+import com.islandpower.configurator.model.OneUser;
 import com.islandpower.configurator.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

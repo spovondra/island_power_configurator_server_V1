@@ -1,4 +1,4 @@
-package com.islandpower.configurator.Controller;
+package com.islandpower.configurator.controller;
 
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
