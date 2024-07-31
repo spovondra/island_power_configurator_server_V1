@@ -1,5 +1,6 @@
 package com.islandpower.configurator.config;
 
+
 import com.islandpower.configurator.filter.JwtRequestFilter;
 import com.islandpower.configurator.service.OneUserDetailService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,7 +42,9 @@ public class SecurityConfiguration {
                     registry.requestMatchers(
                             "/api/auth/user/{id}",
                             "/api/auth/update/{id}",
-                            "/api/components/**"
+                            "/api/components/**",
+                            "/api/calculations/**",
+                            "/api/projects/**"
                     ).hasAnyRole("USER", "ADMIN");
 
                     registry.requestMatchers(
