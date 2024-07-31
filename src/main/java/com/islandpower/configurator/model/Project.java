@@ -10,9 +10,12 @@ public class Project {
     @Id
     private String id;
     private String name;
+    private String userId;
     private Location location;
     private Temperature temperature;
     private SolarComponents solarComponents;
+
+    public Project() {}
 
     public Project(String id, String name, Location location, Temperature temperature, SolarComponents solarComponents) {
         this.id = id;
@@ -22,6 +25,7 @@ public class Project {
         this.solarComponents = solarComponents;
     }
 
+    // Getters and Setters
     public String getId() {
         return id;
     }
@@ -36,6 +40,14 @@ public class Project {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
     public Location getLocation() {
@@ -197,6 +209,7 @@ public class Project {
                 this.quantity = quantity;
             }
 
+            // Getters and Setters
             public String getId() {
                 return id;
             }

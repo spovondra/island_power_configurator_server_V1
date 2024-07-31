@@ -3,6 +3,7 @@ package com.islandpower.configurator.model;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Document(collection = "users")
@@ -15,7 +16,9 @@ public class OneUser {
     private String firstName;
     private String lastName;
     private String email;
-    private List<String> projects;
+    private List<String> projects = new ArrayList<>();
+
+    public OneUser() {}
 
     public OneUser(String id, String username, String password, String role, String firstName, String lastName, String email) {
         this.id = id;
@@ -84,7 +87,11 @@ public class OneUser {
         this.email = email;
     }
 
-    public List<String> getProjects() {return projects;}
+    public List<String> getProjects() {
+        return projects;
+    }
 
-    public void setProjects(List<String> projects) {this.projects = projects;}
+    public void setProjects(List<String> projects) {
+        this.projects = projects;
+    }
 }

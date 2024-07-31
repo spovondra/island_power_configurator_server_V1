@@ -1,12 +1,13 @@
 package com.islandpower.configurator.service;
 
+import com.islandpower.configurator.model.OneUser;
 import com.islandpower.configurator.model.Project;
 import com.islandpower.configurator.repository.ProjectRepository;
+import com.islandpower.configurator.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class ProjectService {
@@ -14,24 +15,29 @@ public class ProjectService {
     @Autowired
     private ProjectRepository projectRepository;
 
-    public Project createProject(Project project) {
-        return projectRepository.save(project);
+    @Autowired
+    private UserRepository userRepository;
+
+    public Project createProject(Project project, String userId) {
+        Project savedProject = projectRepository.save(project);
+        OneUser user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found: " + userId));
+        user.getProjects().add(savedProject.getId());
+        userRepository.save(user);
+        return savedProject;
     }
 
-    public List<Project> getAllProjects() {
-        return projectRepository.findAll();
+    public void deleteProject(String projectId, String userId) {
+        projectRepository.deleteById(projectId);
+        OneUser user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found: " + userId));
+        user.getProjects().remove(projectId);
+        userRepository.save(user);
     }
 
-    public Optional<Project> getProjectById(String id) {
-        return projectRepository.findById(id);
-    }
-
-    public Project updateProject(String id, Project project) {
-        project.setId(id);
-        return projectRepository.save(project);
-    }
-
-    public void deleteProject(String id) {
-        projectRepository.deleteById(id);
+    public List<Project> getProjectsByUserId(String userId) {
+        OneUser user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found: " + userId));
+        return projectRepository.findAllById(user.getProjects());
     }
 }

@@ -22,7 +22,7 @@ public class OneUserDetailService implements UserDetailsService {
 
 
     public OneUser saveUser(OneUser oneUser) {
-        String encodedPassword =(oneUser.getPassword());
+        String encodedPassword = (oneUser.getPassword());
         oneUser.setPassword(encodedPassword);
         userRepository.save(oneUser);
         return oneUser;
@@ -37,7 +37,8 @@ public class OneUserDetailService implements UserDetailsService {
     }
 
     public OneUser getUserById(String userId) {
-        return userRepository.findById(userId).orElse(null);
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found: " + userId));
     }
 
     public Optional<OneUser> getUserByUsername(String username) {

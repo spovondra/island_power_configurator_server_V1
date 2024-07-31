@@ -51,7 +51,6 @@ public class AuthController {
         existingUser.setLastName(updatedOneUser.getLastName());
         existingUser.setEmail(updatedOneUser.getEmail());
 
-        // Only update password if it is provided
         if (updatedOneUser.getPassword() != null && !updatedOneUser.getPassword().isEmpty()) {
             existingUser.setPassword(passwordEncoder.encode(updatedOneUser.getPassword()));
         }
