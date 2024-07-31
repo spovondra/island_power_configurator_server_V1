@@ -29,8 +29,8 @@ public class ProjectController {
     @Autowired
     private OneUserDetailService userDetailsService;
 
-    // Method to get username from token
-    private String getUsernameFromToken(HttpServletRequest request) {
+    // Extract username from the JWT token
+    private String extractUsernameFromToken(HttpServletRequest request) {
         String authHeader = request.getHeader("Authorization");
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             String token = authHeader.substring(7);
@@ -39,8 +39,8 @@ public class ProjectController {
         throw new RuntimeException("No token found in request");
     }
 
-    // Method to get user ID from username
-    private String getUserIdFromUsername(String username) {
+    // Retrieve user ID based on username
+    private String retrieveUserIdByUsername(String username) {
         Optional<OneUser> user = userDetailsService.getUserByUsername(username);
         if (user.isPresent()) {
             return user.get().getId();
@@ -48,27 +48,55 @@ public class ProjectController {
         throw new RuntimeException("User not found: " + username);
     }
 
+    // Endpoint to create a new project
     @PostMapping
     public Project createProject(@RequestBody Project project, HttpServletRequest request) {
-        String username = getUsernameFromToken(request);
-        String userId = getUserIdFromUsername(username);
+        String username = extractUsernameFromToken(request);
+        String userId = retrieveUserIdByUsername(username);
         logger.info("User {} (ID: {}) is creating a project: {}", username, userId, project);
         return projectService.createProject(project, userId);
     }
 
+    // Endpoint to delete a project
     @DeleteMapping("/{projectId}")
     public void deleteProject(@PathVariable String projectId, HttpServletRequest request) {
-        String username = getUsernameFromToken(request);
-        String userId = getUserIdFromUsername(username);
+        String username = extractUsernameFromToken(request);
+        String userId = retrieveUserIdByUsername(username);
         logger.info("User {} (ID: {}) is deleting project with ID: {}", username, userId, projectId);
         projectService.deleteProject(projectId, userId);
     }
 
+    // Endpoint to get all projects
     @GetMapping
-    public List<Project> getProjects(HttpServletRequest request) {
-        String username = getUsernameFromToken(request);
-        String userId = getUserIdFromUsername(username);
+    public List<Project> getAllProjects(HttpServletRequest request) {
+        logger.info("Retrieving all projects");
+        return projectService.getAllProjects();
+    }
+
+    // Endpoint to get projects by user ID
+    @GetMapping("/user-projects")
+    public List<Project> getProjectsByUserId(HttpServletRequest request) {
+        String username = extractUsernameFromToken(request);
+        String userId = retrieveUserIdByUsername(username);
         logger.info("User {} (ID: {}) is retrieving their projects", username, userId);
         return projectService.getProjectsByUserId(userId);
+    }
+
+    // Endpoint to get a specific project by ID
+    @GetMapping("/{projectId}")
+    public Project getProjectById(@PathVariable String projectId, HttpServletRequest request) {
+        String username = extractUsernameFromToken(request);
+        String userId = retrieveUserIdByUsername(username);
+        logger.info("User {} (ID: {}) is retrieving project with ID: {}", username, userId, projectId);
+        return projectService.getProjectById(projectId, userId);
+    }
+
+    // Endpoint to update an existing project
+    @PutMapping("/{projectId}")
+    public Project updateProject(@PathVariable String projectId, @RequestBody Project project, HttpServletRequest request) {
+        String username = extractUsernameFromToken(request);
+        String userId = retrieveUserIdByUsername(username);
+        logger.info("User {} (ID: {}) is updating project with ID: {}", username, userId, projectId);
+        return projectService.updateProject(projectId, project, userId);
     }
 }
