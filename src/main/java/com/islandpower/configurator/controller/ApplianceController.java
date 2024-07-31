@@ -1,6 +1,6 @@
 package com.islandpower.configurator.controller;
 
-import com.islandpower.configurator.Model.Appliance;
+import com.islandpower.configurator.model.Appliance;
 import com.islandpower.configurator.repository.ApplianceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

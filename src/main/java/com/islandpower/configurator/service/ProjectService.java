@@ -1,6 +1,6 @@
 package com.islandpower.configurator.service;
 
-import com.islandpower.configurator.Model.Project;
+import com.islandpower.configurator.model.Project;
 import com.islandpower.configurator.repository.ProjectRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

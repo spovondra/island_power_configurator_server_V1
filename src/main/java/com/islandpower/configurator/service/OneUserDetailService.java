@@ -1,6 +1,6 @@
 package com.islandpower.configurator.service;
 
-import com.islandpower.configurator.Model.OneUser;
+import com.islandpower.configurator.model.OneUser;
 import com.islandpower.configurator.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;

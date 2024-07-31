@@ -1,4 +1,4 @@
-package com.islandpower.configurator.Model;
+package com.islandpower.configurator.model;
 
 public class CalculationResult {
     private double dailyEnergy;

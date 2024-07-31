@@ -1,6 +1,6 @@
 package com.islandpower.configurator.repository;
 
-import com.islandpower.configurator.Model.OneUser;
+import com.islandpower.configurator.model.OneUser;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 import java.util.Optional;

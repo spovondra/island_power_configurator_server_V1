@@ -1,6 +1,6 @@
 package com.islandpower.configurator.controller;
 
-import com.islandpower.configurator.Model.*;
+import com.islandpower.configurator.model.*;
 import com.islandpower.configurator.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.repository.MongoRepository;

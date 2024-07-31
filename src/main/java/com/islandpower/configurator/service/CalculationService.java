@@ -1,7 +1,7 @@
 package com.islandpower.configurator.service;
 
-import com.islandpower.configurator.Model.CalculationParams;
-import com.islandpower.configurator.Model.CalculationResult;
+import com.islandpower.configurator.model.CalculationParams;
+import com.islandpower.configurator.model.CalculationResult;
 import org.springframework.stereotype.Service;
 
 @Service

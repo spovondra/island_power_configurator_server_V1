@@ -1,4 +1,4 @@
-package com.islandpower.configurator.Model;
+package com.islandpower.configurator.model;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;

@@ -1,7 +1,7 @@
 package com.islandpower.configurator.controller;
 
-import com.islandpower.configurator.Model.CalculationParams;
-import com.islandpower.configurator.Model.CalculationResult;
+import com.islandpower.configurator.model.CalculationParams;
+import com.islandpower.configurator.model.CalculationResult;
 import com.islandpower.configurator.service.CalculationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
