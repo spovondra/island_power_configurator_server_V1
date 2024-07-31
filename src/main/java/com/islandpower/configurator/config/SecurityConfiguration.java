@@ -34,7 +34,7 @@ public class SecurityConfiguration {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(registry -> {
                     registry.requestMatchers(
-                            "/api/map/**",
+                            "/api/location/**",
                             "/api/auth/register/**",
                             "/api/auth/login/**"
                     ).permitAll();
