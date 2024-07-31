@@ -65,13 +65,18 @@ public class ProjectService {
         return project;
     }
 
-    // Method to update a project
     public Project updateProject(String projectId, Project updatedProject, String userId) {
         Project existingProject = projectRepository.findById(projectId)
                 .orElseThrow(() -> new RuntimeException("Project not found: " + projectId));
 
-        if (existingProject.getUserId() == null || !existingProject.getUserId().equals(userId)) {
-            throw new RuntimeException("User does not have permission to update this project. Project User ID: " + existingProject.getUserId() + ", Requesting User ID: " + userId);
+        OneUser user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found: " + userId));
+
+        boolean isAdmin = user.getRole().contains("ADMIN");
+
+        if (!isAdmin && (existingProject.getUserId() == null || !existingProject.getUserId().equals(userId))) {
+            throw new RuntimeException("User does not have permission to update this project. Project User ID: "
+                    + existingProject.getUserId() + ", Requesting User ID: " + userId);
         }
 
         existingProject.setName(updatedProject.getName());
