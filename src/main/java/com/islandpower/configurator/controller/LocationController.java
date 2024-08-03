@@ -56,21 +56,24 @@ public class LocationController {
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
 
-            // Create a DecimalFormat instance with a period as the decimal separator
-            DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.US);
-            symbols.setDecimalSeparator('.');
-            DecimalFormat decimalFormat = new DecimalFormat("#.00", symbols);
-
-            // Format temperatures to two decimal places
-            String minTempFormatted = decimalFormat.format(minMaxTemperatures[0]);
-            String maxTempFormatted = decimalFormat.format(minMaxTemperatures[1]);
-
-            String jsonResult = String.format("{\"minTemp\": %s, \"maxTemp\": %s}", minTempFormatted, maxTempFormatted);
+            String jsonResult = getString(minMaxTemperatures);
 
             return new ResponseEntity<>(jsonResult, headers, HttpStatus.OK);
         } catch (Exception e) {
             return ResponseEntity.status(503).body("{\"error\":\"Service unavailable\"}");
         }
+    }
+
+    private static String getString(double[] minMaxTemperatures) {
+        DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.US);
+        symbols.setDecimalSeparator('.');
+        DecimalFormat decimalFormat = new DecimalFormat("#.00", symbols);
+
+        // Format temperatures to two decimal places
+        String minTempFormatted = decimalFormat.format(minMaxTemperatures[0]);
+        String maxTempFormatted = decimalFormat.format(minMaxTemperatures[1]);
+
+        return String.format("{\"minTemp\": %s, \"maxTemp\": %s}", minTempFormatted, maxTempFormatted);
     }
 
 }

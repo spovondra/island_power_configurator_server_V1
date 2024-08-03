@@ -42,6 +42,32 @@ public class LocationService {
         }
     }
 
+    public static class OptimalValues {
+        private Integer optimalAngle;
+        private Integer optimalAspect;
+
+        public OptimalValues(Integer optimalAngle, Integer optimalAspect) {
+            this.optimalAngle = optimalAngle;
+            this.optimalAspect = optimalAspect;
+        }
+
+        public Integer getOptimalAngle() {
+            return optimalAngle;
+        }
+
+        public void setOptimalAngle(Integer optimalAngle) {
+            this.optimalAngle = optimalAngle;
+        }
+
+        public Integer getOptimalAspect() {
+            return optimalAspect;
+        }
+
+        public void setOptimalAspect(Integer optimalAspect) {
+            this.optimalAspect = optimalAspect;
+        }
+    }
+
     public double[] getMinMaxTemperatures(String latitude, String longitude) {
         try {
             String apiUrl = String.format(WEATHER_API_URL, latitude, longitude);
@@ -67,32 +93,6 @@ public class LocationService {
         } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException("Error fetching weather data");
-        }
-    }
-
-    public static class OptimalValues {
-        private Integer optimalAngle;
-        private Integer optimalAspect;
-
-        public OptimalValues(Integer optimalAngle, Integer optimalAspect) {
-            this.optimalAngle = optimalAngle;
-            this.optimalAspect = optimalAspect;
-        }
-
-        public Integer getOptimalAngle() {
-            return optimalAngle;
-        }
-
-        public void setOptimalAngle(Integer optimalAngle) {
-            this.optimalAngle = optimalAngle;
-        }
-
-        public Integer getOptimalAspect() {
-            return optimalAspect;
-        }
-
-        public void setOptimalAspect(Integer optimalAspect) {
-            this.optimalAspect = optimalAspect;
         }
     }
 }
