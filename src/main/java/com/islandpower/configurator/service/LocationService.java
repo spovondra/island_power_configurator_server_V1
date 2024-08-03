@@ -12,8 +12,8 @@ public class LocationService {
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     public static final String PVGIS_API_URL = "https://re.jrc.ec.europa.eu/api/v5_2/PVcalc?lat=%s&lon=%s&peakpower=1&loss=1&angle=%s&aspect=%s";
-    public static final String OPTIMAL_VALUES_API_URL = "https://re.jrc.ec.europa.eu/api/v5_2/PVcalc?lat=%s&lon=%s&raddatabase=PVGIS-SARAH2&userhorizon=&usehorizon=1&outputformat=json&js=1&select_database_grid=PVGIS-SARAH2&pvtechchoice=crystSi&peakpower=1.01&loss=21&mountingplace=free&optimalangles=1";
-    public static final String WEATHER_API_URL = "https://re.jrc.ec.europa.eu/api/v5_2/seriescalc?lat=%s&lon=%s&raddatabase=PVGIS-SARAH2&outputformat=json&startyear=2019&endyear=2020&select_database_hourly=PVGIS-SARAH2&hstartyear=2017&hendyear=2020";
+    public static final String OPTIMAL_VALUES_API_URL = "https://re.jrc.ec.europa.eu/api/v5_2/PVcalc?lat=%s&lon=%s&raddatabase=PVGIS-SARAH2&usehorizon=1&outputformat=json&js=1&select_database_grid=PVGIS-SARAH2&pvtechchoice=crystSi&peakpower=1&loss=21&mountingplace=free&optimalangles=1";
+    public static final String WEATHER_API_URL = "https://re.jrc.ec.europa.eu/api/v5_2/seriescalc?lat=%s&lon=%s&raddatabase=PVGIS-SARAH2&outputformat=json&startyear=2019&endyear=2020";
 
     public String calculatePVGISData(String latitude, String longitude, String angle, String aspect) {
         String apiUrl = String.format(PVGIS_API_URL, latitude, longitude, angle, aspect);
