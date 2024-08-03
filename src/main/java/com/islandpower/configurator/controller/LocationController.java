@@ -1,5 +1,7 @@
 package com.islandpower.configurator.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.islandpower.configurator.service.LocationService;
 import com.islandpower.configurator.service.LocationService.OptimalValues;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
+import java.util.List;
 import java.util.Locale;
 
 @RestController
@@ -23,15 +26,26 @@ public class LocationController {
     @Autowired
     private LocationService locationService;
 
+    @Autowired
+    private ObjectMapper objectMapper;
+
     @GetMapping("/calculatePVGISData")
     public ResponseEntity<String> calculatePVGISData(@RequestParam String latitude, @RequestParam String longitude, @RequestParam String angle, @RequestParam String aspect) {
         try {
-            String response = locationService.calculatePVGISData(latitude, longitude, angle, aspect);
+            List<LocationService.MonthlyHI_d> monthlyHI_dList = locationService.calculatePVGISData(latitude, longitude, angle, aspect);
+
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
-            return new ResponseEntity<>(response, headers, HttpStatus.OK);
-        } catch (Exception e) {
-            return ResponseEntity.status(503).body("{\"error\":\"Service unavailable\"}");
+
+            String jsonResult = objectMapper.writeValueAsString(monthlyHI_dList);
+
+            return new ResponseEntity<>(jsonResult, headers, HttpStatus.OK);
+        } catch (JsonProcessingException e) {
+            // Chyba při zpracování JSON odpovědi
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("{\"error\":\"Error processing JSON\"}");
+        } catch (RuntimeException e) {
+            // Obecná chyba při zpracování API
+            return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body("{\"error\":\"Service unavailable\"}");
         }
     }
 
