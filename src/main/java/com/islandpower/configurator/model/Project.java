@@ -3,27 +3,18 @@ package com.islandpower.configurator.model;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.List;
 import java.util.Map;
 
 @Document(collection = "projects")
 public class Project {
+
     @Id
     private String id;
     private String name;
     private String userId;
-    private Location location;
-    private Temperature temperature;
+    private Site site;
     private SolarComponents solarComponents;
-
-    public Project() {}
-
-    public Project(String id, String name, Location location, Temperature temperature, SolarComponents solarComponents) {
-        this.id = id;
-        this.name = name;
-        this.location = location;
-        this.temperature = temperature;
-        this.solarComponents = solarComponents;
-    }
 
     // Getters and Setters
     public String getId() {
@@ -50,20 +41,12 @@ public class Project {
         this.userId = userId;
     }
 
-    public Location getLocation() {
-        return location;
+    public Site getSite() {
+        return site;
     }
 
-    public void setLocation(Location location) {
-        this.location = location;
-    }
-
-    public Temperature getTemperature() {
-        return temperature;
-    }
-
-    public void setTemperature(Temperature temperature) {
-        this.temperature = temperature;
+    public void setSite(Site site) {
+        this.site = site;
     }
 
     public SolarComponents getSolarComponents() {
@@ -74,17 +57,18 @@ public class Project {
         this.solarComponents = solarComponents;
     }
 
-    public static class Location {
+    // Nested Classes
+    public static class Site {
         private double latitude;
         private double longitude;
+        private double minTemperature;
+        private double maxTemperature;
+        private int panelAngle;
+        private int panelAspect;
+        private boolean usedOptimalValues;
+        private List<MonthlyIrradiance> monthlyIrradianceList;
 
-        public Location() {}
-
-        public Location(double latitude, double longitude) {
-            this.latitude = latitude;
-            this.longitude = longitude;
-        }
-
+        // Getters and Setters
         public double getLatitude() {
             return latitude;
         }
@@ -100,33 +84,76 @@ public class Project {
         public void setLongitude(double longitude) {
             this.longitude = longitude;
         }
-    }
 
-    public static class Temperature {
-        private double min;
-        private double max;
-
-        public Temperature() {}
-
-        public Temperature(double min, double max) {
-            this.min = min;
-            this.max = max;
+        public double getMinTemperature() {
+            return minTemperature;
         }
 
-        public double getMin() {
-            return min;
+        public void setMinTemperature(double minTemperature) {
+            this.minTemperature = minTemperature;
         }
 
-        public void setMin(double min) {
-            this.min = min;
+        public double getMaxTemperature() {
+            return maxTemperature;
         }
 
-        public double getMax() {
-            return max;
+        public void setMaxTemperature(double maxTemperature) {
+            this.maxTemperature = maxTemperature;
         }
 
-        public void setMax(double max) {
-            this.max = max;
+        public int getPanelAngle() {
+            return panelAngle;
+        }
+
+        public void setPanelAngle(int panelAngle) {
+            this.panelAngle = panelAngle;
+        }
+
+        public int getPanelAspect() {
+            return panelAspect;
+        }
+
+        public void setPanelAspect(int panelAspect) {
+            this.panelAspect = panelAspect;
+        }
+
+        public boolean isUsedOptimalValues() {
+            return usedOptimalValues;
+        }
+
+        public void setUsedOptimalValues(boolean usedOptimalValues) {
+            this.usedOptimalValues = usedOptimalValues;
+        }
+
+        public List<MonthlyIrradiance> getMonthlyIrradianceList() {
+            return monthlyIrradianceList;
+        }
+
+        public void setMonthlyIrradianceList(List<MonthlyIrradiance> monthlyIrradianceList) {
+            this.monthlyIrradianceList = monthlyIrradianceList;
+        }
+
+        // Nested Class
+        public static class MonthlyIrradiance {
+            private int month;
+            private double irradiance;
+
+            // Getters and Setters
+            public int getMonth() {
+                return month;
+            }
+
+            public void setMonth(int month) {
+                this.month = month;
+            }
+
+            public double getIrradiance() {
+                return irradiance;
+            }
+
+            public void setIrradiance(double irradiance) {
+                this.irradiance = irradiance;
+            }
         }
     }
 
@@ -137,17 +164,6 @@ public class Project {
         private Map<String, Component> batteries;
         private Map<String, Component> inverters;
         private Map<String, Component> accessories;
-
-        public SolarComponents() {}
-
-        public SolarComponents(Map<String, Component> appliances, Map<String, Component> solarPanels, Map<String, Component> controllers, Map<String, Component> batteries, Map<String, Component> inverters, Map<String, Component> accessories) {
-            this.appliances = appliances;
-            this.solarPanels = solarPanels;
-            this.controllers = controllers;
-            this.batteries = batteries;
-            this.inverters = inverters;
-            this.accessories = accessories;
-        }
 
         // Getters and Setters
         public Map<String, Component> getAppliances() {
@@ -198,16 +214,10 @@ public class Project {
             this.accessories = accessories;
         }
 
+        // Nested Class
         public static class Component {
             private String id;
             private int quantity;
-
-            public Component() {}
-
-            public Component(String id, int quantity) {
-                this.id = id;
-                this.quantity = quantity;
-            }
 
             // Getters and Setters
             public String getId() {

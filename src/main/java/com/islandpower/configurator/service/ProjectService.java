@@ -33,6 +33,13 @@ public class ProjectService {
 
     // Method to delete a project
     public void deleteProject(String projectId, String userId) {
+        Project project = projectRepository.findById(projectId)
+                .orElseThrow(() -> new RuntimeException("Project not found: " + projectId));
+
+        if (!project.getUserId().equals(userId)) {
+            throw new RuntimeException("User does not have permission to delete this project. Project User ID: " + project.getUserId() + ", Requesting User ID: " + userId);
+        }
+
         projectRepository.deleteById(projectId);
 
         OneUser user = userRepository.findById(userId)
@@ -58,13 +65,14 @@ public class ProjectService {
         Project project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new RuntimeException("Project not found: " + projectId));
 
-        if (project.getUserId() == null || !project.getUserId().equals(userId)) {
+        if (!project.getUserId().equals(userId)) {
             throw new RuntimeException("User does not have permission to access this project. Project User ID: " + project.getUserId() + ", Requesting User ID: " + userId);
         }
 
         return project;
     }
 
+    // Method to update an existing project
     public Project updateProject(String projectId, Project updatedProject, String userId) {
         Project existingProject = projectRepository.findById(projectId)
                 .orElseThrow(() -> new RuntimeException("Project not found: " + projectId));
@@ -74,14 +82,13 @@ public class ProjectService {
 
         boolean isAdmin = user.getRole().contains("ADMIN");
 
-        if (!isAdmin && (existingProject.getUserId() == null || !existingProject.getUserId().equals(userId))) {
+        if (!isAdmin && !existingProject.getUserId().equals(userId)) {
             throw new RuntimeException("User does not have permission to update this project. Project User ID: "
                     + existingProject.getUserId() + ", Requesting User ID: " + userId);
         }
 
         existingProject.setName(updatedProject.getName());
-        existingProject.setLocation(updatedProject.getLocation());
-        existingProject.setTemperature(updatedProject.getTemperature());
+        existingProject.setSite(updatedProject.getSite());
         existingProject.setSolarComponents(updatedProject.getSolarComponents());
 
         return projectRepository.save(existingProject);
