@@ -112,13 +112,25 @@ public class ProjectController {
     }
 
     // Endpoint to remove an appliance from a project
-    @DeleteMapping("/{projectId}/applianaces/{applianceId}")
-    public Project removeAppliance(@PathVariable String projectId,
-                                   @PathVariable String applianceId,
-                                   HttpServletRequest request) {
-        String username = extractUsernameFromToken(request);
-        String userId = retrieveUserIdByUsername(username);
-        logger.info("User {} (ID: {}) is removing appliance with ID: {} from project with ID: {}", username, userId, applianceId, projectId);
-        return projectService.removeAppliance(projectId, applianceId);
+    @DeleteMapping("/{projectId}/appliances/{applianceId}")
+    public void removeAppliance(@PathVariable String projectId,
+                                @PathVariable String applianceId,
+                                HttpServletRequest request) {
+        try {
+            String username = extractUsernameFromToken(request);
+            String userId = retrieveUserIdByUsername(username);
+
+            logger.info("User {} (ID: {}) is attempting to remove appliance with ID: {} from project with ID: {}",
+                    username, userId, applianceId, projectId);
+
+            projectService.removeAppliance(projectId, applianceId);
+
+            logger.info("Appliance with ID: {} was successfully removed from project with ID: {} by user {} (ID: {})",
+                    applianceId, projectId, username, userId);
+        } catch (Exception e) {
+            logger.error("Error occurred while user {} was attempting to remove appliance with ID: {} from project with ID: {}",
+                    extractUsernameFromToken(request), applianceId, projectId, e);
+            throw new RuntimeException("Failed to remove appliance", e);
+        }
     }
 }

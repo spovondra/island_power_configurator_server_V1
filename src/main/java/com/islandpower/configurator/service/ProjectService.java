@@ -127,7 +127,7 @@ public class ProjectService {
     }
 
     // Remove appliance from a project
-    public Project removeAppliance(String projectId, String applianceId) {
+    public void removeAppliance(String projectId, String applianceId) {
         Project project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new RuntimeException("Project not found: " + projectId));
 
@@ -136,6 +136,6 @@ public class ProjectService {
             appliances.removeIf(appliance -> appliance.getId().equals(applianceId));
         }
 
-        return projectRepository.save(project);
+        projectRepository.save(project);
     }
 }
