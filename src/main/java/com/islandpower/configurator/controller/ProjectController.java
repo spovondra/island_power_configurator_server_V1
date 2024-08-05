@@ -99,4 +99,26 @@ public class ProjectController {
         logger.info("User {} (ID: {}) is updating project with ID: {}", username, userId, projectId);
         return projectService.updateProject(projectId, project, userId);
     }
+
+    // Endpoint to add or update an appliance in a project
+    @PostMapping("/{projectId}/appliances")
+    public Project addOrUpdateAppliance(@PathVariable String projectId,
+                                        @RequestBody Project.Appliance appliance,
+                                        HttpServletRequest request) {
+        String username = extractUsernameFromToken(request);
+        String userId = retrieveUserIdByUsername(username);
+        logger.info("User {} (ID: {}) is adding/updating an appliance in project with ID: {}", username, userId, projectId);
+        return projectService.addOrUpdateAppliance(projectId, appliance);
+    }
+
+    // Endpoint to remove an appliance from a project
+    @DeleteMapping("/{projectId}/applianaces/{applianceId}")
+    public Project removeAppliance(@PathVariable String projectId,
+                                   @PathVariable String applianceId,
+                                   HttpServletRequest request) {
+        String username = extractUsernameFromToken(request);
+        String userId = retrieveUserIdByUsername(username);
+        logger.info("User {} (ID: {}) is removing appliance with ID: {} from project with ID: {}", username, userId, applianceId, projectId);
+        return projectService.removeAppliance(projectId, applianceId);
+    }
 }

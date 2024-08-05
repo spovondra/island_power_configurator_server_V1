@@ -7,7 +7,10 @@ import com.islandpower.configurator.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class ProjectService {
@@ -93,5 +96,46 @@ public class ProjectService {
         existingProject.setSolarComponents(updatedProject.getSolarComponents());
 
         return projectRepository.save(existingProject);
+    }
+
+    // Create or update appliance in a project
+    public Project addOrUpdateAppliance(String projectId, Project.Appliance appliance) {
+        Project project = projectRepository.findById(projectId)
+                .orElseThrow(() -> new RuntimeException("Project not found: " + projectId));
+
+        List<Project.Appliance> appliances = project.getAppliances();
+        if (appliances == null) {
+            appliances = new ArrayList<>();
+            project.setAppliances(appliances);
+        }
+
+        // Ensure appliance ID is set
+        if (appliance.getId() == null || appliance.getId().isEmpty()) {
+            appliance.setId(UUID.randomUUID().toString()); // Generate new ID if missing
+        }
+
+        Optional<Project.Appliance> existingAppliance = appliances.stream()
+                .filter(a -> a.getId().equals(appliance.getId()))
+                .findFirst();
+
+        if (existingAppliance.isPresent()) {
+            appliances.remove(existingAppliance.get());
+        }
+        appliances.add(appliance);
+
+        return projectRepository.save(project);
+    }
+
+    // Remove appliance from a project
+    public Project removeAppliance(String projectId, String applianceId) {
+        Project project = projectRepository.findById(projectId)
+                .orElseThrow(() -> new RuntimeException("Project not found: " + projectId));
+
+        List<Project.Appliance> appliances = project.getAppliances();
+        if (appliances != null) {
+            appliances.removeIf(appliance -> appliance.getId().equals(applianceId));
+        }
+
+        return projectRepository.save(project);
     }
 }
