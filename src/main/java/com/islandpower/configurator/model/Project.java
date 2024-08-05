@@ -13,6 +13,7 @@ public class Project {
     private String id;
     private String name;
     private String userId;
+    private List<Appliance> appliances;
     private Site site;
     private SolarComponents solarComponents;
 
@@ -41,6 +42,14 @@ public class Project {
         this.userId = userId;
     }
 
+    public List<Appliance> getAppliances() {
+        return appliances;
+    }
+
+    public void setAppliances(List<Appliance> appliances) {
+        this.appliances = appliances;
+    }
+
     public Site getSite() {
         return site;
     }
@@ -57,7 +66,55 @@ public class Project {
         this.solarComponents = solarComponents;
     }
 
-    // Nested Classes
+    public static class Appliance {
+        private String id;
+        private String name;
+        private double power;
+        private int quantity;
+        private int dailyUsageHours;
+
+        // Getters and Setters
+        public String getId() {
+            return id;
+        }
+
+        public void setId(String id) {
+            this.id = id;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public double getPower() {
+            return power;
+        }
+
+        public void setPower(double power) {
+            this.power = power;
+        }
+
+        public int getQuantity() {
+            return quantity;
+        }
+
+        public void setQuantity(int quantity) {
+            this.quantity = quantity;
+        }
+
+        public int getDailyUsageHours() {
+            return dailyUsageHours;
+        }
+
+        public void setDailyUsageHours(int dailyUsageHours) {
+            this.dailyUsageHours = dailyUsageHours;
+        }
+    }
+
     public static class Site {
         private double latitude;
         private double longitude;
@@ -158,21 +215,11 @@ public class Project {
     }
 
     public static class SolarComponents {
-        private Map<String, Component> appliances;
         private Map<String, Component> solarPanels;
         private Map<String, Component> controllers;
         private Map<String, Component> batteries;
         private Map<String, Component> inverters;
         private Map<String, Component> accessories;
-
-        // Getters and Setters
-        public Map<String, Component> getAppliances() {
-            return appliances;
-        }
-
-        public void setAppliances(Map<String, Component> appliances) {
-            this.appliances = appliances;
-        }
 
         public Map<String, Component> getSolarPanels() {
             return solarPanels;

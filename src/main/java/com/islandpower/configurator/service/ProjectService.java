@@ -88,6 +88,7 @@ public class ProjectService {
         }
 
         existingProject.setName(updatedProject.getName());
+        existingProject.setAppliances(updatedProject.getAppliances());
         existingProject.setSite(updatedProject.getSite());
         existingProject.setSolarComponents(updatedProject.getSolarComponents());
 
