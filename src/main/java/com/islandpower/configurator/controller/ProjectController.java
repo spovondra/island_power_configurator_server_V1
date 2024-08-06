@@ -2,6 +2,7 @@ package com.islandpower.configurator.controller;
 
 import com.islandpower.configurator.model.OneUser;
 import com.islandpower.configurator.model.Project;
+import com.islandpower.configurator.model.project.Appliance;
 import com.islandpower.configurator.service.OneUserDetailService;
 import com.islandpower.configurator.service.ProjectService;
 import com.islandpower.configurator.util.JwtUtil;
@@ -170,7 +171,7 @@ public class ProjectController {
      */
     @PostMapping("/{projectId}/appliances")
     public Project addOrUpdateAppliance(@PathVariable String projectId,
-                                        @RequestBody Project.Appliance appliance,
+                                        @RequestBody Appliance appliance,
                                         HttpServletRequest request) {
         String username = extractUsernameFromToken(request);
         String userId = retrieveUserIdByUsername(username);

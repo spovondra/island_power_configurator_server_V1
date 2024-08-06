@@ -1,26 +1,47 @@
 package com.islandpower.configurator.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Service class for fetching and processing location-based data.
+ * This class interacts with various external PVGIS APIs to obtain solar panel data, optimal values, and weather information.
+ *
+ * @version 1.0
+ */
 @Service
 public class LocationService {
+
+    private static final Logger logger = LoggerFactory.getLogger(LocationService.class);
 
     private final RestTemplate restTemplate = new RestTemplate();
     private final ObjectMapper objectMapper = new ObjectMapper();
 
+    // API URLs
     public static final String PVGIS_API_URL = "https://re.jrc.ec.europa.eu/api/v5_2/PVcalc?lat=%s&lon=%s&peakpower=1&loss=1&angle=%s&aspect=%s";
     public static final String OPTIMAL_VALUES_API_URL = "https://re.jrc.ec.europa.eu/api/v5_2/PVcalc?lat=%s&lon=%s&raddatabase=PVGIS-SARAH2&usehorizon=1&outputformat=json&js=1&select_database_grid=PVGIS-SARAH2&pvtechchoice=crystSi&peakpower=1&loss=21&mountingplace=free&optimalangles=1";
     public static final String WEATHER_API_URL = "https://re.jrc.ec.europa.eu/api/v5_2/seriescalc?lat=%s&lon=%s&raddatabase=PVGIS-SARAH2&outputformat=json&startyear=2019&endyear=2020";
 
+    /**
+     * Fetches and processes photovoltaic (PV) data from the PVGIS API.
+     * The data includes monthly solar irradiance values.
+     *
+     * @param latitude The latitude of the location.
+     * @param longitude The longitude of the location.
+     * @param angle The angle of the solar panels.
+     * @param aspect The aspect (orientation) of the solar panels.
+     * @return List of MonthlyHI_d objects containing monthly solar irradiance data.
+     */
     public List<MonthlyHI_d> calculatePVGISData(String latitude, String longitude, String angle, String aspect) {
+        List<MonthlyHI_d> monthlyHI_dList = new ArrayList<>();
+
         try {
             String apiUrl = String.format(PVGIS_API_URL, latitude, longitude, angle, aspect);
             String response = restTemplate.getForObject(apiUrl, String.class);
@@ -29,13 +50,10 @@ public class LocationService {
                 throw new RuntimeException("Received empty response from PVGIS API");
             }
 
-            // Log response for debugging
-            System.out.println("API Response: " + response);
-
             // Split response into lines
             String[] lines = response.split("\n");
 
-            // Find the start and end of the data section
+            // Find the start of the data section
             int dataStartIndex = -1;
             for (int i = 0; i < lines.length; i++) {
                 if (lines[i].startsWith("Month")) {
@@ -48,60 +66,54 @@ public class LocationService {
                 throw new RuntimeException("Data section not found in the response");
             }
 
-            List<MonthlyHI_d> monthlyHI_dList = new ArrayList<>();
-
             for (int i = dataStartIndex; i < lines.length; i++) {
                 String line = lines[i].trim();
                 if (line.isEmpty() || line.startsWith("Year") || line.startsWith("Fixed angle:")) {
-                    continue;
+                    continue; // Skip lines that are empty or are headers
                 }
 
                 String[] tokens = line.split("\\s+");
                 if (tokens.length < 5) {
-                    continue; // Skip malformed lines
+                    continue; // Skip lines with fewer than the expected number of tokens
                 }
 
                 try {
-                    int month = Integer.parseInt(tokens[0]);
-                    double HI_d = Double.parseDouble(tokens[3]);
-                    monthlyHI_dList.add(new MonthlyHI_d(month, HI_d));
+                    int month = Integer.parseInt(tokens[0]); // Attempt to parse the month
+                    double HI_d = Double.parseDouble(tokens[3]); // Attempt to parse the HI_d value
+                    monthlyHI_dList.add(new MonthlyHI_d(month, HI_d)); // Add valid data to the list
                 } catch (NumberFormatException e) {
-                    // Handle potential number format issues
-                    System.err.println("Skipping invalid line: " + line);
+                    // Skip line silently if number format is invalid
+                } catch (Exception e) {
+                    // Skip line silently if any other exception occurs
                 }
             }
-
-            return monthlyHI_dList;
         } catch (Exception e) {
-            e.printStackTrace();
-            throw new RuntimeException("Error processing PVGIS data");
+            logger.error("Error processing PVGIS data", e);
+            throw new RuntimeException("Error processing PVGIS data", e);
         }
+
+        return monthlyHI_dList; // Return the list of valid monthlyHI_d data
     }
 
-    public static class MonthlyHI_d {
-        private int month;
-        private double HI_d;
-
-        public MonthlyHI_d(int month, double HI_d) {
-            this.month = month;
-            this.HI_d = HI_d;
-        }
-
-        public int getMonth() {
-            return month;
-        }
-
-        public double getHI_d() {
-            return HI_d;
-        }
-    }
-
+    /**
+     * Fetches optimal values for solar panel angles and aspects from the PVGIS API.
+     *
+     * @param latitude The latitude of the location.
+     * @param longitude The longitude of the location.
+     * @return OptimalValues object containing the optimal angle and aspect for solar panels.
+     */
     public OptimalValues fetchOptimalValues(String latitude, String longitude) {
         String apiUrl = String.format(OPTIMAL_VALUES_API_URL, latitude, longitude);
         String response = restTemplate.getForObject(apiUrl, String.class);
         return parseOptimalValues(response);
     }
 
+    /**
+     * Parses the JSON response from the PVGIS API to extract optimal values for solar panel angles and aspects.
+     *
+     * @param jsonResponse The JSON response from the API.
+     * @return OptimalValues object containing the optimal angle and aspect for solar panels.
+     */
     private OptimalValues parseOptimalValues(String jsonResponse) {
         try {
             JsonNode rootNode = objectMapper.readTree(jsonResponse);
@@ -113,37 +125,18 @@ public class LocationService {
 
             return new OptimalValues(optimalAngle, optimalAspect);
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Error parsing optimal values from JSON response", e);
             return new OptimalValues(null, null);
         }
     }
 
-    public static class OptimalValues {
-        private Integer optimalAngle;
-        private Integer optimalAspect;
-
-        public OptimalValues(Integer optimalAngle, Integer optimalAspect) {
-            this.optimalAngle = optimalAngle;
-            this.optimalAspect = optimalAspect;
-        }
-
-        public Integer getOptimalAngle() {
-            return optimalAngle;
-        }
-
-        public void setOptimalAngle(Integer optimalAngle) {
-            this.optimalAngle = optimalAngle;
-        }
-
-        public Integer getOptimalAspect() {
-            return optimalAspect;
-        }
-
-        public void setOptimalAspect(Integer optimalAspect) {
-            this.optimalAspect = optimalAspect;
-        }
-    }
-
+    /**
+     * Fetches minimum and maximum temperatures from the weather data API.
+     *
+     * @param latitude The latitude of the location.
+     * @param longitude The longitude of the location.
+     * @return Array containing minimum and maximum temperatures.
+     */
     public double[] getMinMaxTemperatures(String latitude, String longitude) {
         try {
             String apiUrl = String.format(WEATHER_API_URL, latitude, longitude);
@@ -167,8 +160,42 @@ public class LocationService {
 
             return new double[]{minTemp, maxTemp};
         } catch (Exception e) {
-            e.printStackTrace();
-            throw new RuntimeException("Error fetching weather data");
+            logger.error("Error fetching weather data", e);
+            throw new RuntimeException("Error fetching weather data", e);
+        }
+    }
+
+    /**
+     * Inner class representing monthly solar irradiance data.
+     */
+    public record MonthlyHI_d(int month, double HI_d) { }
+
+    /**
+     * Inner class representing optimal values for solar panel angles and aspects.
+     */
+    public static class OptimalValues {
+        private Integer optimalAngle;
+        private Integer optimalAspect;
+
+        public OptimalValues(Integer optimalAngle, Integer optimalAspect) {
+            this.optimalAngle = optimalAngle;
+            this.optimalAspect = optimalAspect;
+        }
+
+        public Integer getOptimalAngle() {
+            return optimalAngle;
+        }
+
+        public void setOptimalAngle(Integer optimalAngle) {
+            this.optimalAngle = optimalAngle;
+        }
+
+        public Integer getOptimalAspect() {
+            return optimalAspect;
+        }
+
+        public void setOptimalAspect(Integer optimalAspect) {
+            this.optimalAspect = optimalAspect;
         }
     }
 }

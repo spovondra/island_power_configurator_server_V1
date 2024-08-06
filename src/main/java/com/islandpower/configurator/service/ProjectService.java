@@ -2,6 +2,7 @@ package com.islandpower.configurator.service;
 
 import com.islandpower.configurator.model.OneUser;
 import com.islandpower.configurator.model.Project;
+import com.islandpower.configurator.model.project.Appliance;
 import com.islandpower.configurator.repository.ProjectRepository;
 import com.islandpower.configurator.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -99,11 +100,11 @@ public class ProjectService {
     }
 
     // Create or update appliance in a project
-    public Project addOrUpdateAppliance(String projectId, Project.Appliance appliance) {
+    public Project addOrUpdateAppliance(String projectId, Appliance appliance) {
         Project project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new RuntimeException("Project not found: " + projectId));
 
-        List<Project.Appliance> appliances = project.getAppliances();
+        List<Appliance> appliances = project.getAppliances();
         if (appliances == null) {
             appliances = new ArrayList<>();
             project.setAppliances(appliances);
@@ -114,7 +115,7 @@ public class ProjectService {
             appliance.setId(UUID.randomUUID().toString()); // Generate new ID if missing
         }
 
-        Optional<Project.Appliance> existingAppliance = appliances.stream()
+        Optional<Appliance> existingAppliance = appliances.stream()
                 .filter(a -> a.getId().equals(appliance.getId()))
                 .findFirst();
 
@@ -131,7 +132,7 @@ public class ProjectService {
         Project project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new RuntimeException("Project not found: " + projectId));
 
-        List<Project.Appliance> appliances = project.getAppliances();
+        List<Appliance> appliances = project.getAppliances();
         if (appliances != null) {
             appliances.removeIf(appliance -> appliance.getId().equals(applianceId));
         }

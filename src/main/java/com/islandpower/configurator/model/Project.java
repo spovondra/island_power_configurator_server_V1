@@ -1,287 +1,163 @@
 package com.islandpower.configurator.model;
 
+import com.islandpower.configurator.model.project.Appliance;
+import com.islandpower.configurator.model.project.Site;
+import com.islandpower.configurator.model.project.SolarComponents;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.List;
-import java.util.Map;
 
+/**
+ * Represents a solar energy project.
+ * This class is used to store information about a specific project, including its name, user details,
+ * associated appliances, site details, and solar components.
+ * It is mapped to a MongoDB collection named "projects".
+ *
+ * @version 1.0
+ */
 @Document(collection = "projects")
 public class Project {
 
+    /**
+     * Unique identifier for the project.
+     */
     @Id
     private String id;
+
+    /**
+     * Name of the project.
+     */
     private String name;
+
+    /**
+     * ID of the user who owns or is associated with the project.
+     */
     private String userId;
+
+    /**
+     * List of appliances used in the project.
+     * Each appliance has details such as power rating, quantity, and daily usage.
+     */
     private List<Appliance> appliances;
+
+    /**
+     * Site-specific details including location, environmental conditions, and panel orientation.
+     */
     private Site site;
+
+    /**
+     * Components related to the solar energy system, including solar panels, controllers, batteries, inverters, and accessories.
+     */
     private SolarComponents solarComponents;
 
     // Getters and Setters
+
+    /**
+     * Gets the unique identifier for the project.
+     *
+     * @return The unique ID of the project.
+     */
     public String getId() {
         return id;
     }
 
+    /**
+     * Sets the unique identifier for the project.
+     *
+     * @param id The unique ID of the project.
+     */
     public void setId(String id) {
         this.id = id;
     }
 
+    /**
+     * Gets the name of the project.
+     *
+     * @return The name of the project.
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * Sets the name of the project.
+     *
+     * @param name The name of the project.
+     */
     public void setName(String name) {
         this.name = name;
     }
 
+    /**
+     * Gets the ID of the user associated with the project.
+     *
+     * @return The ID of the user.
+     */
     public String getUserId() {
         return userId;
     }
 
+    /**
+     * Sets the ID of the user associated with the project.
+     *
+     * @param userId The ID of the user.
+     */
     public void setUserId(String userId) {
         this.userId = userId;
     }
 
+    /**
+     * Gets the list of appliances used in the project.
+     *
+     * @return The list of appliances.
+     */
     public List<Appliance> getAppliances() {
         return appliances;
     }
 
+    /**
+     * Sets the list of appliances used in the project.
+     *
+     * @param appliances The list of appliances.
+     */
     public void setAppliances(List<Appliance> appliances) {
         this.appliances = appliances;
     }
 
+    /**
+     * Gets the site-specific details for the project.
+     *
+     * @return The site details.
+     */
     public Site getSite() {
         return site;
     }
 
+    /**
+     * Sets the site-specific details for the project.
+     *
+     * @param site The site details.
+     */
     public void setSite(Site site) {
         this.site = site;
     }
 
+    /**
+     * Gets the solar components related to the project.
+     *
+     * @return The solar components.
+     */
     public SolarComponents getSolarComponents() {
         return solarComponents;
     }
 
+    /**
+     * Sets the solar components related to the project.
+     *
+     * @param solarComponents The solar components.
+     */
     public void setSolarComponents(SolarComponents solarComponents) {
         this.solarComponents = solarComponents;
-    }
-
-    public static class Appliance {
-        private String id;
-        private String name;
-        private double power;
-        private int quantity;
-        private int dailyUsageHours;
-
-        // Getters and Setters
-        public String getId() {
-            return id;
-        }
-
-        public void setId(String id) {
-            this.id = id;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public void setName(String name) {
-            this.name = name;
-        }
-
-        public double getPower() {
-            return power;
-        }
-
-        public void setPower(double power) {
-            this.power = power;
-        }
-
-        public int getQuantity() {
-            return quantity;
-        }
-
-        public void setQuantity(int quantity) {
-            this.quantity = quantity;
-        }
-
-        public int getDailyUsageHours() {
-            return dailyUsageHours;
-        }
-
-        public void setDailyUsageHours(int dailyUsageHours) {
-            this.dailyUsageHours = dailyUsageHours;
-        }
-    }
-
-    public static class Site {
-        private double latitude;
-        private double longitude;
-        private double minTemperature;
-        private double maxTemperature;
-        private int panelAngle;
-        private int panelAspect;
-        private boolean usedOptimalValues;
-        private List<MonthlyIrradiance> monthlyIrradianceList;
-
-        // Getters and Setters
-        public double getLatitude() {
-            return latitude;
-        }
-
-        public void setLatitude(double latitude) {
-            this.latitude = latitude;
-        }
-
-        public double getLongitude() {
-            return longitude;
-        }
-
-        public void setLongitude(double longitude) {
-            this.longitude = longitude;
-        }
-
-        public double getMinTemperature() {
-            return minTemperature;
-        }
-
-        public void setMinTemperature(double minTemperature) {
-            this.minTemperature = minTemperature;
-        }
-
-        public double getMaxTemperature() {
-            return maxTemperature;
-        }
-
-        public void setMaxTemperature(double maxTemperature) {
-            this.maxTemperature = maxTemperature;
-        }
-
-        public int getPanelAngle() {
-            return panelAngle;
-        }
-
-        public void setPanelAngle(int panelAngle) {
-            this.panelAngle = panelAngle;
-        }
-
-        public int getPanelAspect() {
-            return panelAspect;
-        }
-
-        public void setPanelAspect(int panelAspect) {
-            this.panelAspect = panelAspect;
-        }
-
-        public boolean isUsedOptimalValues() {
-            return usedOptimalValues;
-        }
-
-        public void setUsedOptimalValues(boolean usedOptimalValues) {
-            this.usedOptimalValues = usedOptimalValues;
-        }
-
-        public List<MonthlyIrradiance> getMonthlyIrradianceList() {
-            return monthlyIrradianceList;
-        }
-
-        public void setMonthlyIrradianceList(List<MonthlyIrradiance> monthlyIrradianceList) {
-            this.monthlyIrradianceList = monthlyIrradianceList;
-        }
-
-        // Nested Class
-        public static class MonthlyIrradiance {
-            private int month;
-            private double irradiance;
-
-            // Getters and Setters
-            public int getMonth() {
-                return month;
-            }
-
-            public void setMonth(int month) {
-                this.month = month;
-            }
-
-            public double getIrradiance() {
-                return irradiance;
-            }
-
-            public void setIrradiance(double irradiance) {
-                this.irradiance = irradiance;
-            }
-        }
-    }
-
-    public static class SolarComponents {
-        private Map<String, Component> solarPanels;
-        private Map<String, Component> controllers;
-        private Map<String, Component> batteries;
-        private Map<String, Component> inverters;
-        private Map<String, Component> accessories;
-
-        public Map<String, Component> getSolarPanels() {
-            return solarPanels;
-        }
-
-        public void setSolarPanels(Map<String, Component> solarPanels) {
-            this.solarPanels = solarPanels;
-        }
-
-        public Map<String, Component> getControllers() {
-            return controllers;
-        }
-
-        public void setControllers(Map<String, Component> controllers) {
-            this.controllers = controllers;
-        }
-
-        public Map<String, Component> getBatteries() {
-            return batteries;
-        }
-
-        public void setBatteries(Map<String, Component> batteries) {
-            this.batteries = batteries;
-        }
-
-        public Map<String, Component> getInverters() {
-            return inverters;
-        }
-
-        public void setInverters(Map<String, Component> inverters) {
-            this.inverters = inverters;
-        }
-
-        public Map<String, Component> getAccessories() {
-            return accessories;
-        }
-
-        public void setAccessories(Map<String, Component> accessories) {
-            this.accessories = accessories;
-        }
-
-        // Nested Class
-        public static class Component {
-            private String id;
-            private int quantity;
-
-            // Getters and Setters
-            public String getId() {
-                return id;
-            }
-
-            public void setId(String id) {
-                this.id = id;
-            }
-
-            public int getQuantity() {
-                return quantity;
-            }
-
-            public void setQuantity(int quantity) {
-                this.quantity = quantity;
-            }
-        }
     }
 }
