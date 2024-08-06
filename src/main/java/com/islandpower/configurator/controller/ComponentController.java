@@ -11,148 +11,215 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Controller class for handling component-related requests - Currently under development !!!! .
+ * This class provides endpoints for retrieving, creating, updating, and deleting various types of components.
+ *
+ * @version 0.0
+ */
 @RestController
-@RequestMapping("/api/components")
+@RequestMapping("/api/components") // Base URL for all endpoints in this controller
 public class ComponentController {
 
+    /**
+     * Repository for managing SolarPanel entities.
+     */
     @Autowired
     private SolarPanelRepository solarPanelRepository;
 
+    /**
+     * Repository for managing Controller entities.
+     */
     @Autowired
     private ControllerRepository controllerRepository;
 
+    /**
+     * Repository for managing Battery entities.
+     */
     @Autowired
     private BatteryRepository batteryRepository;
 
+    /**
+     * Repository for managing Inverter entities.
+     */
     @Autowired
     private InverterRepository inverterRepository;
 
+    /**
+     * Repository for managing Accessory entities.
+     */
     @Autowired
     private AccessoryRepository accessoryRepository;
 
+    /**
+     * Endpoint to retrieve all components of a specified type.
+     *
+     * @param type - The type of component to retrieve (e.g., "solar-panels", "controllers", etc.)
+     * @return ResponseEntity<List<?>> - A response entity containing a list of components + HTTP status
+     */
     @GetMapping("/{type}")
     public ResponseEntity<List<?>> getAllComponents(@PathVariable String type) {
-        switch (type) {
-            case "solar-panels":
-                return new ResponseEntity<>(solarPanelRepository.findAll(), HttpStatus.OK);
-            case "controllers":
-                return new ResponseEntity<>(controllerRepository.findAll(), HttpStatus.OK);
-            case "batteries":
-                return new ResponseEntity<>(batteryRepository.findAll(), HttpStatus.OK);
-            case "inverters":
-                return new ResponseEntity<>(inverterRepository.findAll(), HttpStatus.OK);
-            case "accessories":
-                return new ResponseEntity<>(accessoryRepository.findAll(), HttpStatus.OK);
-            default:
-                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+        return switch (type) {
+            case "solar-panels" -> new ResponseEntity<>(solarPanelRepository.findAll(), HttpStatus.OK);
+            case "controllers" -> new ResponseEntity<>(controllerRepository.findAll(), HttpStatus.OK);
+            case "batteries" -> new ResponseEntity<>(batteryRepository.findAll(), HttpStatus.OK);
+            case "inverters" -> new ResponseEntity<>(inverterRepository.findAll(), HttpStatus.OK);
+            case "accessories" -> new ResponseEntity<>(accessoryRepository.findAll(), HttpStatus.OK);
+            default ->
+                    new ResponseEntity<>(HttpStatus.BAD_REQUEST); // Return a BAD_REQUEST status for invalid component type
+        };
     }
 
+    /**
+     * Endpoint to retrieve a specific component by ID.
+     *
+     * @param type - The type of component to retrieve
+     * @param id - The ID of the component to retrieve
+     * @return ResponseEntity<?> - A response entity containing the component + HTTP status
+     */
     @GetMapping("/{type}/{id}")
     public ResponseEntity<?> getComponentById(@PathVariable String type, @PathVariable String id) {
-        switch (type) {
-            case "solar-panels":
-                return getComponent(solarPanelRepository.findById(id), SolarPanel.class);
-            case "controllers":
-                return getComponent(controllerRepository.findById(id), Controller.class);
-            case "batteries":
-                return getComponent(batteryRepository.findById(id), Battery.class);
-            case "inverters":
-                return getComponent(inverterRepository.findById(id), Inverter.class);
-            case "accessories":
-                return getComponent(accessoryRepository.findById(id), Accessory.class);
-            default:
-                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+        return switch (type) {
+            case "solar-panels" -> getComponent(solarPanelRepository.findById(id));
+            case "controllers" -> getComponent(controllerRepository.findById(id));
+            case "batteries" -> getComponent(batteryRepository.findById(id));
+            case "inverters" -> getComponent(inverterRepository.findById(id));
+            case "accessories" -> getComponent(accessoryRepository.findById(id));
+            default ->
+                    new ResponseEntity<>(HttpStatus.BAD_REQUEST); // Return a BAD_REQUEST status for invalid component type
+        };
     }
 
+    /**
+     * Endpoint to create a new component of a specified type.
+     *
+     * @param type - The type of component to create
+     * @param componentData - The data for the new component
+     * @return ResponseEntity<?> - A response entity containing the created component + HTTP status
+     */
     @PostMapping("/{type}")
     public ResponseEntity<?> createComponent(@PathVariable String type, @RequestBody Object componentData) {
-        switch (type) {
-            case "solar-panels":
+        return switch (type) {
+            case "solar-panels" -> {
                 SolarPanel solarPanel = (SolarPanel) componentData;
-                return new ResponseEntity<>(solarPanelRepository.save(solarPanel), HttpStatus.CREATED);
-            case "controllers":
+                yield new ResponseEntity<>(solarPanelRepository.save(solarPanel), HttpStatus.CREATED);
+            }
+            case "controllers" -> {
                 Controller controller = (Controller) componentData;
-                return new ResponseEntity<>(controllerRepository.save(controller), HttpStatus.CREATED);
-            case "batteries":
+                yield new ResponseEntity<>(controllerRepository.save(controller), HttpStatus.CREATED);
+            }
+            case "batteries" -> {
                 Battery battery = (Battery) componentData;
-                return new ResponseEntity<>(batteryRepository.save(battery), HttpStatus.CREATED);
-            case "inverters":
+                yield new ResponseEntity<>(batteryRepository.save(battery), HttpStatus.CREATED);
+            }
+            case "inverters" -> {
                 Inverter inverter = (Inverter) componentData;
-                return new ResponseEntity<>(inverterRepository.save(inverter), HttpStatus.CREATED);
-            case "accessories":
+                yield new ResponseEntity<>(inverterRepository.save(inverter), HttpStatus.CREATED);
+            }
+            case "accessories" -> {
                 Accessory accessory = (Accessory) componentData;
-                return new ResponseEntity<>(accessoryRepository.save(accessory), HttpStatus.CREATED);
-            default:
-                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+                yield new ResponseEntity<>(accessoryRepository.save(accessory), HttpStatus.CREATED);
+            }
+            default ->
+                    new ResponseEntity<>(HttpStatus.BAD_REQUEST); // Return a BAD_REQUEST status for invalid component type
+        };
     }
 
+    /**
+     * Endpoint to update an existing component by ID.
+     *
+     * @param type - The type of component to update
+     * @param id - The ID of the component to update
+     * @param componentData - The updated data for the component
+     * @return ResponseEntity<?> - A response entity containing the updated component + HTTP status
+     */
     @PutMapping("/{type}/{id}")
     public ResponseEntity<?> updateComponent(@PathVariable String type, @PathVariable String id, @RequestBody Object componentData) {
-        switch (type) {
-            case "solar-panels":
-                return updateComponent(id, (SolarPanel) componentData, solarPanelRepository);
-            case "controllers":
-                return updateComponent(id, (Controller) componentData, controllerRepository);
-            case "batteries":
-                return updateComponent(id, (Battery) componentData, batteryRepository);
-            case "inverters":
-                return updateComponent(id, (Inverter) componentData, inverterRepository);
-            case "accessories":
-                return updateComponent(id, (Accessory) componentData, accessoryRepository);
-            default:
-                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+        return switch (type) {
+            case "solar-panels" -> updateComponent(id, (SolarPanel) componentData, solarPanelRepository);
+            case "controllers" -> updateComponent(id, (Controller) componentData, controllerRepository);
+            case "batteries" -> updateComponent(id, (Battery) componentData, batteryRepository);
+            case "inverters" -> updateComponent(id, (Inverter) componentData, inverterRepository);
+            case "accessories" -> updateComponent(id, (Accessory) componentData, accessoryRepository);
+            default ->
+                    new ResponseEntity<>(HttpStatus.BAD_REQUEST); // Return a BAD_REQUEST status for invalid component type
+        };
     }
 
+    /**
+     * Endpoint to delete a component by ID.
+     *
+     * @param type - The type of component to delete
+     * @param id - The ID of the component to delete
+     * @return ResponseEntity<Void> - A response entity with NO CONTENT status
+     */
     @DeleteMapping("/{type}/{id}")
     public ResponseEntity<Void> deleteComponent(@PathVariable String type, @PathVariable String id) {
-        switch (type) {
-            case "solar-panels":
-                return deleteComponent(id, solarPanelRepository);
-            case "controllers":
-                return deleteComponent(id, controllerRepository);
-            case "batteries":
-                return deleteComponent(id, batteryRepository);
-            case "inverters":
-                return deleteComponent(id, inverterRepository);
-            case "accessories":
-                return deleteComponent(id, accessoryRepository);
-            default:
-                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+        return switch (type) {
+            case "solar-panels" -> deleteComponent(id, solarPanelRepository);
+            case "controllers" -> deleteComponent(id, controllerRepository);
+            case "batteries" -> deleteComponent(id, batteryRepository);
+            case "inverters" -> deleteComponent(id, inverterRepository);
+            case "accessories" -> deleteComponent(id, accessoryRepository);
+            default ->
+                    new ResponseEntity<>(HttpStatus.BAD_REQUEST); // Return a BAD_REQUEST status for invalid component type
+        };
     }
 
     // Utility methods
-    private <T> ResponseEntity<?> getComponent(Optional<T> componentOptional, Class<T> componentClass) {
+
+    /**
+     * Utility method to handle retrieval of a component.
+     *
+     * @param componentOptional - Optional containing the component data
+     * @param <T> - Type of the component
+     * @return ResponseEntity<?> - A response entity containing the component + HTTP status
+     */
+    private <T> ResponseEntity<?> getComponent(Optional<T> componentOptional) {
         return componentOptional
-                .map(component -> new ResponseEntity<>(component, HttpStatus.OK))
-                .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+                .map(component -> new ResponseEntity<>(component, HttpStatus.OK)) // Return OK status if component is present
+                .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND)); // Return NOT_FOUND status if component is not present
     }
 
+    /**
+     * Utility method to handle updating a component.
+     *
+     * @param id - The ID of the component to update
+     * @param componentData - The new data for the component
+     * @param repository - The repository for the component type
+     * @param <T> - Type of the component
+     * @return ResponseEntity<?> - A response entity containing the updated component + HTTP status
+     */
     private <T> ResponseEntity<?> updateComponent(String id, T componentData, MongoRepository<T, String> repository) {
         return repository.findById(id)
                 .map(existingComponent -> {
-                    // Assuming components have an `update` method or you manually copy properties
-                    // In this case, we assume the incoming `componentData` has the updated properties
+                    // Assuming components have an `update` method or properties are copied manually
                     ((UpdatableComponent) existingComponent).update(componentData);
                     return new ResponseEntity<>(repository.save(existingComponent), HttpStatus.OK);
                 })
-                .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+                .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND)); // Return NOT_FOUND status if component is not present
     }
 
+    /**
+     * Utility method to handle deletion of a component.
+     *
+     * @param id - The ID of the component to delete
+     * @param repository - The repository for the component type
+     * @param <T> - Type of the component
+     * @return ResponseEntity<Void> - A response entity with NO CONTENT status
+     */
     private <T> ResponseEntity<Void> deleteComponent(String id, MongoRepository<T, String> repository) {
         return repository.findById(id)
                 .map(component -> {
-                    repository.deleteById(id);
-                    return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
+                    repository.deleteById(id); // Delete the component by ID
+                    return new ResponseEntity<Void>(HttpStatus.NO_CONTENT); // Return NO_CONTENT status if deletion is successful
                 })
-                .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+                .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND)); // Return NOT_FOUND status if component does not exist
     }
 
-    // Interface for updatable components
+    /**
+     * Interface for components update.
+     */
     private interface UpdatableComponent {
         void update(Object data);
     }

@@ -19,16 +19,37 @@ import java.text.DecimalFormatSymbols;
 import java.util.List;
 import java.util.Locale;
 
+/**
+ * Controller class for handling location-related requests.
+ * This class provides endpoints for calculating PVGIS data, fetching optimal values, and retrieving minimum and maximum temperatures.
+ *
+ * @version 1.0
+ */
 @RestController
 @RequestMapping("/api/location")
 public class LocationController {
 
+    /**
+     * Service for location-related calculations and PVGIS data retrieval.
+     */
     @Autowired
     private LocationService locationService;
 
+    /**
+     * ObjectMapper for converting Java objects to JSON.
+     */
     @Autowired
     private ObjectMapper objectMapper;
 
+    /**
+     * Endpoint to calculate PVGIS data based on latitude, longitude, angle, and aspect.
+     *
+     * @param latitude - Latitude coordinate of the location
+     * @param longitude - Longitude coordinate of the location
+     * @param angle - Angle of panel for the calculation
+     * @param aspect - Aspect of panel for the calculation
+     * @return ResponseEntity<String> - JSON response containing PVGIS data or error message
+     */
     @GetMapping("/calculatePVGISData")
     public ResponseEntity<String> calculatePVGISData(@RequestParam String latitude, @RequestParam String longitude, @RequestParam String angle, @RequestParam String aspect) {
         try {
@@ -41,14 +62,21 @@ public class LocationController {
 
             return new ResponseEntity<>(jsonResult, headers, HttpStatus.OK);
         } catch (JsonProcessingException e) {
-            // Chyba při zpracování JSON odpovědi
+            // Error processing JSON response
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("{\"error\":\"Error processing JSON\"}");
         } catch (RuntimeException e) {
-            // Obecná chyba při zpracování API
+            // General error while processing API request
             return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body("{\"error\":\"Service unavailable\"}");
         }
     }
 
+    /**
+     * Endpoint to fetch optimal values (angle and aspect) based on latitude and longitude.
+     *
+     * @param latitude - Latitude coordinate of the location
+     * @param longitude - Longitude coordinate of the location
+     * @return ResponseEntity<String> - JSON response containing optimal angle and aspect or error message
+     */
     @GetMapping("/fetchOptimalValues")
     public ResponseEntity<String> fetchOptimalValues(@RequestParam String latitude, @RequestParam String longitude) {
         try {
@@ -62,6 +90,13 @@ public class LocationController {
         }
     }
 
+    /**
+     * Endpoint to retrieve the minimum and maximum temperatures for a given latitude and longitude.
+     *
+     * @param latitude - Latitude coordinate of the location
+     * @param longitude - Longitude coordinate of the location
+     * @return ResponseEntity<String> - JSON response containing min and max temperatures or error message
+     */
     @GetMapping("/min-max-temperatures")
     public ResponseEntity<String> getMinMaxTemperatures(@RequestParam String latitude, @RequestParam String longitude) {
         try {
@@ -78,6 +113,14 @@ public class LocationController {
         }
     }
 
+    // Utility methods
+
+    /**
+     * Utility method to format minimum and maximum temperatures as a JSON string.
+     *
+     * @param minMaxTemperatures - Array containing minimum and maximum temperatures
+     * @return String - JSON formatted string with temperatures
+     */
     private static String getString(double[] minMaxTemperatures) {
         DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.US);
         symbols.setDecimalSeparator('.');
@@ -89,5 +132,4 @@ public class LocationController {
 
         return String.format("{\"minTemp\": %s, \"maxTemp\": %s}", minTempFormatted, maxTempFormatted);
     }
-
 }
