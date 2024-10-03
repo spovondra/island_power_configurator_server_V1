@@ -25,9 +25,9 @@ public class LocationService {
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     // API URLs
-    public static final String PVGIS_API_URL = "https://re.jrc.ec.europa.eu/api/v5_2/PVcalc?lat=%s&lon=%s&peakpower=1&loss=1&angle=%s&aspect=%s";
-    public static final String OPTIMAL_VALUES_API_URL = "https://re.jrc.ec.europa.eu/api/v5_2/PVcalc?lat=%s&lon=%s&raddatabase=PVGIS-SARAH2&usehorizon=1&outputformat=json&js=1&select_database_grid=PVGIS-SARAH2&pvtechchoice=crystSi&peakpower=1&loss=21&mountingplace=free&optimalangles=1";
-    public static final String WEATHER_API_URL = "https://re.jrc.ec.europa.eu/api/v5_2/seriescalc?lat=%s&lon=%s&raddatabase=PVGIS-SARAH2&outputformat=json&startyear=2019&endyear=2020";
+    public static final String PVGIS_API_URL = "https://re.jrc.ec.europa.eu/api/v5_3/PVcalc?lat=%s&lon=%s&outputformat=json&peakpower=1&loss=1&angle=%s&aspect=%s";
+    public static final String OPTIMAL_VALUES_API_URL = "https://re.jrc.ec.europa.eu/api/v5_3/PVcalc?lat=%s&lon=%s&raddatabase=PVGIS-SARAH3&usehorizon=1&outputformat=json&js=1&select_database_grid=PVGIS-SARAH2&pvtechchoice=crystSi&peakpower=1&loss=21&mountingplace=free&optimalangles=1";
+    public static final String WEATHER_API_URL = "https://re.jrc.ec.europa.eu/api/v5_3/seriescalc?lat=%s&lon=%s&raddatabase=PVGIS-SARAH3&outputformat=json&&startyear=2023&endyear=2023";
 
     /**
      * Fetches and processes photovoltaic (PV) data from the PVGIS API.
@@ -50,43 +50,22 @@ public class LocationService {
                 throw new RuntimeException("Received empty response from PVGIS API");
             }
 
-            // Split response into lines
-            String[] lines = response.split("\n");
+            // Parse the JSON response
+            JsonNode rootNode = objectMapper.readTree(response);
+            JsonNode monthlyDataNode = rootNode.path("outputs").path("monthly").path("fixed");
 
-            // Find the start of the data section
-            int dataStartIndex = -1;
-            for (int i = 0; i < lines.length; i++) {
-                if (lines[i].startsWith("Month")) {
-                    dataStartIndex = i + 1; // Skip header line
-                    break;
-                }
+            if (!monthlyDataNode.isArray()) {
+                throw new RuntimeException("Expected an array of monthly data in the response");
             }
 
-            if (dataStartIndex == -1) {
-                throw new RuntimeException("Data section not found in the response");
+            // Loop through the monthly data array
+            for (JsonNode monthNode : monthlyDataNode) {
+                int month = monthNode.path("month").asInt();
+                double HI_d = monthNode.path("H(i)_d").asDouble(); // Daily solar irradiance
+
+                monthlyHI_dList.add(new MonthlyHI_d(month, HI_d));
             }
 
-            for (int i = dataStartIndex; i < lines.length; i++) {
-                String line = lines[i].trim();
-                if (line.isEmpty() || line.startsWith("Year") || line.startsWith("Fixed angle:")) {
-                    continue; // Skip lines that are empty or are headers
-                }
-
-                String[] tokens = line.split("\\s+");
-                if (tokens.length < 5) {
-                    continue; // Skip lines with fewer than the expected number of tokens
-                }
-
-                try {
-                    int month = Integer.parseInt(tokens[0]); // Attempt to parse the month
-                    double HI_d = Double.parseDouble(tokens[3]); // Attempt to parse the HI_d value
-                    monthlyHI_dList.add(new MonthlyHI_d(month, HI_d)); // Add valid data to the list
-                } catch (NumberFormatException e) {
-                    // Skip line silently if number format is invalid
-                } catch (Exception e) {
-                    // Skip line silently if any other exception occurs
-                }
-            }
         } catch (Exception e) {
             logger.error("Error processing PVGIS data", e);
             throw new RuntimeException("Error processing PVGIS data", e);
@@ -94,6 +73,7 @@ public class LocationService {
 
         return monthlyHI_dList; // Return the list of valid monthlyHI_d data
     }
+
 
     /**
      * Fetches optimal values for solar panel angles and aspects from the PVGIS API.

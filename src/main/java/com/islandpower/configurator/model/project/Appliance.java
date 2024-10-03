@@ -1,132 +1,95 @@
 package com.islandpower.configurator.model.project;
 
-/**
- * Represents an appliance used in a solar energy project.
- * This class stores information about an individual appliance, including its power rating,
- * quantity, and daily usage. It is used to track and manage appliances within a project.
- *
- * @version 1.0
- */
 public class Appliance {
 
-    /**
-     * Unique identifier for the appliance.
-     */
     private String id;
-
-    /**
-     * Name of the appliance.
-     * This is a descriptive name for the appliance (e.g., "Refrigerator", "Washing Machine").
-     */
     private String name;
-
-    /**
-     * Power rating of the appliance in watts (W).
-     * This value indicates the amount of power the appliance consumes during operation.
-     */
-    private double power;
-
-    /**
-     * Quantity of the appliance.
-     * This specifies how many units of the appliance are used in the project.
-     */
+    private String type; // AC or DC
     private int quantity;
+    private double power; // in Watts
+    private double hours; // Hours per day
+    private double days; // Days per week
+    private double peakPower; // in Watts
+    private double energy; // Energy consumption calculated
+    private double cost;
 
-    /**
-     * Daily usage hours of the appliance.
-     * This represents the number of hours the appliance is used per day.
-     */
-    private int dailyUsageHours;
-
-    // Getters and Setters
-
-    /**
-     * Gets the unique identifier for the appliance.
-     *
-     * @return The unique ID of the appliance.
-     */
     public String getId() {
         return id;
     }
 
-    /**
-     * Sets the unique identifier for the appliance.
-     *
-     * @param id The unique ID of the appliance.
-     */
     public void setId(String id) {
         this.id = id;
     }
 
-    /**
-     * Gets the name of the appliance.
-     *
-     * @return The name of the appliance.
-     */
     public String getName() {
         return name;
     }
 
-    /**
-     * Sets the name of the appliance.
-     *
-     * @param name The name of the appliance.
-     */
     public void setName(String name) {
         this.name = name;
     }
 
-    /**
-     * Gets the power rating of the appliance.
-     *
-     * @return The power rating in watts.
-     */
-    public double getPower() {
-        return power;
+    public String getType() {
+        return type;
     }
 
-    /**
-     * Sets the power rating of the appliance.
-     *
-     * @param power The power rating in watts.
-     */
-    public void setPower(double power) {
-        this.power = power;
+    public void setType(String type) {
+        this.type = type;
     }
 
-    /**
-     * Gets the quantity of the appliance.
-     *
-     * @return The quantity of the appliance.
-     */
     public int getQuantity() {
         return quantity;
     }
 
-    /**
-     * Sets the quantity of the appliance.
-     *
-     * @param quantity The quantity of the appliance.
-     */
     public void setQuantity(int quantity) {
         this.quantity = quantity;
     }
 
-    /**
-     * Gets the daily usage hours of the appliance.
-     *
-     * @return The number of hours the appliance is used per day.
-     */
-    public int getDailyUsageHours() {
-        return dailyUsageHours;
+    public double getPower() {
+        return power;
     }
 
-    /**
-     * Sets the daily usage hours of the appliance.
-     *
-     * @param dailyUsageHours The number of hours the appliance is used per day.
-     */
-    public void setDailyUsageHours(int dailyUsageHours) {
-        this.dailyUsageHours = dailyUsageHours;
+    public void setPower(double power) {
+        this.power = power;
+    }
+
+    public double getHours() {
+        return hours;
+    }
+
+    public void setHours(double hours) {
+        this.hours = hours;
+    }
+
+    public double getDays() {
+        return days;
+    }
+
+    public void setDays(double days) {
+        this.days = days;
+    }
+
+    public double getPeakPower() {
+        return peakPower;
+    }
+
+    public void setPeakPower(double peakPower) {
+        this.peakPower = peakPower;
+    }
+
+    public double getEnergy() {
+        return energy;
+    }
+
+    public void setEnergy(double energy) {
+        this.energy = energy;
+    }
+
+    public double getCost() {
+        return cost;
+    }
+
+    public void setCost(double cost) {
+        this.cost = cost;
     }
 }
