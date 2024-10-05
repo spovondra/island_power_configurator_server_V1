@@ -1,7 +1,8 @@
 package com.islandpower.configurator.model.project;
 
-public class Appliance {
+import org.springframework.data.mongodb.core.mapping.Document;
 
+public class Appliance {
     private String id;
     private String name;
     private String type; // AC or DC
@@ -11,7 +12,6 @@ public class Appliance {
     private double days; // Days per week
     private double peakPower; // in Watts
     private double energy; // Energy consumption calculated
-    private double cost;
 
     public String getId() {
         return id;
@@ -83,13 +83,5 @@ public class Appliance {
 
     public void setEnergy(double energy) {
         this.energy = energy;
-    }
-
-    public double getCost() {
-        return cost;
-    }
-
-    public void setCost(double cost) {
-        this.cost = cost;
     }
 }

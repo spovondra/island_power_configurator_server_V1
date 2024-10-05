@@ -5,41 +5,75 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document(collection = "controllers")
 public class Controller {
-    @Id
-    private String id;
-    private String model;
-    private String type;
-    private double voltage;
-    private double current;
-    private String image;
-    private double efficiency;
-    private String dimensions;
+    private int id; // Unikátní identifikátor regulátoru
+    private String name; // Název regulátoru
+    private double ratedPower; // Jmenovitý výkon regulátoru (W)
+    private double currentRating; // Maximální proud regulátoru (A)
+    private double maxVoltage; // Maximální napětí regulátoru (V)
+    private double minVoltage; // Minimální napětí regulátoru (V)
+    private String type; // Typ regulátoru (např. PWM, MPPT)
+    private double efficiency; // Účinnost regulátoru
 
-    public Controller(String id, String model, String type, double voltage, double current, String image, double efficiency, String dimensions) {
+    // Konstruktory
+    public Controller(int id, String name, double ratedPower, double currentRating,
+                      double maxVoltage, double minVoltage, String type, double efficiency) {
         this.id = id;
-        this.model = model;
+        this.name = name;
+        this.ratedPower = ratedPower;
+        this.currentRating = currentRating;
+        this.maxVoltage = maxVoltage;
+        this.minVoltage = minVoltage;
         this.type = type;
-        this.voltage = voltage;
-        this.current = current;
-        this.image = image;
-        this.efficiency = efficiency;
-        this.dimensions = dimensions;
+        this.efficiency = efficiency; // Inicializace účinnosti
     }
 
-    public String getId() {
+    // Getter a setter metody
+    public int getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(int id) {
         this.id = id;
     }
 
-    public String getModel() {
-        return model;
+    public String getName() {
+        return name;
     }
 
-    public void setModel(String model) {
-        this.model = model;
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public double getRatedPower() {
+        return ratedPower;
+    }
+
+    public void setRatedPower(double ratedPower) {
+        this.ratedPower = ratedPower;
+    }
+
+    public double getCurrentRating() {
+        return currentRating;
+    }
+
+    public void setCurrentRating(double currentRating) {
+        this.currentRating = currentRating;
+    }
+
+    public double getMaxVoltage() {
+        return maxVoltage;
+    }
+
+    public void setMaxVoltage(double maxVoltage) {
+        this.maxVoltage = maxVoltage;
+    }
+
+    public double getMinVoltage() {
+        return minVoltage;
+    }
+
+    public void setMinVoltage(double minVoltage) {
+        this.minVoltage = minVoltage;
     }
 
     public String getType() {
@@ -50,43 +84,11 @@ public class Controller {
         this.type = type;
     }
 
-    public double getVoltage() {
-        return voltage;
-    }
-
-    public void setVoltage(double voltage) {
-        this.voltage = voltage;
-    }
-
-    public double getCurrent() {
-        return current;
-    }
-
-    public void setCurrent(double current) {
-        this.current = current;
-    }
-
-    public String getImage() {
-        return image;
-    }
-
-    public void setImage(String image) {
-        this.image = image;
-    }
-
     public double getEfficiency() {
         return efficiency;
     }
 
     public void setEfficiency(double efficiency) {
         this.efficiency = efficiency;
-    }
-
-    public String getDimensions() {
-        return dimensions;
-    }
-
-    public void setDimensions(String dimensions) {
-        this.dimensions = dimensions;
     }
 }

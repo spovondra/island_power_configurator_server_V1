@@ -1,102 +1,80 @@
 package com.islandpower.configurator.model;
 
-import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document(collection = "batteries")
 public class Battery {
-    @Id
-    private String id;
-    private String model;
-    private double capacity;
-    private double voltage;
-    private String chemistry;
-    private String image;
-    private String dischargeRate;
-    private String weight;
-    private String dimensions;
+    private int id;
+    private String name;
+    private String type; // Battery type (Li-ion, LiFePO4, Lead Acid)
+    private int capacity; // Capacity in Ah
+    private int voltage; // Voltage in V
+    private double dod; // Depth of Discharge
+    private double price; // Price of the battery
 
-    public Battery(String id, String model, double capacity, double voltage, String chemistry, String image, String dischargeRate, String weight, String dimensions) {
+    public Battery(int id, String name, String type, int capacity, int voltage, double dod, double price) {
         this.id = id;
-        this.model = model;
+        this.name = name;
+        this.type = type; // Initialize battery type
         this.capacity = capacity;
         this.voltage = voltage;
-        this.chemistry = chemistry;
-        this.image = image;
-        this.dischargeRate = dischargeRate;
-        this.weight = weight;
-        this.dimensions = dimensions;
+        this.dod = dod;
+        this.price = price; // Initialize price
     }
 
-    public String getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(int id) {
         this.id = id;
     }
 
-    public String getModel() {
-        return model;
+    public String getName() {
+        return name;
     }
 
-    public void setModel(String model) {
-        this.model = model;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public double getCapacity() {
+    public String getType() {
+        return type; // Getter for battery type
+    }
+
+    public void setType(String type) {
+        this.type = type; // Setter for battery type
+    }
+
+    public int getCapacity() {
         return capacity;
     }
 
-    public void setCapacity(double capacity) {
+    public void setCapacity(int capacity) {
         this.capacity = capacity;
     }
 
-    public double getVoltage() {
+    public int getVoltage() {
         return voltage;
     }
 
-    public void setVoltage(double voltage) {
+    public void setVoltage(int voltage) {
         this.voltage = voltage;
     }
 
-    public String getChemistry() {
-        return chemistry;
+    public double getDod() {
+        return dod; // Getter for Depth of Discharge
     }
 
-    public void setChemistry(String chemistry) {
-        this.chemistry = chemistry;
+    public void setDod(double dod) {
+        this.dod = dod; // Setter for Depth of Discharge
     }
 
-    public String getImage() {
-        return image;
+    public double getPrice() {
+        return price; // Getter for price
     }
 
-    public void setImage(String image) {
-        this.image = image;
-    }
-
-    public String getDischargeRate() {
-        return dischargeRate;
-    }
-
-    public void setDischargeRate(String dischargeRate) {
-        this.dischargeRate = dischargeRate;
-    }
-
-    public String getWeight() {
-        return weight;
-    }
-
-    public void setWeight(String weight) {
-        this.weight = weight;
-    }
-
-    public String getDimensions() {
-        return dimensions;
-    }
-
-    public void setDimensions(String dimensions) {
-        this.dimensions = dimensions;
+    public void setPrice(double price) {
+        this.price = price; // Setter for price
     }
 }

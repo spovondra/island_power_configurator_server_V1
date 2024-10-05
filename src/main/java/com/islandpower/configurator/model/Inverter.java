@@ -1,53 +1,78 @@
 package com.islandpower.configurator.model;
 
-import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document(collection = "inverters")
 public class Inverter {
-    @Id
-    private String id;
-    private String model;
-    private double power;
+    private int id;
+    private String name;
+    private double continuousPower25C;
+    private double continuousPower40C;
+    private double continuousPower65C;
+    private double maxPower;
     private double efficiency;
-    private String image;
-    private double voltage;
-    private double frequency;
-    private String dimensions;
+    private int voltage;
+    private double price; // Price of the inverter
 
-    public Inverter(String id, String model, double power, double efficiency, String image, double voltage, double frequency, String dimensions) {
+    public Inverter(int id, String name, double continuousPower25C, double continuousPower40C,
+                    double continuousPower65C, double maxPower, double efficiency, int voltage, double price) {
         this.id = id;
-        this.model = model;
-        this.power = power;
+        this.name = name;
+        this.continuousPower25C = continuousPower25C;
+        this.continuousPower40C = continuousPower40C;
+        this.continuousPower65C = continuousPower65C;
+        this.maxPower = maxPower;
         this.efficiency = efficiency;
-        this.image = image;
         this.voltage = voltage;
-        this.frequency = frequency;
-        this.dimensions = dimensions;
+        this.price = price; // Initialize price
     }
 
-    public String getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(int id) {
         this.id = id;
     }
 
-    public String getModel() {
-        return model;
+    public String getName() {
+        return name;
     }
 
-    public void setModel(String model) {
-        this.model = model;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public double getPower() {
-        return power;
+    public double getContinuousPower25C() {
+        return continuousPower25C;
     }
 
-    public void setPower(double power) {
-        this.power = power;
+    public void setContinuousPower25C(double continuousPower25C) {
+        this.continuousPower25C = continuousPower25C;
+    }
+
+    public double getContinuousPower40C() {
+        return continuousPower40C;
+    }
+
+    public void setContinuousPower40C(double continuousPower40C) {
+        this.continuousPower40C = continuousPower40C;
+    }
+
+    public double getContinuousPower65C() {
+        return continuousPower65C;
+    }
+
+    public void setContinuousPower65C(double continuousPower65C) {
+        this.continuousPower65C = continuousPower65C;
+    }
+
+    public double getMaxPower() {
+        return maxPower;
+    }
+
+    public void setMaxPower(double maxPower) {
+        this.maxPower = maxPower;
     }
 
     public double getEfficiency() {
@@ -58,35 +83,19 @@ public class Inverter {
         this.efficiency = efficiency;
     }
 
-    public String getImage() {
-        return image;
-    }
-
-    public void setImage(String image) {
-        this.image = image;
-    }
-
-    public double getVoltage() {
+    public int getVoltage() {
         return voltage;
     }
 
-    public void setVoltage(double voltage) {
+    public void setVoltage(int voltage) {
         this.voltage = voltage;
     }
 
-    public double getFrequency() {
-        return frequency;
+    public double getPrice() {
+        return price; // Getter for price
     }
 
-    public void setFrequency(double frequency) {
-        this.frequency = frequency;
-    }
-
-    public String getDimensions() {
-        return dimensions;
-    }
-
-    public void setDimensions(String dimensions) {
-        this.dimensions = dimensions;
+    public void setPrice(double price) {
+        this.price = price; // Setter for price
     }
 }
