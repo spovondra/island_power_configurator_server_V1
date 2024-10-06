@@ -57,7 +57,8 @@ public class SecurityConfiguration {
                     registry.requestMatchers(
                             "/api/location/**",
                             "/api/auth/register/**",
-                            "/api/auth/login/**"
+                            "/api/auth/login/**",
+                            "/api/auth/refresh-token/**"
                     ).permitAll();
 
                     // Endpoints accessible to users with USER or ADMIN roles

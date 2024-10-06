@@ -16,13 +16,16 @@ import java.util.function.Function;
 public class JwtUtil {
 
     @Value("${jwt.secret}")
-    private String SECRET_KEY;
+    private String secretKey;  // Renamed for clarity and to follow Java naming conventions
+
+    @Value("${jwt.expiration}")
+    private long accessTokenExpirationMs;
 
     @Value("${jwt.refreshExpirationMs}")
     private long refreshTokenExpirationMs; // For refresh token expiration period
 
     private SecretKey getSigningKey() {
-        return Keys.hmacShaKeyFor(SECRET_KEY.getBytes());
+        return Keys.hmacShaKeyFor(secretKey.getBytes());
     }
 
     public String extractUsername(String token) {
@@ -51,7 +54,7 @@ public class JwtUtil {
     }
 
     public String generateToken(UserDetails userDetails) {
-        return createToken(userDetails.getUsername(), 1000 * 60 * 60 * 10); // 10 hours
+        return createToken(userDetails.getUsername(), accessTokenExpirationMs);
     }
 
     public String generateRefreshToken(UserDetails userDetails) {
@@ -80,7 +83,7 @@ public class JwtUtil {
     public String refreshToken(String refreshToken) {
         if (isTokenRefreshable(refreshToken)) {
             String username = extractUsername(refreshToken);
-            return createToken(username, 1000 * 60 * 60 * 10); // New 10-hour token
+            return createToken(username, accessTokenExpirationMs);
         }
         return null; // Handle invalid refresh tokens
     }
