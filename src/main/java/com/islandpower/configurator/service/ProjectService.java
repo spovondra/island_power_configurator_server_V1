@@ -155,7 +155,8 @@ public class ProjectService {
         double totalAcPeakPower = 0;
         double totalDcPeakPower = 0;
 
-        if(project.getAppliances() == null) {
+        // Corrected condition to check if appliances are not null
+        if (project.getAppliances() != null) {
             for (Appliance appliance : project.getAppliances()) {
                 double dailyEnergy = appliance.getPower() * appliance.getHours() * appliance.getDays() / 7; // Daily energy calculation
                 appliance.setEnergy(dailyEnergy);
@@ -169,7 +170,6 @@ public class ProjectService {
                 }
             }
         }
-
 
         // Set calculated values in project
         project.setTotalAcEnergy(totalAcEnergy);
