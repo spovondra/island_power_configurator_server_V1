@@ -19,7 +19,7 @@ import java.util.Optional;
  * Controller class for handling authentication and user management endpoints.
  * This class provides endpoints for user registration, authentication, and user management operations.
  *
- * @version 1.0
+ * @version 1.1
  */
 
 @RestController
@@ -27,13 +27,13 @@ import java.util.Optional;
 public class AuthController {
 
     @Autowired
-    private OneUserDetailService userServices; // Service for user-related operations
+    private OneUserDetailService userServices;
 
     @Autowired
-    private PasswordEncoder passwordEncoder; // Password encoder for hashing passwords
+    private PasswordEncoder passwordEncoder;
 
     @Autowired
-    private JwtUtil jwtUtil; // Utility class for JWT token operations
+    private JwtUtil jwtUtil;
 
     /**
      * Endpoint to register a new user.
@@ -43,8 +43,8 @@ public class AuthController {
      */
     @PostMapping("/register")
     public OneUser registerUser(@RequestBody OneUser user) {
-        user.setPassword(passwordEncoder.encode(user.getPassword())); // Encode the user's password
-        return userServices.saveUser(user); // Save and return the user
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        return userServices.saveUser(user);
     }
 
     /**
@@ -54,7 +54,7 @@ public class AuthController {
      */
     @GetMapping("/getAll")
     public Iterable<OneUser> getAllUsers() {
-        return userServices.getAll(); // Return all users
+        return userServices.getAll();
     }
 
     /**
@@ -66,12 +66,11 @@ public class AuthController {
      */
     @PutMapping("/update/{id}")
     public String updateUser(@PathVariable("id") String userId, @RequestBody OneUser updatedOneUser) {
-        OneUser existingUser = userServices.getUserById(userId); // Get the existing user by ID
+        OneUser existingUser = userServices.getUserById(userId);
         if (existingUser == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"); // Throw error if user not found
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
         }
 
-        // Update user details
         existingUser.setUsername(updatedOneUser.getUsername());
         existingUser.setRole(updatedOneUser.getRole());
         existingUser.setFirstName(updatedOneUser.getFirstName());
@@ -79,11 +78,11 @@ public class AuthController {
         existingUser.setEmail(updatedOneUser.getEmail());
 
         if (updatedOneUser.getPassword() != null && !updatedOneUser.getPassword().isEmpty()) {
-            existingUser.setPassword(passwordEncoder.encode(updatedOneUser.getPassword())); // Encode and set new password if provided
+            existingUser.setPassword(passwordEncoder.encode(updatedOneUser.getPassword()));
         }
 
-        userServices.saveUser(existingUser); // Save the updated user
-        return userId; // Return the user ID
+        userServices.saveUser(existingUser);
+        return userId;
     }
 
     /**
@@ -93,7 +92,7 @@ public class AuthController {
      */
     @DeleteMapping("/delete/{id}")
     public void deleteUser(@PathVariable("id") String userId) {
-        userServices.deleteById(userId); // Delete the user by ID
+        userServices.deleteById(userId);
     }
 
     /**
@@ -104,7 +103,7 @@ public class AuthController {
      */
     @GetMapping("/user/{id}")
     public OneUser getUserById(@PathVariable("id") String userId) {
-        return userServices.getUserById(userId); // Return the user by ID
+        return userServices.getUserById(userId);
     }
 
     /**
@@ -117,12 +116,13 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<?> authenticateUser(@RequestParam String username, @RequestParam String password) {
         if (userServices.authenticateUser(username, password)) {
-            UserDetails userDetails = userServices.loadUserByUsername(username); // Load user details by username
-            String jwt = jwtUtil.generateToken(userDetails); // Generate JWT token
+            UserDetails userDetails = userServices.loadUserByUsername(username);
+            String jwt = jwtUtil.generateToken(userDetails); // Generate access token
+            String refreshToken = jwtUtil.generateRefreshToken(userDetails); // Generate refresh token
 
-            // Prepare response with JWT token and user details
             Map<String, Object> response = new HashMap<>();
             response.put("jwt", jwt);
+            response.put("refreshToken", refreshToken);
 
             Optional<OneUser> optionalUser = userServices.getUserByUsername(username);
             if (optionalUser.isPresent()) {
@@ -130,12 +130,31 @@ public class AuthController {
                 response.put("userId", user.getId());
                 response.put("role", user.getRole());
             } else {
-                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "User not found after successful authentication"); // Handle unexpected case
+                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "User not found after successful authentication");
             }
 
-            return ResponseEntity.ok(response); // Return response entity with token and user details
+            return ResponseEntity.ok(response);
         } else {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid credentials"); // Throw error if authentication fails
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid credentials");
+        }
+    }
+
+    /**
+     * Endpoint to refresh JWT token using a refresh token.
+     *
+     * @param refreshToken - The refresh token used to generate a new JWT token
+     * @return ResponseEntity<?> - Response entity containing the new JWT token
+     */
+    @PostMapping("/refresh-token")
+    public ResponseEntity<?> refreshJwtToken(@RequestParam String refreshToken) {
+        String newToken = jwtUtil.refreshToken(refreshToken); // Generate a new access token
+
+        if (newToken != null) {
+            Map<String, String> response = new HashMap<>();
+            response.put("jwt", newToken);
+            return ResponseEntity.ok(response); // Return the new token in the response
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid refresh token");
         }
     }
 }

@@ -96,6 +96,9 @@ public class ProjectService {
         existingProject.setSite(updatedProject.getSite());
         existingProject.setSolarComponents(updatedProject.getSolarComponents());
 
+        // Perform calculations after updating the project
+        calculateEnergyConsumption(existingProject);
+
         return projectRepository.save(existingProject);
     }
 
@@ -124,6 +127,9 @@ public class ProjectService {
         }
         appliances.add(appliance);
 
+        // Perform calculations after adding/updating appliance
+        calculateEnergyConsumption(project);
+
         return projectRepository.save(project);
     }
 
@@ -137,6 +143,56 @@ public class ProjectService {
             appliances.removeIf(appliance -> appliance.getId().equals(applianceId));
         }
 
+        // Perform calculations after removing appliance
+        calculateEnergyConsumption(project);
+
         projectRepository.save(project);
+    }
+
+    private void calculateEnergyConsumption(Project project) {
+        double totalAcEnergy = 0;
+        double totalDcEnergy = 0;
+        double totalAcPeakPower = 0;
+        double totalDcPeakPower = 0;
+
+        if(project.getAppliances() == null) {
+            for (Appliance appliance : project.getAppliances()) {
+                double dailyEnergy = appliance.getPower() * appliance.getHours() * appliance.getDays() / 7; // Daily energy calculation
+                appliance.setEnergy(dailyEnergy);
+
+                if (appliance.getType().equals("AC")) { // Use equals to compare strings
+                    totalAcEnergy += dailyEnergy; // Accumulate AC energy
+                    totalAcPeakPower += appliance.getPeakPower() * appliance.getQuantity(); // Accumulate AC peak power
+                } else if (appliance.getType().equals("DC")) {
+                    totalDcEnergy += dailyEnergy; // Accumulate DC energy
+                    totalDcPeakPower += appliance.getPeakPower() * appliance.getQuantity(); // Accumulate DC peak power
+                }
+            }
+        }
+
+
+        // Set calculated values in project
+        project.setTotalAcEnergy(totalAcEnergy);
+        project.setTotalDcEnergy(totalDcEnergy);
+        project.setTotalAcPeakPower(totalAcPeakPower);
+        project.setTotalDcPeakPower(totalDcPeakPower);
+
+        // Set system voltage based on the project conditions
+        project.setSystemVoltage(calculateSystemVoltage(project)); // Calculate and set system voltage
+    }
+
+    // Method to calculate system voltage based on appliances
+    private String calculateSystemVoltage(Project project) {
+        double totalEnergy = project.getTotalAcEnergy() + project.getTotalDcEnergy();
+
+        // Implement your logic to determine the system voltage based on the combined peak power
+        // Example thresholds for demonstration purposes:
+        if (totalEnergy < 1000) {
+            return "12V";
+        } else if (totalEnergy < 3000) {
+            return "24V";
+        } else {
+            return "48V";
+        }
     }
 }
