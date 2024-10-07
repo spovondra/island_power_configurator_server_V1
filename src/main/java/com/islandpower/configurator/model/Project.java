@@ -3,6 +3,7 @@ package com.islandpower.configurator.model;
 import com.islandpower.configurator.model.project.Appliance;
 import com.islandpower.configurator.model.project.Site;
 import com.islandpower.configurator.model.project.SolarComponents;
+import com.islandpower.configurator.model.project.ConfigurationModel; // Import your new class
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -15,16 +16,12 @@ public class Project {
     private String id;
     private String name;
     private String userId;
-    private List<Appliance> appliances;
     private Site site;
     private SolarComponents solarComponents;
-    private double totalAcEnergy;
-    private double totalDcEnergy;
-    private String systemVoltage;
-    private String recommendedSystemVoltage; // Recommended system voltage
-    private double totalAcPeakPower; // Total peak power for AC
-    private double totalDcPeakPower; // Total peak power for DC
+    private List<Appliance> appliances; // List of appliances
+    private ConfigurationModel configurationModel; // New field for configuration details
 
+    // Getters and Setters
     public String getId() {
         return id;
     }
@@ -49,14 +46,6 @@ public class Project {
         this.userId = userId;
     }
 
-    public List<Appliance> getAppliances() {
-        return appliances;
-    }
-
-    public void setAppliances(List<Appliance> appliances) {
-        this.appliances = appliances;
-    }
-
     public Site getSite() {
         return site;
     }
@@ -73,51 +62,19 @@ public class Project {
         this.solarComponents = solarComponents;
     }
 
-    public double getTotalAcEnergy() {
-        return totalAcEnergy;
+    public List<Appliance> getAppliances() {
+        return appliances;
     }
 
-    public void setTotalAcEnergy(double totalAcEnergy) {
-        this.totalAcEnergy = totalAcEnergy;
+    public void setAppliances(List<Appliance> appliances) {
+        this.appliances = appliances;
     }
 
-    public double getTotalDcEnergy() {
-        return totalDcEnergy;
+    public ConfigurationModel getConfigurationModel() {
+        return configurationModel;
     }
 
-    public void setTotalDcEnergy(double totalDcEnergy) {
-        this.totalDcEnergy = totalDcEnergy;
-    }
-
-    public String getSystemVoltage() {
-        return systemVoltage;
-    }
-
-    public void setSystemVoltage(String systemVoltage) {
-        this.systemVoltage = systemVoltage;
-    }
-
-    public String getRecommendedSystemVoltage() {
-        return recommendedSystemVoltage;
-    }
-
-    public void setRecommendedSystemVoltage(String recommendedSystemVoltage) {
-        this.recommendedSystemVoltage = recommendedSystemVoltage;
-    }
-
-    public double getTotalAcPeakPower() {
-        return totalAcPeakPower;
-    }
-
-    public void setTotalAcPeakPower(double totalAcPeakPower) {
-        this.totalAcPeakPower = totalAcPeakPower;
-    }
-
-    public double getTotalDcPeakPower() {
-        return totalDcPeakPower;
-    }
-
-    public void setTotalDcPeakPower(double totalDcPeakPower) {
-        this.totalDcPeakPower = totalDcPeakPower;
+    public void setConfigurationModel(ConfigurationModel configurationModel) {
+        this.configurationModel = configurationModel;
     }
 }
