@@ -4,7 +4,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document(collection = "batteries")
 public class Battery {
-    private int id;
+    private String id;
     private String name;
     private String type; // Battery type (Li-ion, LiFePO4, Lead Acid)
     private int capacity; // Capacity in Ah
@@ -12,7 +12,7 @@ public class Battery {
     private double dod; // Depth of Discharge
     private double price; // Price of the battery
 
-    public Battery(int id, String name, String type, int capacity, int voltage, double dod, double price) {
+    public Battery(String id, String name, String type, int capacity, int voltage, double dod, double price) {
         this.id = id;
         this.name = name;
         this.type = type; // Initialize battery type
@@ -22,11 +22,11 @@ public class Battery {
         this.price = price; // Initialize price
     }
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 

@@ -21,6 +21,7 @@ public class Project {
     private double totalAcEnergy;
     private double totalDcEnergy;
     private String systemVoltage;
+    private String recommendedSystemVoltage; // Recommended system voltage
     private double totalAcPeakPower; // Total peak power for AC
     private double totalDcPeakPower; // Total peak power for DC
 
@@ -94,6 +95,14 @@ public class Project {
 
     public void setSystemVoltage(String systemVoltage) {
         this.systemVoltage = systemVoltage;
+    }
+
+    public String getRecommendedSystemVoltage() {
+        return recommendedSystemVoltage;
+    }
+
+    public void setRecommendedSystemVoltage(String recommendedSystemVoltage) {
+        this.recommendedSystemVoltage = recommendedSystemVoltage;
     }
 
     public double getTotalAcPeakPower() {

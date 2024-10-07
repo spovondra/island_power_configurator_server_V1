@@ -5,7 +5,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document(collection = "controllers")
 public class Controller {
-    private int id; // Unikátní identifikátor regulátoru
+    private String id; // Unikátní identifikátor regulátoru
     private String name; // Název regulátoru
     private double ratedPower; // Jmenovitý výkon regulátoru (W)
     private double currentRating; // Maximální proud regulátoru (A)
@@ -15,7 +15,7 @@ public class Controller {
     private double efficiency; // Účinnost regulátoru
 
     // Konstruktory
-    public Controller(int id, String name, double ratedPower, double currentRating,
+    public Controller(String id, String name, double ratedPower, double currentRating,
                       double maxVoltage, double minVoltage, String type, double efficiency) {
         this.id = id;
         this.name = name;
@@ -28,11 +28,11 @@ public class Controller {
     }
 
     // Getter a setter metody
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 

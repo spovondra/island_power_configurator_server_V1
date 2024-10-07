@@ -4,7 +4,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document(collection = "inverters")
 public class Inverter {
-    private int id;
+    private String id;
     private String name;
     private double continuousPower25C;
     private double continuousPower40C;
@@ -14,7 +14,7 @@ public class Inverter {
     private int voltage;
     private double price; // Price of the inverter
 
-    public Inverter(int id, String name, double continuousPower25C, double continuousPower40C,
+    public Inverter(String id, String name, double continuousPower25C, double continuousPower40C,
                     double continuousPower65C, double maxPower, double efficiency, int voltage, double price) {
         this.id = id;
         this.name = name;
@@ -27,11 +27,11 @@ public class Inverter {
         this.price = price; // Initialize price
     }
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 

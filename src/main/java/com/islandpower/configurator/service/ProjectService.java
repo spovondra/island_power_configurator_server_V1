@@ -177,15 +177,14 @@ public class ProjectService {
         project.setTotalAcPeakPower(totalAcPeakPower);
         project.setTotalDcPeakPower(totalDcPeakPower);
 
-        // Set system voltage based on the project conditions
-        project.setSystemVoltage(calculateSystemVoltage(project)); // Calculate and set system voltage
+        project.setRecommendedSystemVoltage(calculateRecommendedSystemVoltage(project)); // Set recommended system voltage
     }
 
-    // Method to calculate system voltage based on appliances
-    private String calculateSystemVoltage(Project project) {
+    // Method to calculate recommended system voltage based on appliances
+    private String calculateRecommendedSystemVoltage(Project project) {
         double totalEnergy = project.getTotalAcEnergy() + project.getTotalDcEnergy();
 
-        // Implement your logic to determine the system voltage based on the combined peak power
+        // Implement your logic to determine the recommended system voltage based on the total energy
         // Example thresholds for demonstration purposes:
         if (totalEnergy < 1000) {
             return "12V";
