@@ -2,11 +2,13 @@ package com.islandpower.configurator.service;
 
 import com.islandpower.configurator.model.OneUser;
 import com.islandpower.configurator.model.Project;
+import com.islandpower.configurator.model.project.Site;
 import com.islandpower.configurator.repository.ProjectRepository;
 import com.islandpower.configurator.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -92,5 +94,40 @@ public class ProjectService {
         existingProject.setConfigurationModel(updatedProject.getConfigurationModel());
 
         return projectRepository.save(existingProject);
+    }
+
+    public void updateSiteWithLocationData(String projectId, String userId, double latitude, double longitude,
+                                           double[] minMaxTemperatures, int panelAngle, int panelAspect,
+                                           boolean usedOptimalValues, List<Site.MonthlyIrradiance> monthlyIrradiance) {
+        // Fetch the project by ID
+        Project project = projectRepository.findById(projectId)
+                .orElseThrow(() -> new RuntimeException("Project not found: " + projectId));
+
+        // Check if the user has permission to update this project
+        if (!project.getUserId().equals(userId)) {
+            throw new RuntimeException("User does not have permission to access this project.");
+        }
+
+        // Create a new Site object if it does not exist
+        Site site = project.getSite();
+        if (site == null) {
+            site = new Site();
+            project.setSite(site);
+        }
+
+        // Set location data
+        site.setLatitude(latitude);
+        site.setLongitude(longitude);
+        site.setMinTemperature(minMaxTemperatures[0]);
+        site.setMaxTemperature(minMaxTemperatures[1]);
+        site.setPanelAngle(panelAngle);
+        site.setPanelAspect(panelAspect);
+        site.setUsedOptimalValues(usedOptimalValues);
+
+        // Create and set monthly irradiance list
+        site.setMonthlyIrradianceList(monthlyIrradiance);
+
+        // Save the updated project
+        projectRepository.save(project);
     }
 }
