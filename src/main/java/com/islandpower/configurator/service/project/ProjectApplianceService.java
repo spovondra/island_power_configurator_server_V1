@@ -103,14 +103,14 @@ public class ProjectApplianceService {
     }
 
     // Calculate recommended system voltage based on energy consumption
-    private String calculateRecommendedSystemVoltage(double totalEnergy) {
+    private double calculateRecommendedSystemVoltage(double totalEnergy) {
         // Example logic to recommend system voltage
         if (totalEnergy < 1000) {
-            return "12V";
+            return 12;
         } else if (totalEnergy < 3000) {
-            return "24V";
+            return 24;
         } else {
-            return "48V";
+            return 48;
         }
     }
 }

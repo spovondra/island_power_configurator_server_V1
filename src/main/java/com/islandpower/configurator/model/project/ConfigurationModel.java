@@ -3,12 +3,16 @@ package com.islandpower.configurator.model.project;
 public class ConfigurationModel {
     private double totalAcEnergy;
     private double totalDcEnergy;
-    private String systemVoltage;
-    private String recommendedSystemVoltage; // Recommended system voltage
+    private double systemVoltage;
+    private double recommendedSystemVoltage; // Recommended system voltage
     private double totalAcPeakPower; // Total peak power for AC
     private double totalDcPeakPower; // Total peak power for DC
     private String inverterId; // Field for the inverter ID
     private double inverterTemperature; // Field for the inverter installation temperature
+
+    // New fields for energy calculations
+    private double totalAdjustedAcEnergy; // Adjusted AC Load
+    private double totalDailyEnergy; // Total Daily Energy
 
     // Getters and Setters
     public double getTotalAcEnergy() {
@@ -27,19 +31,19 @@ public class ConfigurationModel {
         this.totalDcEnergy = totalDcEnergy;
     }
 
-    public String getSystemVoltage() {
+    public double getSystemVoltage() {
         return systemVoltage;
     }
 
-    public void setSystemVoltage(String systemVoltage) {
+    public void setSystemVoltage(double systemVoltage) {
         this.systemVoltage = systemVoltage;
     }
 
-    public String getRecommendedSystemVoltage() {
+    public double getRecommendedSystemVoltage() {
         return recommendedSystemVoltage;
     }
 
-    public void setRecommendedSystemVoltage(String recommendedSystemVoltage) {
+    public void setRecommendedSystemVoltage(double recommendedSystemVoltage) {
         this.recommendedSystemVoltage = recommendedSystemVoltage;
     }
 
@@ -73,5 +77,22 @@ public class ConfigurationModel {
 
     public void setInverterTemperature(double inverterTemperature) {
         this.inverterTemperature = inverterTemperature;
+    }
+
+    // New getters and setters for Adjusted AC Load and Total Daily Energy
+    public double getTotalAdjustedAcEnergy() {
+        return totalAdjustedAcEnergy;
+    }
+
+    public void setTotalAdjustedAcEnergy(double totalAdjustedAcEnergy) {
+        this.totalAdjustedAcEnergy = totalAdjustedAcEnergy;
+    }
+
+    public double getTotalDailyEnergy() {
+        return totalDailyEnergy;
+    }
+
+    public void setTotalDailyEnergy(double totalDailyEnergy) {
+        this.totalDailyEnergy = totalDailyEnergy;
     }
 }

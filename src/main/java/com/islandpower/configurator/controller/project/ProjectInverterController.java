@@ -15,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/projects/{projectId}/inverters")
@@ -61,8 +62,14 @@ public class ProjectInverterController {
         // Get the configuration model from the project
         ConfigurationModel configModel = project.getConfigurationModel();
         if (configModel == null) {
-            throw new RuntimeException("Configuration model not found for project: " + projectId);
+            configModel = new ConfigurationModel();
+            project.setConfigurationModel(configModel);
         }
+
+        // Update the system voltage and temperature in the configuration model
+        configModel.setSystemVoltage(systemVoltage);
+        configModel.setInverterTemperature(temperature);
+        projectRepository.save(project);
 
         // Extract total appliance power and peak power from the configuration model
         double totalAppliancePower = configModel.getTotalAcEnergy(); // Adjust as necessary if using DC
@@ -76,4 +83,26 @@ public class ProjectInverterController {
         return ResponseEntity.ok(suitableInverters);
     }
 
+    @PostMapping("/select-inverter/{inverterId}")
+    public ResponseEntity<Void> selectInverter(
+            @PathVariable String projectId,
+            @PathVariable String inverterId) {
+
+        // Delegate the logic to the service
+        projectInverterService.selectInverter(projectId, inverterId);
+
+        // Return 204 No Content to indicate the operation was successful without returning data
+        return ResponseEntity.noContent().build();
+    }
+
+    // Method to fetch inverter details by project ID and inverter ID
+    @GetMapping("/inverters/{inverterId}")
+    public ResponseEntity<Inverter> getInverterDetails(@PathVariable String projectId, @PathVariable String inverterId) {
+        Inverter inverter = projectInverterService.getSelectedInverter(inverterId); // Call a service method to get the inverter
+        if (inverter != null) {
+            return ResponseEntity.ok(inverter); // Return the inverter details
+        } else {
+            return ResponseEntity.notFound().build(); // Return 404 if not found
+        }
+    }
 }
