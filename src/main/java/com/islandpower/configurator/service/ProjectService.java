@@ -98,7 +98,7 @@ public class ProjectService {
 
     public void updateSiteWithLocationData(String projectId, String userId, double latitude, double longitude,
                                            double[] minMaxTemperatures, int panelAngle, int panelAspect,
-                                           boolean usedOptimalValues, List<Site.MonthlyIrradiance> monthlyIrradiance) {
+                                           boolean usedOptimalValues, List<Site.MonthlyData> monthlyData) {
         // Fetch the project by ID
         Project project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new RuntimeException("Project not found: " + projectId));
@@ -125,7 +125,7 @@ public class ProjectService {
         site.setUsedOptimalValues(usedOptimalValues);
 
         // Create and set monthly irradiance list
-        site.setMonthlyIrradianceList(monthlyIrradiance);
+        site.setMonthlyDataList(monthlyData);
 
         // Save the updated project
         projectRepository.save(project);
