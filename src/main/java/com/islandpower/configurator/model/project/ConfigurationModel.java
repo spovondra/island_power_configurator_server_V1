@@ -1,18 +1,25 @@
 package com.islandpower.configurator.model.project;
 
 public class ConfigurationModel {
-    private double totalAcEnergy;
-    private double totalDcEnergy;
-    private double systemVoltage;
+    private double totalAcEnergy; // Total AC energy consumption
+    private double totalDcEnergy; // Total DC energy consumption
+    private double systemVoltage; // Current system voltage
     private double recommendedSystemVoltage; // Recommended system voltage
     private double totalAcPeakPower; // Total peak power for AC
     private double totalDcPeakPower; // Total peak power for DC
-    private String inverterId; // Field for the inverter ID
-    private double inverterTemperature; // Field for the inverter installation temperature
+    private String inverterId; // ID of the selected inverter
+    private double inverterTemperature; // Installation temperature of the inverter
 
     // New fields for energy calculations
     private double totalAdjustedAcEnergy; // Adjusted AC Load
     private double totalDailyEnergy; // Total Daily Energy
+
+    // Battery configuration fields
+    private String batteryId; // ID of the selected battery
+    private double requiredBatteryCapacity; // Capacity of the battery in kWh
+    private double batteryAutonomy; // Battery autonomy calculated based on capacity and energy needs
+    private int parallelBatteries; // Number of parallel batteries required
+    private int seriesBatteries; // Number of series batteries required
 
     // Getters and Setters
     public double getTotalAcEnergy() {
@@ -94,5 +101,45 @@ public class ConfigurationModel {
 
     public void setTotalDailyEnergy(double totalDailyEnergy) {
         this.totalDailyEnergy = totalDailyEnergy;
+    }
+
+    public String getBatteryId() {
+        return batteryId;
+    }
+
+    public void setBatteryId(String batteryId) {
+        this.batteryId = batteryId;
+    }
+
+    public double getRequiredBatteryCapacity() {
+        return requiredBatteryCapacity;
+    }
+
+    public void setRequiredBatteryCapacity(double requiredBatteryCapacity) {
+        this.requiredBatteryCapacity = requiredBatteryCapacity;
+    }
+
+    public double getBatteryAutonomy() {
+        return batteryAutonomy;
+    }
+
+    public void setBatteryAutonomy(double batteryAutonomy) {
+        this.batteryAutonomy = batteryAutonomy;
+    }
+
+    public int getParallelBatteries() {
+        return parallelBatteries;
+    }
+
+    public void setParallelBatteries(int parallelBatteries) {
+        this.parallelBatteries = parallelBatteries;
+    }
+
+    public int getSeriesBatteries() {
+        return seriesBatteries;
+    }
+
+    public void setSeriesBatteries(int seriesBatteries) {
+        this.seriesBatteries = seriesBatteries;
     }
 }
