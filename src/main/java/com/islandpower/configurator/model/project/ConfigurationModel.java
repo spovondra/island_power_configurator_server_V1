@@ -15,11 +15,7 @@ public class ConfigurationModel {
     private double totalDailyEnergy; // Total Daily Energy
 
     // Battery configuration fields
-    private String batteryId; // ID of the selected battery
-    private double requiredBatteryCapacity; // Capacity of the battery in kWh
-    private double batteryAutonomy; // Battery autonomy calculated based on capacity and energy needs
-    private int parallelBatteries; // Number of parallel batteries required
-    private int seriesBatteries; // Number of series batteries required
+    private ProjectBattery projectBattery; // Battery configuration object
 
     // Getters and Setters
     public double getTotalAcEnergy() {
@@ -103,43 +99,12 @@ public class ConfigurationModel {
         this.totalDailyEnergy = totalDailyEnergy;
     }
 
-    public String getBatteryId() {
-        return batteryId;
+    // Getters and Setters for ProjectBattery
+    public ProjectBattery getProjectBattery() {
+        return projectBattery;
     }
 
-    public void setBatteryId(String batteryId) {
-        this.batteryId = batteryId;
-    }
-
-    public double getRequiredBatteryCapacity() {
-        return requiredBatteryCapacity;
-    }
-
-    public void setRequiredBatteryCapacity(double requiredBatteryCapacity) {
-        this.requiredBatteryCapacity = requiredBatteryCapacity;
-    }
-
-    public double getBatteryAutonomy() {
-        return batteryAutonomy;
-    }
-
-    public void setBatteryAutonomy(double batteryAutonomy) {
-        this.batteryAutonomy = batteryAutonomy;
-    }
-
-    public int getParallelBatteries() {
-        return parallelBatteries;
-    }
-
-    public void setParallelBatteries(int parallelBatteries) {
-        this.parallelBatteries = parallelBatteries;
-    }
-
-    public int getSeriesBatteries() {
-        return seriesBatteries;
-    }
-
-    public void setSeriesBatteries(int seriesBatteries) {
-        this.seriesBatteries = seriesBatteries;
+    public void setProjectBattery(ProjectBattery projectBattery) {
+        this.projectBattery = projectBattery;
     }
 }

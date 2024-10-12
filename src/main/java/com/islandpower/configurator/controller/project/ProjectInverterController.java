@@ -91,7 +91,6 @@ public class ProjectInverterController {
         // Delegate the logic to the service
         projectInverterService.selectInverter(projectId, inverterId);
 
-        // Return 204 No Content to indicate the operation was successful without returning data
         return ResponseEntity.noContent().build();
     }
 

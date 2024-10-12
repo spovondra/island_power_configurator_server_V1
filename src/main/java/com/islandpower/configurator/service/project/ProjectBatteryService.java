@@ -3,9 +3,9 @@ package com.islandpower.configurator.service.project;
 import com.islandpower.configurator.model.Battery;
 import com.islandpower.configurator.model.project.ConfigurationModel;
 import com.islandpower.configurator.model.Project;
+import com.islandpower.configurator.model.project.ProjectBattery;
 import com.islandpower.configurator.repository.BatteryRepository;
 import com.islandpower.configurator.repository.ProjectRepository;
-import com.islandpower.configurator.dto.BatteryConfigurationResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,26 +29,6 @@ public class ProjectBatteryService {
         this.projectRepository = projectRepository;
     }
 
-    // Add or update a battery in a project
-    public Project addOrUpdateBattery(String projectId, Battery battery) {
-        Project project = projectRepository.findById(projectId)
-                .orElseThrow(() -> new RuntimeException("Project not found: " + projectId));
-
-        if (battery.getId() == null || battery.getId().isEmpty()) {
-            battery.setId(UUID.randomUUID().toString());
-        }
-
-        ConfigurationModel configModel = project.getConfigurationModel();
-        if (configModel == null) {
-            configModel = new ConfigurationModel();
-            project.setConfigurationModel(configModel);
-        }
-
-        configModel.setBatteryId(battery.getId());
-        projectRepository.save(project);
-        return project;
-    }
-
     // Remove a battery from a project
     public void removeBattery(String projectId, String batteryId) {
         Project project = projectRepository.findById(projectId)
@@ -56,7 +36,8 @@ public class ProjectBatteryService {
 
         ConfigurationModel configModel = project.getConfigurationModel();
         if (configModel != null) {
-            configModel.setBatteryId(null);
+            ProjectBattery projectBattery = configModel.getProjectBattery();
+            projectBattery.setBatteryId(null);
         }
 
         projectRepository.save(project);
@@ -82,16 +63,23 @@ public class ProjectBatteryService {
         return voltageMatch && technologyMatch;
     }
 
-    public BatteryConfigurationResponse selectBattery(String projectId, String batteryId, int autonomyDays, int temperature) {
+    public ProjectBattery selectBattery(String projectId, String batteryId, int autonomyDays, int temperature) {
         Project project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new RuntimeException("Project not found: " + projectId));
 
         ConfigurationModel configModel = project.getConfigurationModel();
         if (configModel == null) {
-            throw new RuntimeException("Configuration model not found for project: " + projectId);
+            configModel = new ConfigurationModel();
+            project.setConfigurationModel(configModel);
         }
 
-        configModel.setBatteryId(batteryId); // Nastav battery ID
+        ProjectBattery projectBattery = configModel.getProjectBattery();
+        if (projectBattery == null) {
+            projectBattery = new ProjectBattery();
+            configModel.setProjectBattery(projectBattery); // Initialize the ProjectBattery
+        }
+
+        projectBattery.setBatteryId(batteryId); // Nastav battery ID
         projectRepository.save(project);
 
         return calculateBatteryConfiguration(projectId, batteryId, autonomyDays, temperature);
@@ -112,11 +100,13 @@ public class ProjectBatteryService {
             )
     );
 
-    public BatteryConfigurationResponse calculateBatteryConfiguration(String projectId, String batteryId, int autonomyDays, int temperature) {
+    public ProjectBattery calculateBatteryConfiguration(String projectId, String batteryId, int autonomyDays, int temperature) {
         Project project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new RuntimeException("Project not found: " + projectId));
 
         ConfigurationModel configModel = project.getConfigurationModel();
+        ProjectBattery projectBattery = configModel.getProjectBattery();
+
         Battery selectedBattery = getSelectedBattery(batteryId);
 
         // Získání teplotního koeficientu
@@ -139,10 +129,13 @@ public class ProjectBatteryService {
         double operationalDays = totalAvailableCapacity / ((totalDailyEnergy / systemVoltage) * (1 / temperatureCoefficient));
 
         // Uložení vypočítaných hodnot do modelu
-        configModel.setParallelBatteries(parallelBatteries);
-        configModel.setSeriesBatteries(seriesBatteries);
-        configModel.setRequiredBatteryCapacity(requiredCapacity);
-        configModel.setBatteryAutonomy(operationalDays);
+        projectBattery.setBatteryCapacityDod(batteryCapacityDOD);
+        projectBattery.setParallelBatteries(parallelBatteries);
+        projectBattery.setSeriesBatteries(seriesBatteries);
+        projectBattery.setRequiredBatteryCapacity(requiredCapacity);
+        projectBattery.setBatteryAutonomy(autonomyDays);
+        projectBattery.setTotalAvailableCapacity(totalAvailableCapacity);
+        projectBattery.setBatteryAutonomy(operationalDays);
 
         projectRepository.save(project);
 
@@ -151,7 +144,7 @@ public class ProjectBatteryService {
                 projectId, batteryId, parallelBatteries, seriesBatteries, requiredCapacity, operationalDays, totalAvailableCapacity);
 
         // Vrácení vypočítaných hodnot v odpovědi
-        return new BatteryConfigurationResponse(batteryId, batteryCapacityDOD, parallelBatteries, seriesBatteries, requiredCapacity, totalAvailableCapacity, operationalDays);
+        return new ProjectBattery(batteryId, batteryCapacityDOD, parallelBatteries, seriesBatteries, requiredCapacity, autonomyDays, totalAvailableCapacity, operationalDays);
     }
 
     private double getTemperatureCoefficient(String batteryType, int temperature) {
@@ -165,5 +158,14 @@ public class ProjectBatteryService {
     public Battery getSelectedBattery(String batteryId) {
         return batteryRepository.findById(batteryId)
                 .orElseThrow(() -> new RuntimeException("Battery not found: " + batteryId));
+    }
+
+    public ProjectBattery getProjectBattery(String projectId) {
+        Project project = projectRepository.findById(projectId)
+                .orElseThrow(() -> new RuntimeException("Project not found: " + projectId));
+
+        ConfigurationModel configModel = project.getConfigurationModel();
+
+        return configModel.getProjectBattery();
     }
 }

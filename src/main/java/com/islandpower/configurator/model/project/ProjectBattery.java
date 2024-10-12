@@ -1,29 +1,31 @@
-package com.islandpower.configurator.dto;
+package com.islandpower.configurator.model.project;
 
-public class BatteryConfigurationResponse {
+public class ProjectBattery {
     private String batteryId;
     private double batteryCapacityDod;
     private int parallelBatteries;
     private int seriesBatteries;
-    private double requiredCapacity;
+    private double requiredBatteryCapacity;
+    private double batteryAutonomy; // Battery autonomy calculated based on capacity and energy needs
     private double totalAvailableCapacity;
     private double operationalDays;
 
-    public BatteryConfigurationResponse() {
+    public ProjectBattery() {
     }
 
-    public BatteryConfigurationResponse (String batteryId, double batteryCapacityDod, int parallelBatteries, int seriesBatteries,
-                                        double requiredCapacity, double totalAvailableCapacity, double operationalDays) {
+    public ProjectBattery(String batteryId, double batteryCapacityDod, int parallelBatteries, int seriesBatteries,
+                          double requiredBatteryCapacity, double batteryAutonomy, double totalAvailableCapacity, double operationalDays) {
         this.batteryId = batteryId;
         this.batteryCapacityDod = batteryCapacityDod;
         this.parallelBatteries = parallelBatteries;
         this.seriesBatteries = seriesBatteries;
-        this.requiredCapacity = requiredCapacity;
+        this.requiredBatteryCapacity = requiredBatteryCapacity;
+        this.batteryAutonomy = batteryAutonomy;
         this.totalAvailableCapacity = totalAvailableCapacity;
         this.operationalDays = operationalDays;
     }
 
-    // Getters a setters
+    // Getters and Setters
     public String getBatteryId() {
         return batteryId;
     }
@@ -48,12 +50,12 @@ public class BatteryConfigurationResponse {
         this.seriesBatteries = seriesBatteries;
     }
 
-    public double getRequiredCapacity() {
-        return requiredCapacity;
+    public double getRequiredBatteryCapacity() {
+        return requiredBatteryCapacity;
     }
 
-    public void setRequiredCapacity(double requiredCapacity) {
-        this.requiredCapacity = requiredCapacity;
+    public void setRequiredBatteryCapacity(double requiredBatteryCapacity) {
+        this.requiredBatteryCapacity = requiredBatteryCapacity;
     }
 
     public double getBatteryCapacityDod() {
@@ -78,5 +80,13 @@ public class BatteryConfigurationResponse {
 
     public void setTotalAvailableCapacity(double totalAvailableCapacity) {
         this.totalAvailableCapacity = totalAvailableCapacity;
+    }
+
+    public double getBatteryAutonomy() {
+        return batteryAutonomy;
+    }
+
+    public void setBatteryAutonomy(double batteryAutonomy) {
+        this.batteryAutonomy = batteryAutonomy;
     }
 }

@@ -1,9 +1,7 @@
 package com.islandpower.configurator.controller.project;
 
-import com.islandpower.configurator.dto.BatteryConfigurationResponse;
 import com.islandpower.configurator.model.Battery;
-import com.islandpower.configurator.model.Project;
-import com.islandpower.configurator.model.project.ConfigurationModel;
+import com.islandpower.configurator.model.project.ProjectBattery;
 import com.islandpower.configurator.service.project.ProjectBatteryService;
 import com.islandpower.configurator.service.JwtUtilService;
 import com.islandpower.configurator.repository.ProjectRepository;
@@ -31,14 +29,6 @@ public class ProjectBatteryController {
     @Autowired
     private ProjectRepository projectRepository;
 
-    @PostMapping
-    public Project addOrUpdateBattery(@PathVariable String projectId, @RequestBody Battery battery, HttpServletRequest request) {
-        String username = jwtUtilService.extractUsernameFromToken(request);
-        String userId = jwtUtilService.retrieveUserIdByUsername(username);
-        logger.info("User {} (ID: {}) is adding/updating a battery in project with ID: {}", username, userId, projectId);
-        return projectBatteryService.addOrUpdateBattery(projectId, battery);
-    }
-
     @DeleteMapping("/{batteryId}")
     public void removeBattery(@PathVariable String projectId, @PathVariable String batteryId, HttpServletRequest request) {
         String username = jwtUtilService.extractUsernameFromToken(request);
@@ -58,23 +48,19 @@ public class ProjectBatteryController {
     }
 
     @PostMapping("/select-battery/{batteryId}")
-    public ResponseEntity<BatteryConfigurationResponse> selectBattery(
+    public ResponseEntity<ProjectBattery> selectBattery(
             @PathVariable String projectId,
             @PathVariable String batteryId,
             @RequestParam int autonomyDays,
             @RequestParam int temperature) {
 
-        BatteryConfigurationResponse response = projectBatteryService.selectBattery(projectId, batteryId, autonomyDays, temperature);
-        return ResponseEntity.ok(response);
+        ProjectBattery projectBattery = projectBatteryService.selectBattery(projectId, batteryId, autonomyDays, temperature);
+        return ResponseEntity.ok(projectBattery);
     }
 
-    @GetMapping("/batteries/{batteryId}")
-    public ResponseEntity<Battery> getBatteryDetails(@PathVariable String projectId, @PathVariable String batteryId) {
-        Battery battery = projectBatteryService.getSelectedBattery(batteryId);
-        if (battery != null) {
-            return ResponseEntity.ok(battery);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+    @GetMapping("/")
+    public ResponseEntity<ProjectBattery> getProjectBattery(@PathVariable String projectId) {
+        ProjectBattery projectBattery = projectBatteryService.getProjectBattery(projectId);
+        return ResponseEntity.ok(projectBattery);
     }
 }
