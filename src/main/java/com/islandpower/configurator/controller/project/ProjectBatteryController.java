@@ -58,14 +58,14 @@ public class ProjectBatteryController {
     }
 
     @PostMapping("/select-battery/{batteryId}")
-    public ResponseEntity<Void> selectBattery(
+    public ResponseEntity<BatteryConfigurationResponse> selectBattery(
             @PathVariable String projectId,
             @PathVariable String batteryId,
             @RequestParam int autonomyDays,
-            @RequestParam int temperature) { // Added parameters
+            @RequestParam int temperature) {
 
-        projectBatteryService.selectBattery(projectId, batteryId, autonomyDays, temperature);
-        return ResponseEntity.noContent().build();
+        BatteryConfigurationResponse response = projectBatteryService.selectBattery(projectId, batteryId, autonomyDays, temperature);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/batteries/{batteryId}")
@@ -76,16 +76,5 @@ public class ProjectBatteryController {
         } else {
             return ResponseEntity.notFound().build();
         }
-    }
-
-    @PostMapping("/calculate")
-    public ResponseEntity<BatteryConfigurationResponse> calculateBatteryConfiguration(
-            @PathVariable String projectId,
-            @RequestParam String batteryId,
-            @RequestParam int temperature,
-            @RequestParam int autonomousDays ) { // Parameter for battery temperature
-
-        BatteryConfigurationResponse calculationResult = projectBatteryService.calculateBatteryConfiguration(projectId, batteryId, temperature, autonomousDays);
-        return ResponseEntity.ok(calculationResult);
     }
 }
