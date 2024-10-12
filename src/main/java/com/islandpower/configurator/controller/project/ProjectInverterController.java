@@ -4,6 +4,7 @@ import com.islandpower.configurator.dto.InverterDTO;
 import com.islandpower.configurator.model.Inverter;
 import com.islandpower.configurator.model.Project;
 import com.islandpower.configurator.model.project.ConfigurationModel;
+import com.islandpower.configurator.model.project.ProjectInverter;
 import com.islandpower.configurator.service.JwtUtilService;
 import com.islandpower.configurator.service.project.ProjectInverterService;
 import com.islandpower.configurator.repository.ProjectRepository;
@@ -15,7 +16,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/projects/{projectId}/inverters")
@@ -31,14 +31,6 @@ public class ProjectInverterController {
 
     @Autowired
     private ProjectRepository projectRepository;
-
-    @PostMapping
-    public Project addOrUpdateInverter(@PathVariable String projectId, @RequestBody Inverter inverter, HttpServletRequest request) {
-        String username = jwtUtilService.extractUsernameFromToken(request);
-        String userId = jwtUtilService.retrieveUserIdByUsername(username);
-        logger.info("User {} (ID: {}) is adding/updating an inverter in project with ID: {}", username, userId, projectId);
-        return projectInverterService.addOrUpdateInverter(projectId, inverter);
-    }
 
     @DeleteMapping("/{inverterId}")
     public void removeInverter(@PathVariable String projectId, @PathVariable String inverterId, HttpServletRequest request) {
@@ -68,12 +60,18 @@ public class ProjectInverterController {
 
         // Update the system voltage and temperature in the configuration model
         configModel.setSystemVoltage(systemVoltage);
-        configModel.setInverterTemperature(temperature);
+
+        // Since inverter-related fields are now inside ProjectInverter, update ProjectInverter
+        if (configModel.getProjectInverter() == null) {
+            configModel.setProjectInverter(new com.islandpower.configurator.model.project.ProjectInverter());
+        }
+
+        configModel.getProjectInverter().setInverterTemperature(temperature);
         projectRepository.save(project);
 
-        // Extract total appliance power and peak power from the configuration model
-        double totalAppliancePower = configModel.getTotalAcEnergy(); // Adjust as necessary if using DC
-        double totalPeakAppliancePower = configModel.getTotalAcPeakPower(); // Adjust if using DC peak power
+        // Extract total appliance power and peak power from the ProjectAppliance object
+        double totalAppliancePower = configModel.getProjectAppliance().getTotalAcEnergy(); // Adjust as necessary if using DC
+        double totalPeakAppliancePower = configModel.getProjectAppliance().getTotalAcPeakPower(); // Adjust if using DC peak power
 
         // Get suitable inverters based on the provided inputs
         List<InverterDTO> suitableInverters = projectInverterService.getSuitableInverters(
@@ -94,14 +92,9 @@ public class ProjectInverterController {
         return ResponseEntity.noContent().build();
     }
 
-    // Method to fetch inverter details by project ID and inverter ID
-    @GetMapping("/inverters/{inverterId}")
-    public ResponseEntity<Inverter> getInverterDetails(@PathVariable String projectId, @PathVariable String inverterId) {
-        Inverter inverter = projectInverterService.getSelectedInverter(inverterId); // Call a service method to get the inverter
-        if (inverter != null) {
-            return ResponseEntity.ok(inverter); // Return the inverter details
-        } else {
-            return ResponseEntity.notFound().build(); // Return 404 if not found
-        }
+    @GetMapping("/")
+    public ResponseEntity<ProjectInverter> getProjectInverter(@PathVariable String projectId) {
+        ProjectInverter projectInverter = projectInverterService.getProjectInverter(projectId);
+        return ResponseEntity.ok(projectInverter);
     }
 }

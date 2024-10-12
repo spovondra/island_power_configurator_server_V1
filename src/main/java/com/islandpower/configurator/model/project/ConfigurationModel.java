@@ -1,39 +1,22 @@
 package com.islandpower.configurator.model.project;
 
 public class ConfigurationModel {
-    private double totalAcEnergy; // Total AC energy consumption
-    private double totalDcEnergy; // Total DC energy consumption
+    private ProjectAppliance projectAppliance; // Appliance energy and power fields first
     private double systemVoltage; // Current system voltage
     private double recommendedSystemVoltage; // Recommended system voltage
-    private double totalAcPeakPower; // Total peak power for AC
-    private double totalDcPeakPower; // Total peak power for DC
-    private String inverterId; // ID of the selected inverter
-    private double inverterTemperature; // Installation temperature of the inverter
-
-    // New fields for energy calculations
-    private double totalAdjustedAcEnergy; // Adjusted AC Load
-    private double totalDailyEnergy; // Total Daily Energy
-
-    // Battery configuration fields
+    private ProjectInverter projectInverter; // Inverter configuration object
     private ProjectBattery projectBattery; // Battery configuration object
 
-    // Getters and Setters
-    public double getTotalAcEnergy() {
-        return totalAcEnergy;
+    // Getters and Setters for ProjectAppliance
+    public ProjectAppliance getProjectAppliance() {
+        return projectAppliance;
     }
 
-    public void setTotalAcEnergy(double totalAcEnergy) {
-        this.totalAcEnergy = totalAcEnergy;
+    public void setProjectAppliance(ProjectAppliance projectAppliance) {
+        this.projectAppliance = projectAppliance;
     }
 
-    public double getTotalDcEnergy() {
-        return totalDcEnergy;
-    }
-
-    public void setTotalDcEnergy(double totalDcEnergy) {
-        this.totalDcEnergy = totalDcEnergy;
-    }
-
+    // Getters and Setters for systemVoltage and recommendedSystemVoltage
     public double getSystemVoltage() {
         return systemVoltage;
     }
@@ -50,53 +33,13 @@ public class ConfigurationModel {
         this.recommendedSystemVoltage = recommendedSystemVoltage;
     }
 
-    public double getTotalAcPeakPower() {
-        return totalAcPeakPower;
+    // Getters and Setters for ProjectInverter
+    public ProjectInverter getProjectInverter() {
+        return projectInverter;
     }
 
-    public void setTotalAcPeakPower(double totalAcPeakPower) {
-        this.totalAcPeakPower = totalAcPeakPower;
-    }
-
-    public double getTotalDcPeakPower() {
-        return totalDcPeakPower;
-    }
-
-    public void setTotalDcPeakPower(double totalDcPeakPower) {
-        this.totalDcPeakPower = totalDcPeakPower;
-    }
-
-    public String getInverterId() {
-        return inverterId;
-    }
-
-    public void setInverterId(String inverterId) {
-        this.inverterId = inverterId;
-    }
-
-    public double getInverterTemperature() {
-        return inverterTemperature;
-    }
-
-    public void setInverterTemperature(double inverterTemperature) {
-        this.inverterTemperature = inverterTemperature;
-    }
-
-    // New getters and setters for Adjusted AC Load and Total Daily Energy
-    public double getTotalAdjustedAcEnergy() {
-        return totalAdjustedAcEnergy;
-    }
-
-    public void setTotalAdjustedAcEnergy(double totalAdjustedAcEnergy) {
-        this.totalAdjustedAcEnergy = totalAdjustedAcEnergy;
-    }
-
-    public double getTotalDailyEnergy() {
-        return totalDailyEnergy;
-    }
-
-    public void setTotalDailyEnergy(double totalDailyEnergy) {
-        this.totalDailyEnergy = totalDailyEnergy;
+    public void setProjectInverter(ProjectInverter projectInverter) {
+        this.projectInverter = projectInverter;
     }
 
     // Getters and Setters for ProjectBattery

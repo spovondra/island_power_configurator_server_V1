@@ -3,6 +3,7 @@ package com.islandpower.configurator.service.project;
 import com.islandpower.configurator.model.project.Appliance;
 import com.islandpower.configurator.model.Project;
 import com.islandpower.configurator.model.project.ConfigurationModel;
+import com.islandpower.configurator.model.project.ProjectAppliance;
 import com.islandpower.configurator.repository.ProjectRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -72,6 +73,12 @@ public class ProjectApplianceService {
             project.setConfigurationModel(configModel);
         }
 
+        ProjectAppliance projectAppliance = configModel.getProjectAppliance();
+        if (projectAppliance == null) {
+            projectAppliance = new ProjectAppliance();
+            configModel.setProjectAppliance(projectAppliance);
+        }
+
         double totalAcEnergy = 0;
         double totalDcEnergy = 0;
         double totalAcPeakPower = 0;
@@ -94,10 +101,10 @@ public class ProjectApplianceService {
             }
         }
 
-        configModel.setTotalAcEnergy(totalAcEnergy);
-        configModel.setTotalDcEnergy(totalDcEnergy);
-        configModel.setTotalAcPeakPower(totalAcPeakPower);
-        configModel.setTotalDcPeakPower(totalDcPeakPower);
+        projectAppliance.setTotalAcEnergy(totalAcEnergy);
+        projectAppliance.setTotalDcEnergy(totalDcEnergy);
+        projectAppliance.setTotalAcPeakPower(totalAcPeakPower);
+        projectAppliance.setTotalDcPeakPower(totalDcPeakPower);
 
         configModel.setRecommendedSystemVoltage(calculateRecommendedSystemVoltage(totalAcEnergy + totalDcEnergy));
     }

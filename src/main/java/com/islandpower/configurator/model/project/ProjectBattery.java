@@ -2,20 +2,25 @@ package com.islandpower.configurator.model.project;
 
 public class ProjectBattery {
     private String batteryId;
+    private String type; // New field for battery type
+    private int temperature; // New field for temperature
     private double batteryCapacityDod;
     private int parallelBatteries;
     private int seriesBatteries;
     private double requiredBatteryCapacity;
-    private double batteryAutonomy; // Battery autonomy calculated based on capacity and energy needs
+    private double batteryAutonomy;
     private double totalAvailableCapacity;
     private double operationalDays;
 
     public ProjectBattery() {
     }
 
-    public ProjectBattery(String batteryId, double batteryCapacityDod, int parallelBatteries, int seriesBatteries,
-                          double requiredBatteryCapacity, double batteryAutonomy, double totalAvailableCapacity, double operationalDays) {
+    public ProjectBattery(String batteryId, String type, int temperature, double batteryCapacityDod, int parallelBatteries,
+                          int seriesBatteries, double requiredBatteryCapacity, double batteryAutonomy, double totalAvailableCapacity,
+                          double operationalDays) {
         this.batteryId = batteryId;
+        this.type = type;
+        this.temperature = temperature;
         this.batteryCapacityDod = batteryCapacityDod;
         this.parallelBatteries = parallelBatteries;
         this.seriesBatteries = seriesBatteries;
@@ -32,6 +37,30 @@ public class ProjectBattery {
 
     public void setBatteryId(String batteryId) {
         this.batteryId = batteryId;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public int getTemperature() {
+        return temperature;
+    }
+
+    public void setTemperature(int temperature) {
+        this.temperature = temperature;
+    }
+
+    public double getBatteryCapacityDod() {
+        return batteryCapacityDod;
+    }
+
+    public void setBatteryCapacityDod(double batteryCapacityDod) {
+        this.batteryCapacityDod = batteryCapacityDod;
     }
 
     public int getParallelBatteries() {
@@ -58,20 +87,12 @@ public class ProjectBattery {
         this.requiredBatteryCapacity = requiredBatteryCapacity;
     }
 
-    public double getBatteryCapacityDod() {
-        return batteryCapacityDod;
+    public double getBatteryAutonomy() {
+        return batteryAutonomy;
     }
 
-    public void setBatteryCapacityDod(double batteryCapacityDod) {
-        this.batteryCapacityDod = batteryCapacityDod;
-    }
-
-    public double getOperationalDays() {
-        return operationalDays;
-    }
-
-    public void setOperationalDays(double operationalDays) {
-        this.operationalDays = operationalDays;
+    public void setBatteryAutonomy(double batteryAutonomy) {
+        this.batteryAutonomy = batteryAutonomy;
     }
 
     public double getTotalAvailableCapacity() {
@@ -82,11 +103,11 @@ public class ProjectBattery {
         this.totalAvailableCapacity = totalAvailableCapacity;
     }
 
-    public double getBatteryAutonomy() {
-        return batteryAutonomy;
+    public double getOperationalDays() {
+        return operationalDays;
     }
 
-    public void setBatteryAutonomy(double batteryAutonomy) {
-        this.batteryAutonomy = batteryAutonomy;
+    public void setOperationalDays(double operationalDays) {
+        this.operationalDays = operationalDays;
     }
 }

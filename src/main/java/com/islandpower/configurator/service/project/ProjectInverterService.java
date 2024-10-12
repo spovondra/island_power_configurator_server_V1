@@ -3,10 +3,10 @@ package com.islandpower.configurator.service.project;
 import com.islandpower.configurator.dto.InverterDTO;
 import com.islandpower.configurator.model.Inverter;
 import com.islandpower.configurator.model.project.ConfigurationModel;
+import com.islandpower.configurator.model.project.ProjectInverter;
 import com.islandpower.configurator.model.Project;
 import com.islandpower.configurator.repository.InverterRepository;
 import com.islandpower.configurator.repository.ProjectRepository;
-import org.slf4j.ILoggerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,42 +27,20 @@ public class ProjectInverterService {
         this.projectRepository = projectRepository;
     }
 
-    // Add or update an inverter in a project
-    public Project addOrUpdateInverter(String projectId, Inverter inverter) {
-        Project project = projectRepository.findById(projectId)
-                .orElseThrow(() -> new RuntimeException("Project not found: " + projectId));
-
-        if (inverter.getId() == null || inverter.getId().isEmpty()) {
-            inverter.setId(UUID.randomUUID().toString());
-        }
-
-        // Update the configuration model with inverter details
-        ConfigurationModel configModel = project.getConfigurationModel();
-        if (configModel == null) {
-            configModel = new ConfigurationModel();
-            project.setConfigurationModel(configModel);
-        }
-
-        configModel.setInverterId(inverter.getId());
-
-        projectRepository.save(project);
-        return project;
-    }
-
     // Remove inverter from a project
     public void removeInverter(String projectId, String inverterId) {
         Project project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new RuntimeException("Project not found: " + projectId));
 
         ConfigurationModel configModel = project.getConfigurationModel();
-        if (configModel != null) {
-            configModel.setInverterId(null); // Remove the inverter ID
+        if (configModel != null && configModel.getProjectInverter() != null) {
+            configModel.getProjectInverter().setInverterId(null); // Remove the inverter ID
         }
 
         projectRepository.save(project);
     }
 
-    // Method to fetch and filter inverters based on power requirements and return DTOs
+    // Fetch and filter inverters based on power requirements
     public List<InverterDTO> getSuitableInverters(double systemVoltage, double temperature,
                                                   double totalAppliancePower, double totalPeakAppliancePower) {
         List<Inverter> allInverters = inverterRepository.findAll();
@@ -81,11 +59,8 @@ public class ProjectInverterService {
             double peakPower = inverter.getMaxPower();
 
             // Check if the inverter can handle the total appliance power and peak power requirements
-            boolean isPowerSufficient = isInverterPowerSufficient(continuousPower, totalAppliancePower);
-            boolean isPeakPowerSufficient = isInverterPeakPowerSufficient(peakPower, totalPeakAppliancePower);
-
-            // If both power checks are satisfied, create a DTO and add to the suitable DTO list
-            if (isPowerSufficient && isPeakPowerSufficient) {
+            if (isInverterPowerSufficient(continuousPower, totalAppliancePower)
+                    && isInverterPeakPowerSufficient(peakPower, totalPeakAppliancePower)) {
                 InverterDTO inverterDTO = new InverterDTO(
                         inverter.getId(),
                         inverter.getName(),
@@ -100,7 +75,7 @@ public class ProjectInverterService {
         return suitableInverterDTOs;
     }
 
-    // Example implementation for getting continuous power based on temperature
+    // Get continuous power based on temperature
     private double getContinuousPowerByTemperature(Inverter inverter, double temperature) {
         if (temperature == 25) {
             return inverter.getContinuousPower25C();
@@ -121,67 +96,79 @@ public class ProjectInverterService {
         return inverterPeakPower > totalPeakAppliancePower;
     }
 
+    // Select inverter and update project
     public void selectInverter(String projectId, String inverterId) {
-        // Fetch the project by ID
         Project project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new RuntimeException("Project not found: " + projectId));
 
-        // Get the configuration model from the project
         ConfigurationModel configModel = project.getConfigurationModel();
         if (configModel == null) {
             throw new RuntimeException("Configuration model not found for project: " + projectId);
         }
 
-        // Save the selected inverter in the configuration model
-        configModel.setInverterId(inverterId);
+        ProjectInverter projectInverter = configModel.getProjectInverter();
+        if (projectInverter == null) {
+            projectInverter = new ProjectInverter();
+            configModel.setProjectInverter(projectInverter);
+        }
 
-        // Fetch the inverter by ID (if you need to check if it exists)
+        // Set the selected inverter ID
+        projectInverter.setInverterId(inverterId);
+
+        // Fetch the selected inverter
         Inverter selectedInverter = getSelectedInverter(inverterId);
 
-        // Perform calculations after selecting the inverter
+        // Perform energy calculations after selecting the inverter
         calculateEnergyValues(project, selectedInverter);
 
-        // Save changes to the project
+        // Save the project
         projectRepository.save(project);
-
     }
 
-    // Calculate total daily energy for all AC and DC appliances
+    // Calculate energy values for the project based on selected inverter
     private void calculateEnergyValues(Project project, Inverter selectedInverter) {
         ConfigurationModel configModel = project.getConfigurationModel();
+        ProjectInverter projectInverter = configModel.getProjectInverter();
 
-        // Get the total daily energy for DC and AC appliances
-        double totalDailyDC = configModel.getTotalDcEnergy(); // Get total daily DC energy
-        double totalDailyAC = configModel.getTotalAcEnergy(); // Get total daily AC energy
+        double totalDailyDC = configModel.getProjectAppliance().getTotalDcEnergy();
+        double totalDailyAC = configModel.getProjectAppliance().getTotalAcEnergy();
 
-        // Log total daily energy values
         logger.info("Total Daily DC Energy: {}", totalDailyDC);
         logger.info("Total Daily AC Energy: {}", totalDailyAC);
 
-        // Get inverter efficiency
-        double inverterEfficiency = selectedInverter.getEfficiency() / 100.0; // Convert percentage to decimal
+        double inverterEfficiency = selectedInverter.getEfficiency() / 100.0;
         logger.info("Inverter Efficiency: {}%", selectedInverter.getEfficiency());
 
-        // Calculate total required energy
+        // Calculate adjusted AC energy
         double totalAdjustedAcEnergy = totalDailyAC / inverterEfficiency;
         double totalDailyEnergy = totalDailyDC + totalAdjustedAcEnergy;
 
-        // Log calculated energy values
         logger.info("Total Adjusted AC Energy: {}", totalAdjustedAcEnergy);
         logger.info("Total Daily Energy: {}", totalDailyEnergy);
 
-        // Set calculated values in configuration model
-        configModel.setTotalAdjustedAcEnergy(totalAdjustedAcEnergy);
-        configModel.setTotalDailyEnergy(totalDailyEnergy);
+        // Set values in ProjectInverter
+        projectInverter.setTotalAdjustedAcEnergy(totalAdjustedAcEnergy);
+        projectInverter.setTotalDailyEnergy(totalDailyEnergy);
 
-        // Save the updated configuration model
         projectRepository.save(project);
-        logger.info("Updated project configuration saved successfully for project ID: {}", project.getId());
+        logger.info("Project updated successfully with inverter calculations for project ID: {}", project.getId());
     }
 
-
-    public Inverter getSelectedInverter (String inverterId) {
+    // Fetch selected inverter by ID
+    public Inverter getSelectedInverter(String inverterId) {
         return inverterRepository.findById(inverterId)
                 .orElseThrow(() -> new RuntimeException("Inverter not found: " + inverterId));
+    }
+
+    public ProjectInverter getProjectInverter(String projectId) {
+        Project project = projectRepository.findById(projectId)
+                .orElseThrow(() -> new RuntimeException("Project not found: " + projectId));
+
+        ConfigurationModel configModel = project.getConfigurationModel();
+        if (configModel == null || configModel.getProjectInverter() == null) {
+            throw new RuntimeException("ProjectInverter not found for project: " + projectId);
+        }
+
+        return configModel.getProjectInverter();
     }
 }
