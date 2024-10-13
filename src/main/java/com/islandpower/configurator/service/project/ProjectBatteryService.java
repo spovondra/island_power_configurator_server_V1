@@ -109,6 +109,7 @@ public class ProjectBatteryService {
     );
 
     // Calculate battery configuration for a project
+    // Calculate battery configuration for a project
     public ProjectBattery calculateBatteryConfiguration(String projectId, String batteryId, int autonomyDays, int temperature) {
         Project project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new RuntimeException("Project not found: " + projectId));
@@ -124,16 +125,33 @@ public class ProjectBatteryService {
         double systemVoltage = configModel.getSystemVoltage();
         double batteryVoltage = selectedBattery.getVoltage();
 
-        // Calculate required battery capacity
+        // Calculate required battery capacity using the formula:
+        // C_require = (E_daily_AC_DC / U_system) * t_days * (1 / T_temperature)
         double requiredCapacity = (totalDailyEnergy / systemVoltage) * autonomyDays * (1 / temperatureCoefficient); // Ah
+
+        // Calculate battery capacity with DOD (Depth of Discharge)
+        // C_batteryDOD = C_battery * DOD
         double batteryCapacityDOD = selectedBattery.getCapacity() * selectedBattery.getDod();
 
-        // Calculate number of parallel and series batteries
+        // Check if battery capacity with DOD is greater than or equal to required capacity
+        if (batteryCapacityDOD < requiredCapacity) {
+            throw new RuntimeException("Selected battery does not meet the required capacity.");
+        }
+
+        // Calculate the number of parallel batteries required
+        // n_batt_parallel = C_require / C_batteryDOD
         int parallelBatteries = (int) Math.ceil(requiredCapacity / batteryCapacityDOD);
+
+        // Calculate the number of series batteries required
+        // n_batt_serial = U_system / U_battery
         int seriesBatteries = (int) Math.ceil(systemVoltage / batteryVoltage);
 
-        // Calculate total available capacity and operational days
-        double totalAvailableCapacity = batteryCapacityDOD * parallelBatteries; // Total available capacity
+        // Calculate total available capacity
+        // Total available capacity = C_batteryDOD * parallelBatteries
+        double totalAvailableCapacity = batteryCapacityDOD * parallelBatteries;
+
+        // Calculate operational days
+        // Operational days = Total available capacity / (Total daily energy / System voltage)
         double operationalDays = totalAvailableCapacity / ((totalDailyEnergy / systemVoltage) * (1 / temperatureCoefficient));
 
         // Set calculated values in ProjectBattery

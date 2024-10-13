@@ -35,8 +35,9 @@ public class ProjectSolarPanelService {
     // Calculate and save the solar panel configuration
     public ProjectSolarPanel calculateSolarPanelConfiguration(String projectId, String solarPanelId,
                                                               double panelOversizeCoefficient, double batteryEfficiency,
-                                                              double cableEfficiency, int panelTemperature,
-                                                              List<Integer> selectedMonths, String installationType) {
+                                                              double cableEfficiency, List<Integer> selectedMonths,
+                                                              String installationType, double manufacturerTolerance,
+                                                              double agingLoss, double dirtLoss) {
 
         // Fetch the project
         Project project = projectRepository.findById(projectId)
@@ -46,7 +47,7 @@ public class ProjectSolarPanelService {
         SolarPanel selectedPanel = solarPanelRepository.findById(solarPanelId)
                 .orElseThrow(() -> new RuntimeException("Solar Panel not found: " + solarPanelId));
 
-        // Get total daily energy required
+        // Get total daily energy required for AC and DC appliances
         double totalDailyEnergyRequired = project.getConfigurationModel().getProjectInverter().getTotalDailyEnergy();
 
         // Fetch monthly data from site
@@ -55,6 +56,7 @@ public class ProjectSolarPanelService {
 
         int maxPanelsRequired = 0;
         double totalDailyEnergyProduction = 0;
+        double finalEfficiency = 0.0;
 
         // Perform calculations for each selected month
         for (Site.MonthlyData monthlyData : monthlyDataList) {
@@ -62,19 +64,26 @@ public class ProjectSolarPanelService {
                 double psh = monthlyData.getIrradiance(); // Get irradiance (PSH)
                 double ambientTemperature = monthlyData.getAmbientTemperature(); // Get ambient temperature
 
-                // Calculate required energy and power
+                // Calculate energy required from the battery (equation 13):
                 double requiredEnergy = totalDailyEnergyRequired / (batteryEfficiency * cableEfficiency);
+
+                // Calculate required output power from solar panels (equation 14):
                 double requiredPower = (requiredEnergy / psh) * panelOversizeCoefficient;
 
-                // Calculate temperature efficiency factor
-                double tempEfficiencyFactor = calculateTemperatureEfficiency(selectedPanel, ambientTemperature);
-                double deratedPower = selectedPanel.getpRated() * tempEfficiencyFactor;
+                // Calculate temperature efficiency for solar panels (equation 16):
+                double tempEfficiencyFactor = calculateTemperatureEfficiency(selectedPanel, ambientTemperature, installationType);
 
-                // Calculate number of panels required
+                // Calculate total panel efficiency (equation 15):
+                finalEfficiency = calculateTotalEfficiency(tempEfficiencyFactor, manufacturerTolerance, agingLoss, dirtLoss);
+
+                // Calculate derated power of the solar panel (equation 17):
+                double deratedPower = selectedPanel.getpRated() * finalEfficiency;
+
+                // Calculate the number of solar panels required (equation 18):
                 int numPanelsRequired = (int) Math.ceil(requiredPower / deratedPower);
                 maxPanelsRequired = Math.max(maxPanelsRequired, numPanelsRequired);
 
-                // Calculate estimated daily solar energy production
+                // Calculate the estimated daily energy production by solar panels (equation 19):
                 double estimatedDailySolarEnergy = deratedPower * psh;
 
                 // Add monthly calculation data, including PSH and Ambient Temperature
@@ -85,8 +94,7 @@ public class ProjectSolarPanelService {
                         totalDailyEnergyRequired, // This remains constant
                         requiredEnergy,
                         requiredPower,
-                        tempEfficiencyFactor,
-                        tempEfficiencyFactor, // Efficiency is tempEfficiencyFactor for simplicity
+                        finalEfficiency, // Only the final efficiency is stored
                         deratedPower,
                         numPanelsRequired,
                         estimatedDailySolarEnergy
@@ -113,7 +121,7 @@ public class ProjectSolarPanelService {
         projectSolarPanel.setSolarPanelId(solarPanelId);
         projectSolarPanel.setNumberOfPanels(maxPanelsRequired);
         projectSolarPanel.setTotalPowerGenerated(selectedPanel.getpRated() * maxPanelsRequired);
-        projectSolarPanel.setEfficiencyLoss(0.05); // Example efficiency loss
+        projectSolarPanel.setEfficiencyLoss(1 - finalEfficiency); // Store efficiency loss as 1 - final efficiency
         projectSolarPanel.setEstimatedDailyEnergyProduction(totalDailyEnergyProduction);
         projectSolarPanel.setMonthlyData(monthlyCalculations); // Store monthly data including PSH and ambient temperature
 
@@ -123,10 +131,27 @@ public class ProjectSolarPanelService {
         return projectSolarPanel; // Return the result
     }
 
-    // Method to calculate temperature efficiency
-    private double calculateTemperatureEfficiency(SolarPanel solarPanel, double ambientTemperature) {
+    // Method to calculate temperature efficiency (equation 16)
+    private double calculateTemperatureEfficiency(SolarPanel solarPanel, double ambientTemperature, String installationType) {
         double tempCoefficientPMax = solarPanel.getTempCoefficientPMax();
-        return (100 + (ambientTemperature - 25) * tempCoefficientPMax) / 100;
+        int installationTemperatureIncrease = getInstallationTemperatureIncrease(installationType);
+        return (100 + (ambientTemperature + installationTemperatureIncrease - 25) * tempCoefficientPMax) / 100;
+    }
+
+    // Method to calculate total efficiency (equation 15)
+    private double calculateTotalEfficiency(double tempEfficiency, double manufacturerTolerance, double agingLoss, double dirtLoss) {
+        // η_efficiency = η_temp * η_man * η_aging * η_dirt
+        return tempEfficiency * manufacturerTolerance * agingLoss * dirtLoss;
+    }
+
+    // Fetch the temperature increase based on the installation type (provided table)
+    private int getInstallationTemperatureIncrease(String installationType) {
+        return switch (installationType) {
+            case "ground", "angle_above_20" -> 25;
+            case "parallel_gap_above_150" -> 30;
+            case "parallel_gap_below_150" -> 35;
+            default -> 25; // Default to 25°C for unknown types
+        };
     }
 
     // Method to fetch the solar panel configuration for the project

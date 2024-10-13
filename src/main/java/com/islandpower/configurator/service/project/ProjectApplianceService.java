@@ -87,7 +87,8 @@ public class ProjectApplianceService {
         List<Appliance> appliances = project.getAppliances();
         if (appliances != null) {
             for (Appliance appliance : appliances) {
-                double dailyEnergy = appliance.getPower() * appliance.getHours() * appliance.getDays() / 7; // Daily energy calculation
+                // Multiply the energy and peak power by the quantity of appliances
+                double dailyEnergy = appliance.getPower() * appliance.getHours() * appliance.getDays() / 7 * appliance.getQuantity(); // Daily energy calculation
                 appliance.setEnergy(dailyEnergy);
 
                 // Null check before comparing appliance type

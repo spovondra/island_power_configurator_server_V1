@@ -31,16 +31,18 @@ public class ProjectSolarPanelController {
             @RequestBody Map<String, Object> requestBody) {
 
         String solarPanelId = (String) requestBody.get("solarPanelId");
-        double panelOversizeCoefficient = (double) requestBody.get("panelOversizeCoefficient");
-        double batteryEfficiency = (double) requestBody.get("batteryEfficiency");
-        double cableEfficiency = (double) requestBody.get("cableEfficiency");
-        int panelTemperature = (int) requestBody.get("panelTemperature");
+        double panelOversizeCoefficient = ((Number) requestBody.get("panelOversizeCoefficient")).doubleValue();
+        double batteryEfficiency = ((Number) requestBody.get("batteryEfficiency")).doubleValue();
+        double cableEfficiency = ((Number) requestBody.get("cableEfficiency")).doubleValue();
         List<Integer> selectedMonths = (List<Integer>) requestBody.get("selectedMonths");
         String installationType = (String) requestBody.get("installationType");
+        double manufacturerTolerance = ((Number) requestBody.get("manufacturerTolerance")).doubleValue();
+        double agingLoss = ((Number) requestBody.get("agingLoss")).doubleValue();
+        double dirtLoss = ((Number) requestBody.get("dirtLoss")).doubleValue();
 
         ProjectSolarPanel projectSolarPanel = projectSolarPanelService.calculateSolarPanelConfiguration(
                 projectId, solarPanelId, panelOversizeCoefficient, batteryEfficiency, cableEfficiency,
-                panelTemperature, selectedMonths, installationType);
+                selectedMonths, installationType, manufacturerTolerance, agingLoss, dirtLoss);
 
         return ResponseEntity.ok(projectSolarPanel);
     }

@@ -90,22 +90,20 @@ public class ProjectSolarPanel {
         private double totalDailyEnergy;
         private double requiredEnergy;
         private double requiredPower;
-        private double temperatureEfficiency;
         private double efficiency;
         private double deratedPower;
         private int numPanels;
         private double estimatedDailySolarEnergy;
 
         public MonthlySolarData(int month, Double psh, Double ambientTemperature, double totalDailyEnergy,
-                                double requiredEnergy, double requiredPower, double temperatureEfficiency,
-                                double efficiency, double deratedPower, int numPanels, double estimatedDailySolarEnergy) {
+                                double requiredEnergy, double requiredPower, double efficiency, double deratedPower,
+                                int numPanels, double estimatedDailySolarEnergy) {
             this.month = month;
             this.psh = (psh != null) ? psh : 0.0; // Set default value of 0.0 if psh is null
             this.ambientTemperature = (ambientTemperature != null) ? ambientTemperature : 0.0; // Set default value of 0.0 if ambientTemperature is null
             this.totalDailyEnergy = totalDailyEnergy;
             this.requiredEnergy = requiredEnergy;
             this.requiredPower = requiredPower;
-            this.temperatureEfficiency = temperatureEfficiency;
             this.efficiency = efficiency;
             this.deratedPower = deratedPower;
             this.numPanels = numPanels;
@@ -159,14 +157,6 @@ public class ProjectSolarPanel {
 
         public void setRequiredPower(double requiredPower) {
             this.requiredPower = requiredPower;
-        }
-
-        public double getTemperatureEfficiency() {
-            return temperatureEfficiency;
-        }
-
-        public void setTemperatureEfficiency(double temperatureEfficiency) {
-            this.temperatureEfficiency = temperatureEfficiency;
         }
 
         public double getEfficiency() {
