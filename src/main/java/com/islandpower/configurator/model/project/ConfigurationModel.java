@@ -1,14 +1,15 @@
 package com.islandpower.configurator.model.project;
 
 public class ConfigurationModel {
-    private ProjectAppliance projectAppliance; // Appliance energy and power fields
-    private double systemVoltage; // Current system voltage
-    private double recommendedSystemVoltage; // Recommended system voltage
-    private ProjectInverter projectInverter; // Inverter configuration object
-    private ProjectBattery projectBattery; // Battery configuration object
-    private ProjectSolarPanel projectSolarPanel; // Solar panel configuration object
+    private ProjectAppliance projectAppliance;
+    private double systemVoltage;
+    private double recommendedSystemVoltage;
+    private ProjectInverter projectInverter;
+    private ProjectBattery projectBattery;
+    private ProjectSolarPanel projectSolarPanel;
+    private ProjectController projectController; // Přidání ProjectController
 
-    // Getters and Setters for ProjectAppliance
+    // Gettery a Settery
     public ProjectAppliance getProjectAppliance() {
         return projectAppliance;
     }
@@ -17,7 +18,6 @@ public class ConfigurationModel {
         this.projectAppliance = projectAppliance;
     }
 
-    // Getters and Setters for systemVoltage and recommendedSystemVoltage
     public double getSystemVoltage() {
         return systemVoltage;
     }
@@ -34,7 +34,6 @@ public class ConfigurationModel {
         this.recommendedSystemVoltage = recommendedSystemVoltage;
     }
 
-    // Getters and Setters for ProjectInverter
     public ProjectInverter getProjectInverter() {
         return projectInverter;
     }
@@ -43,7 +42,6 @@ public class ConfigurationModel {
         this.projectInverter = projectInverter;
     }
 
-    // Getters and Setters for ProjectBattery
     public ProjectBattery getProjectBattery() {
         return projectBattery;
     }
@@ -52,12 +50,19 @@ public class ConfigurationModel {
         this.projectBattery = projectBattery;
     }
 
-    // Getters and Setters for ProjectSolarPanel
     public ProjectSolarPanel getProjectSolarPanel() {
         return projectSolarPanel;
     }
 
     public void setProjectSolarPanel(ProjectSolarPanel projectSolarPanel) {
         this.projectSolarPanel = projectSolarPanel;
+    }
+
+    public ProjectController getProjectController() {
+        return projectController;
+    }
+
+    public void setProjectController(ProjectController projectController) {
+        this.projectController = projectController;
     }
 }

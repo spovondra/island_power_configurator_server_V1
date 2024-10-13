@@ -14,6 +14,7 @@ public class SolarPanel {
     private double vmp; // Voltage at maximum power
     private double imp; // Current at maximum power
     private double tempCoefficientPMax; // Temperature coefficient for maximum power
+    private double tempCoefficientVoc; // **New** Temperature coefficient for open-circuit voltage (Voc)
     private double tolerance; // Panel tolerance percentage
     private double degradationFirstYear; // Degradation in the first year
     private double degradationYears; // Degradation per year after the first year
@@ -21,7 +22,7 @@ public class SolarPanel {
 
     // Constructor
     public SolarPanel(String id, String manufacturer, String name, double pRated, double voc, double isc,
-                      double vmp, double imp, double tempCoefficientPMax, double tolerance,
+                      double vmp, double imp, double tempCoefficientPMax, double tempCoefficientVoc, double tolerance,
                       double degradationFirstYear, double degradationYears, double price) {
         this.id = id;
         this.manufacturer = manufacturer;
@@ -32,6 +33,7 @@ public class SolarPanel {
         this.vmp = vmp;
         this.imp = imp;
         this.tempCoefficientPMax = tempCoefficientPMax;
+        this.tempCoefficientVoc = tempCoefficientVoc; // **New field initialized**
         this.tolerance = tolerance;
         this.degradationFirstYear = degradationFirstYear;
         this.degradationYears = degradationYears;
@@ -109,6 +111,14 @@ public class SolarPanel {
 
     public void setTempCoefficientPMax(double tempCoefficientPMax) {
         this.tempCoefficientPMax = tempCoefficientPMax;
+    }
+
+    public double getTempCoefficientVoc() {
+        return tempCoefficientVoc; // **Getter for the new field**
+    }
+
+    public void setTempCoefficientVoc(double tempCoefficientVoc) {
+        this.tempCoefficientVoc = tempCoefficientVoc; // **Setter for the new field**
     }
 
     public double getTolerance() {

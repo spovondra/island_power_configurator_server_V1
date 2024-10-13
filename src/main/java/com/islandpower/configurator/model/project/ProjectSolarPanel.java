@@ -9,19 +9,38 @@ public class ProjectSolarPanel {
     private double totalCost; // Total cost of the selected panels
     private double efficiencyLoss; // Efficiency loss due to temperature or other factors
     private double estimatedDailyEnergyProduction; // Estimated daily energy production (Wh)
+
+    // Efficiency and factors for solar panel calculations
+    private double panelOversizeCoefficient; // Oversize factor for the panels
+    private double batteryEfficiency; // Efficiency of the battery system
+    private double cableEfficiency; // Efficiency of the cabling
+    private double manufacturerTolerance; // Manufacturer's tolerance value
+    private double agingLoss; // Loss due to aging of the panels
+    private double dirtLoss; // Loss due to dirt accumulation on the panels
+    private String installationType; // Installation type (ground, roof_angle, parallel_greater_150mm, etc.)
+
     private List<MonthlySolarData> monthlyData; // Monthly data including PSH and ambientTemperature
 
     public ProjectSolarPanel() {
     }
 
     public ProjectSolarPanel(String solarPanelId, int numberOfPanels, double totalPowerGenerated, double totalCost,
-                             double efficiencyLoss, double estimatedDailyEnergyProduction, List<MonthlySolarData> monthlyData) {
+                             double efficiencyLoss, double estimatedDailyEnergyProduction, double panelOversizeCoefficient,
+                             double batteryEfficiency, double cableEfficiency, double manufacturerTolerance,
+                             double agingLoss, double dirtLoss, String installationType, List<MonthlySolarData> monthlyData) {
         this.solarPanelId = solarPanelId;
         this.numberOfPanels = numberOfPanels;
         this.totalPowerGenerated = totalPowerGenerated;
         this.totalCost = totalCost;
         this.efficiencyLoss = efficiencyLoss;
         this.estimatedDailyEnergyProduction = estimatedDailyEnergyProduction;
+        this.panelOversizeCoefficient = panelOversizeCoefficient;
+        this.batteryEfficiency = batteryEfficiency;
+        this.cableEfficiency = cableEfficiency;
+        this.manufacturerTolerance = manufacturerTolerance;
+        this.agingLoss = agingLoss;
+        this.dirtLoss = dirtLoss;
+        this.installationType = installationType;
         this.monthlyData = monthlyData;
     }
 
@@ -74,6 +93,62 @@ public class ProjectSolarPanel {
         this.estimatedDailyEnergyProduction = estimatedDailyEnergyProduction;
     }
 
+    public double getPanelOversizeCoefficient() {
+        return panelOversizeCoefficient;
+    }
+
+    public void setPanelOversizeCoefficient(double panelOversizeCoefficient) {
+        this.panelOversizeCoefficient = panelOversizeCoefficient;
+    }
+
+    public double getBatteryEfficiency() {
+        return batteryEfficiency;
+    }
+
+    public void setBatteryEfficiency(double batteryEfficiency) {
+        this.batteryEfficiency = batteryEfficiency;
+    }
+
+    public double getCableEfficiency() {
+        return cableEfficiency;
+    }
+
+    public void setCableEfficiency(double cableEfficiency) {
+        this.cableEfficiency = cableEfficiency;
+    }
+
+    public double getManufacturerTolerance() {
+        return manufacturerTolerance;
+    }
+
+    public void setManufacturerTolerance(double manufacturerTolerance) {
+        this.manufacturerTolerance = manufacturerTolerance;
+    }
+
+    public double getAgingLoss() {
+        return agingLoss;
+    }
+
+    public void setAgingLoss(double agingLoss) {
+        this.agingLoss = agingLoss;
+    }
+
+    public double getDirtLoss() {
+        return dirtLoss;
+    }
+
+    public void setDirtLoss(double dirtLoss) {
+        this.dirtLoss = dirtLoss;
+    }
+
+    public String getInstallationType() {
+        return installationType;
+    }
+
+    public void setInstallationType(String installationType) {
+        this.installationType = installationType;
+    }
+
     public List<MonthlySolarData> getMonthlyData() {
         return monthlyData;
     }
@@ -84,9 +159,9 @@ public class ProjectSolarPanel {
 
     // Inner class to store data for each month, including PSH and ambient temperature
     public static class MonthlySolarData {
-        private int month; // 1-12
-        private Double psh; // Peak Sun Hours (Allow null)
-        private Double ambientTemperature; // Allow null
+        private int month;
+        private Double psh;
+        private Double ambientTemperature;
         private double totalDailyEnergy;
         private double requiredEnergy;
         private double requiredPower;
@@ -99,8 +174,8 @@ public class ProjectSolarPanel {
                                 double requiredEnergy, double requiredPower, double efficiency, double deratedPower,
                                 int numPanels, double estimatedDailySolarEnergy) {
             this.month = month;
-            this.psh = (psh != null) ? psh : 0.0; // Set default value of 0.0 if psh is null
-            this.ambientTemperature = (ambientTemperature != null) ? ambientTemperature : 0.0; // Set default value of 0.0 if ambientTemperature is null
+            this.psh = (psh != null) ? psh : 0.0;
+            this.ambientTemperature = (ambientTemperature != null) ? ambientTemperature : 0.0;
             this.totalDailyEnergy = totalDailyEnergy;
             this.requiredEnergy = requiredEnergy;
             this.requiredPower = requiredPower;
