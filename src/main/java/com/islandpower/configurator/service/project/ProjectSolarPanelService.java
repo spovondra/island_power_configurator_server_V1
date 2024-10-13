@@ -2,6 +2,7 @@ package com.islandpower.configurator.service.project;
 
 import com.islandpower.configurator.model.SolarPanel;
 import com.islandpower.configurator.model.Project;
+import com.islandpower.configurator.model.project.ConfigurationModel;
 import com.islandpower.configurator.model.project.ProjectSolarPanel;
 import com.islandpower.configurator.model.project.Site;
 import com.islandpower.configurator.repository.ProjectRepository;
@@ -21,18 +22,17 @@ public class ProjectSolarPanelService {
     @Autowired
     private ProjectRepository projectRepository;
 
-    // Method to fetch suitable solar panels for a project
+    // Fetch suitable solar panels based on project needs
     public List<SolarPanel> getSuitableSolarPanels(String projectId) {
         Project project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new RuntimeException("Project not found: " + projectId));
 
         double systemVoltage = project.getConfigurationModel().getSystemVoltage();
-
-        // Filter the solar panels based on certain project characteristics (if needed).
-        return solarPanelRepository.findAll(); // Returning all for now, filtering logic can be added here.
+        // Add filtering logic if necessary based on project properties
+        return solarPanelRepository.findAll(); // Return all solar panels for now
     }
 
-    // Method to calculate solar panel configuration
+    // Calculate and save the solar panel configuration
     public ProjectSolarPanel calculateSolarPanelConfiguration(String projectId, String solarPanelId,
                                                               double panelOversizeCoefficient, double batteryEfficiency,
                                                               double cableEfficiency, int panelTemperature,
@@ -46,19 +46,11 @@ public class ProjectSolarPanelService {
         SolarPanel selectedPanel = solarPanelRepository.findById(solarPanelId)
                 .orElseThrow(() -> new RuntimeException("Solar Panel not found: " + solarPanelId));
 
-
-
         // Get total daily energy required
         double totalDailyEnergyRequired = project.getConfigurationModel().getProjectInverter().getTotalDailyEnergy();
 
         // Fetch monthly data from site
         List<Site.MonthlyData> monthlyDataList = project.getSite().getMonthlyDataList();
-        monthlyDataList.forEach(monthlyData -> {
-            System.out.println("Month: " + monthlyData.getMonth());
-            System.out.println("Irradiance (PSH): " + monthlyData.getIrradiance());
-            System.out.println("Ambient Temperature: " + monthlyData.getAmbientTemperature());
-        });
-
         List<ProjectSolarPanel.MonthlySolarData> monthlyCalculations = new ArrayList<>();
 
         int maxPanelsRequired = 0;
@@ -74,12 +66,6 @@ public class ProjectSolarPanelService {
                 double requiredEnergy = totalDailyEnergyRequired / (batteryEfficiency * cableEfficiency);
                 double requiredPower = (requiredEnergy / psh) * panelOversizeCoefficient;
 
-                // Log the retrieved PSH and ambient temperature
-                System.out.println("PSH for month " + monthlyData.getMonth() + ": " + psh);
-                System.out.println("Ambient Temperature for month " + monthlyData.getMonth() + ": " + ambientTemperature);
-                System.out.println("Required Energy: " + requiredEnergy);
-                System.out.println("Required Power: " + requiredPower);
-
                 // Calculate temperature efficiency factor
                 double tempEfficiencyFactor = calculateTemperatureEfficiency(selectedPanel, ambientTemperature);
                 double deratedPower = selectedPanel.getpRated() * tempEfficiencyFactor;
@@ -91,9 +77,11 @@ public class ProjectSolarPanelService {
                 // Calculate estimated daily solar energy production
                 double estimatedDailySolarEnergy = deratedPower * psh;
 
-                // Add monthly calculation data
+                // Add monthly calculation data, including PSH and Ambient Temperature
                 ProjectSolarPanel.MonthlySolarData monthlySolarData = new ProjectSolarPanel.MonthlySolarData(
                         monthlyData.getMonth(),
+                        psh, // Store PSH
+                        ambientTemperature, // Store ambient temperature
                         totalDailyEnergyRequired, // This remains constant
                         requiredEnergy,
                         requiredPower,
@@ -108,17 +96,31 @@ public class ProjectSolarPanelService {
             }
         }
 
-        // Prepare the final solar panel configuration data
+        // Get the configuration model
+        ConfigurationModel configModel = project.getConfigurationModel();
+        if (configModel == null) {
+            configModel = new ConfigurationModel();
+            project.setConfigurationModel(configModel);
+        }
 
-        return new ProjectSolarPanel(
-                solarPanelId,
-                maxPanelsRequired,
-                selectedPanel.getpRated() * maxPanelsRequired,
-                0.0,
-                0.05, // Example efficiency loss
-                totalDailyEnergyProduction,
-                monthlyCalculations
-        ); // Return the result, but don't save it in the database
+        ProjectSolarPanel projectSolarPanel = configModel.getProjectSolarPanel();
+        if (projectSolarPanel == null) {
+            projectSolarPanel = new ProjectSolarPanel();
+            configModel.setProjectSolarPanel(projectSolarPanel);
+        }
+
+        // Save the calculated solar panel configuration, including PSH and ambient temperature
+        projectSolarPanel.setSolarPanelId(solarPanelId);
+        projectSolarPanel.setNumberOfPanels(maxPanelsRequired);
+        projectSolarPanel.setTotalPowerGenerated(selectedPanel.getpRated() * maxPanelsRequired);
+        projectSolarPanel.setEfficiencyLoss(0.05); // Example efficiency loss
+        projectSolarPanel.setEstimatedDailyEnergyProduction(totalDailyEnergyProduction);
+        projectSolarPanel.setMonthlyData(monthlyCalculations); // Store monthly data including PSH and ambient temperature
+
+        // Save the project back to the repository
+        projectRepository.save(project);
+
+        return projectSolarPanel; // Return the result
     }
 
     // Method to calculate temperature efficiency
@@ -127,7 +129,7 @@ public class ProjectSolarPanelService {
         return (100 + (ambientTemperature - 25) * tempCoefficientPMax) / 100;
     }
 
-    // Method to fetch the project solar panel configuration
+    // Method to fetch the solar panel configuration for the project
     public ProjectSolarPanel getProjectSolarPanel(String projectId) {
         Project project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new RuntimeException("Project not found: " + projectId));

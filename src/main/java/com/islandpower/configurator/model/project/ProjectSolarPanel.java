@@ -9,7 +9,7 @@ public class ProjectSolarPanel {
     private double totalCost; // Total cost of the selected panels
     private double efficiencyLoss; // Efficiency loss due to temperature or other factors
     private double estimatedDailyEnergyProduction; // Estimated daily energy production (Wh)
-    private List<MonthlySolarData> monthlyData; // Monthly data for the solar panel performance, excluding PSH and ambientTemperature
+    private List<MonthlySolarData> monthlyData; // Monthly data including PSH and ambientTemperature
 
     public ProjectSolarPanel() {
     }
@@ -82,9 +82,11 @@ public class ProjectSolarPanel {
         this.monthlyData = monthlyData;
     }
 
-    // Inner class to store data for each month (excluding PSH and ambient temperature)
+    // Inner class to store data for each month, including PSH and ambient temperature
     public static class MonthlySolarData {
         private int month; // 1-12
+        private Double psh; // Peak Sun Hours (Allow null)
+        private Double ambientTemperature; // Allow null
         private double totalDailyEnergy;
         private double requiredEnergy;
         private double requiredPower;
@@ -94,10 +96,12 @@ public class ProjectSolarPanel {
         private int numPanels;
         private double estimatedDailySolarEnergy;
 
-        public MonthlySolarData(int month, double totalDailyEnergy, double requiredEnergy, double requiredPower,
-                                double temperatureEfficiency, double efficiency, double deratedPower, int numPanels,
-                                double estimatedDailySolarEnergy) {
+        public MonthlySolarData(int month, Double psh, Double ambientTemperature, double totalDailyEnergy,
+                                double requiredEnergy, double requiredPower, double temperatureEfficiency,
+                                double efficiency, double deratedPower, int numPanels, double estimatedDailySolarEnergy) {
             this.month = month;
+            this.psh = (psh != null) ? psh : 0.0; // Set default value of 0.0 if psh is null
+            this.ambientTemperature = (ambientTemperature != null) ? ambientTemperature : 0.0; // Set default value of 0.0 if ambientTemperature is null
             this.totalDailyEnergy = totalDailyEnergy;
             this.requiredEnergy = requiredEnergy;
             this.requiredPower = requiredPower;
@@ -115,6 +119,22 @@ public class ProjectSolarPanel {
 
         public void setMonth(int month) {
             this.month = month;
+        }
+
+        public Double getPsh() {
+            return psh;
+        }
+
+        public void setPsh(Double psh) {
+            this.psh = psh;
+        }
+
+        public Double getAmbientTemperature() {
+            return ambientTemperature;
+        }
+
+        public void setAmbientTemperature(Double ambientTemperature) {
+            this.ambientTemperature = ambientTemperature;
         }
 
         public double getTotalDailyEnergy() {
