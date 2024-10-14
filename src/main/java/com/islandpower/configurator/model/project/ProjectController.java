@@ -1,36 +1,40 @@
 package com.islandpower.configurator.model.project;
 
 public class ProjectController {
-    private String controllerId; // ID vybraného regulátoru
-    private String type; // Typ regulátoru (např. PWM, MPPT)
-    private double requiredCurrent; // Požadovaný proud pro regulátor [A]
-    private double requiredPower; // Požadovaný výkon pro regulátor [W]
-    private int seriesModules; // Počet modulů v sérii
-    private int parallelModules; // Počet modulů paralelně
-    private boolean isValid; // Příznak, zda je regulátor validní pro tuto konfiguraci
-    private double adjustedOpenCircuitVoltage; // Upravené otevřené napětí pro MPPT
-    private double adjustedVoltageAtMaxPower; // Upravené napětí při maximálním výkonu pro MPPT
-    private double totalControllerEfficiency; // Účinnost regulátoru
+    private String controllerId; // ID of the selected controller
+    private String type; // Controller type (PWM, MPPT)
+    private double requiredCurrent; // Required current for the controller [A]
+    private double requiredPower; // Required power for the controller [W]
+    private int seriesModules; // Number of modules in series
+    private int parallelModules; // Number of modules in parallel
+    private int maxModulesInSerial; // Maximum number of modules in serial
+    private int minModulesInSerial; // Minimum number of modules in serial
+    private boolean isValid; // Indicates if the controller configuration is valid
+    private double adjustedOpenCircuitVoltage; // Adjusted open-circuit voltage for MPPT
+    private double adjustedVoltageAtMaxPower; // Adjusted voltage at maximum power for MPPT
+    private double totalControllerEfficiency; // Controller efficiency
 
-    public ProjectController() {
-    }
+    // Constructors, getters, and setters
+    public ProjectController() {}
 
     public ProjectController(String controllerId, String type, double requiredCurrent, double requiredPower,
-                             int seriesModules, int parallelModules, boolean isValid, double adjustedOpenCircuitVoltage,
-                             double adjustedVoltageAtMaxPower, double totalControllerEfficiency) {
+                             int seriesModules, int parallelModules, int maxModulesInSerial, int minModulesInSerial,
+                             boolean isValid, double adjustedOpenCircuitVoltage, double adjustedVoltageAtMaxPower,
+                             double totalControllerEfficiency) {
         this.controllerId = controllerId;
         this.type = type;
         this.requiredCurrent = requiredCurrent;
         this.requiredPower = requiredPower;
         this.seriesModules = seriesModules;
         this.parallelModules = parallelModules;
+        this.maxModulesInSerial = maxModulesInSerial;
+        this.minModulesInSerial = minModulesInSerial;
         this.isValid = isValid;
         this.adjustedOpenCircuitVoltage = adjustedOpenCircuitVoltage;
         this.adjustedVoltageAtMaxPower = adjustedVoltageAtMaxPower;
         this.totalControllerEfficiency = totalControllerEfficiency;
     }
 
-    // Gettery a Settery
     public String getControllerId() {
         return controllerId;
     }
@@ -77,6 +81,22 @@ public class ProjectController {
 
     public void setParallelModules(int parallelModules) {
         this.parallelModules = parallelModules;
+    }
+
+    public int getMaxModulesInSerial() {
+        return maxModulesInSerial;
+    }
+
+    public void setMaxModulesInSerial(int maxModulesInSerial) {
+        this.maxModulesInSerial = maxModulesInSerial;
+    }
+
+    public int getMinModulesInSerial() {
+        return minModulesInSerial;
+    }
+
+    public void setMinModulesInSerial(int minModulesInSerial) {
+        this.minModulesInSerial = minModulesInSerial;
     }
 
     public boolean isValid() {
