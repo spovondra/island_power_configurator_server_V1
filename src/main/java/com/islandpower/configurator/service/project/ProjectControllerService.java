@@ -66,23 +66,28 @@ public class ProjectControllerService {
             projectController = new ProjectController();
         }
 
-        double U_modul = solarPanel.getVmp();
-        double I_mp = solarPanel.getImp();
-        double I_sc = solarPanel.getIsc();
-        double P_rated = solarPanel.getpRated();
+        // Panel characteristics
+        double U_modul = solarPanel.getVmp(); // Vmp (Voltage at maximum power)
+        double I_sc = solarPanel.getIsc();    // Isc (Short-circuit current)
+        double P_rated = solarPanel.getpRated(); // Rated power of panel
+        double K_U_oc = solarPanel.getTempCoefficientVoc(); // Temp coefficient for Voc
+        double K_P_max = solarPanel.getTempCoefficientPMax(); // Temp coefficient for Pmax
+        double ambientMin = project.getSite().getMinTemperature();
+        double ambientMax = project.getSite().getMaxTemperature();
 
-        double U_oc_adjusted = calculateAdjustedOpenCircuitVoltage(solarPanel, project.getSite().getMinTemperature());
-        double U_mp_adjusted = calculateAdjustedVoltageAtMaxPower(solarPanel, project.getSite().getMaxTemperature());
+        // Adjusted Voc and Vmp based on temperatures
+        double U_oc_adjusted = calculateAdjustedOpenCircuitVoltage(solarPanel, ambientMin);
+        double U_mp_adjusted = calculateAdjustedVoltageAtMaxPower(solarPanel, ambientMax);
 
         if (controller.getType().equalsIgnoreCase("PWM")) {
-            calculatePWMConfiguration(systemVoltage, U_modul, P_rated, I_mp, I_sc, controller, projectController);
+            calculatePWMConfiguration(systemVoltage, U_modul, I_sc, controller, projectController);
         } else if (controller.getType().equalsIgnoreCase("MPPT")) {
-            calculateMPPTConfiguration(systemVoltage, solarPanel, controller, projectController, U_oc_adjusted, U_mp_adjusted);
+            calculateMPPTConfiguration(systemVoltage, U_mp_adjusted, U_oc_adjusted, P_rated, I_sc, controller, projectController);
         }
 
-        // Calculate Maximum and Minimum Modules in Serial
+        // Maximum and Minimum Modules in Series
         int maxModulesInSerial = (int) Math.floor(controller.getMaxVoltage() / U_oc_adjusted);
-        int minModulesInSerial = (int) Math.ceil(systemVoltage/ U_mp_adjusted);  // Assuming 12V as the minimum operating voltage
+        int minModulesInSerial = (int) Math.ceil(systemVoltage / U_mp_adjusted);
 
         projectController.setControllerId(controllerId);
         projectController.setType(controller.getType());
@@ -98,7 +103,7 @@ public class ProjectControllerService {
         return projectController;
     }
 
-    private void calculatePWMConfiguration(double systemVoltage, double U_modul, double P_rated, double I_mp, double I_sc, Controller controller, ProjectController projectController) {
+    private void calculatePWMConfiguration(double systemVoltage, double U_modul, double I_sc, Controller controller, ProjectController projectController) {
         int n_PWM_serial = Math.max((int) Math.floor(systemVoltage / U_modul), 1);
         int n_PWM_parallel = Math.max((int) Math.floor(controller.getCurrentRating() / (I_sc * SAFETY_FACTOR)), 1);
 
@@ -111,12 +116,9 @@ public class ProjectControllerService {
         projectController.setValid(valid);
     }
 
-    private void calculateMPPTConfiguration(double systemVoltage, SolarPanel solarPanel, Controller controller, ProjectController projectController, double U_oc_adjusted, double U_mp_adjusted) {
-        double P_rated = solarPanel.getpRated();
-        double I_mp = solarPanel.getImp();
-
+    private void calculateMPPTConfiguration(double systemVoltage, double U_mp_adjusted, double U_oc_adjusted, double P_rated, double I_sc, Controller controller, ProjectController projectController) {
         int n_MPPT_serial = Math.max((int) Math.floor(systemVoltage / U_mp_adjusted), 1);
-        int n_MPPT_parallel = Math.max((int) Math.floor(P_rated / (I_mp * U_mp_adjusted)), 1);
+        int n_MPPT_parallel = Math.max((int) Math.floor(controller.getRatedPower() / (P_rated * n_MPPT_serial)), 1);
 
         double requiredPower = K_CONTROLLER_OVERSIZE * n_MPPT_serial * P_rated;
 
@@ -133,14 +135,14 @@ public class ProjectControllerService {
         double K_U_oc = solarPanel.getTempCoefficientVoc();
         double voc = solarPanel.getVoc();
         double t_min = ambientMin - T_STC;
-        return voc + (K_U_oc * t_min * voc / 100);
+        return voc + (K_U_oc * t_min);
     }
 
     private double calculateAdjustedVoltageAtMaxPower(SolarPanel solarPanel, double ambientMax) {
         double K_P_max = solarPanel.getTempCoefficientPMax();
         double vmp = solarPanel.getVmp();
         double t_max = ambientMax - T_STC;
-        return vmp + (K_P_max * t_max * vmp / 100);
+        return vmp + (K_P_max * t_max);
     }
 
     public ProjectController getProjectController(String projectId) {
