@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -34,7 +35,15 @@ public class ProjectSolarPanelController {
         double panelOversizeCoefficient = ((Number) requestBody.get("panelOversizeCoefficient")).doubleValue();
         double batteryEfficiency = ((Number) requestBody.get("batteryEfficiency")).doubleValue();
         double cableEfficiency = ((Number) requestBody.get("cableEfficiency")).doubleValue();
-        List<Integer> selectedMonths = (List<Integer>) requestBody.get("selectedMonths");
+        List<?> selectedMonthsRaw = (List<?>) requestBody.get("selectedMonths");
+        List<Integer> selectedMonths = new ArrayList<>();
+        if (selectedMonthsRaw != null) {
+            for (Object item : selectedMonthsRaw) {
+                if (item instanceof Number) {
+                    selectedMonths.add(((Number) item).intValue());
+                }
+            }
+        }
         String installationType = (String) requestBody.get("installationType");
         double manufacturerTolerance = ((Number) requestBody.get("manufacturerTolerance")).doubleValue();
         double agingLoss = ((Number) requestBody.get("agingLoss")).doubleValue();

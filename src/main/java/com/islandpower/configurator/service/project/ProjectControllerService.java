@@ -44,6 +44,7 @@ public class ProjectControllerService {
 
         return controllerRepository.findAll().stream()
                 .filter(controller -> controller.getType().equalsIgnoreCase(regulatorType))
+                .filter(controller -> controller.getMinVoltage() <= systemVoltage && controller.getMaxVoltage() >= systemVoltage) // Compatibility filter
                 .collect(Collectors.toList());
     }
 
@@ -119,13 +120,14 @@ public class ProjectControllerService {
         if (n_serial * n_parallel < numPanels) {
             projectController.setSeriesModules(0);
             projectController.setParallelModules(0);
+
         } else {
             findOptimalPanelConfig(numPanels, n_serial, n_parallel, projectController);
         }
 
         projectController.setSeriesModules(n_serial);
         projectController.setParallelModules(n_parallel);
-        //projectController.setControllerCurrent(maxShortCircuitCurrent);
+        projectController.setRequiredCurrent(maxShortCircuitCurrent); // je to tak?
         projectController.setValid(controller.getCurrentRating() >= maxShortCircuitCurrent);
     }
 

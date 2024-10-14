@@ -2,7 +2,6 @@ package com.islandpower.configurator.model;
 
 import com.islandpower.configurator.model.project.Appliance;
 import com.islandpower.configurator.model.project.Site;
-import com.islandpower.configurator.model.project.SolarComponents;
 import com.islandpower.configurator.model.project.ConfigurationModel; // Import your new class
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -17,7 +16,6 @@ public class Project {
     private String name;
     private String userId;
     private Site site;
-    private SolarComponents solarComponents;
     private List<Appliance> appliances; // List of appliances
     private ConfigurationModel configurationModel; // New field for configuration details
 
@@ -52,14 +50,6 @@ public class Project {
 
     public void setSite(Site site) {
         this.site = site;
-    }
-
-    public SolarComponents getSolarComponents() {
-        return solarComponents;
-    }
-
-    public void setSolarComponents(SolarComponents solarComponents) {
-        this.solarComponents = solarComponents;
     }
 
     public List<Appliance> getAppliances() {

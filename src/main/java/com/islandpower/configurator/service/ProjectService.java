@@ -90,7 +90,6 @@ public class ProjectService {
 
         existingProject.setName(updatedProject.getName());
         existingProject.setSite(updatedProject.getSite());
-        existingProject.setSolarComponents(updatedProject.getSolarComponents());
         existingProject.setConfigurationModel(updatedProject.getConfigurationModel());
 
         return projectRepository.save(existingProject);
