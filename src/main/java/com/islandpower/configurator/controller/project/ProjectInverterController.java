@@ -1,6 +1,5 @@
 package com.islandpower.configurator.controller.project;
 
-import com.islandpower.configurator.dto.InverterDTO;
 import com.islandpower.configurator.model.Inverter;
 import com.islandpower.configurator.model.Project;
 import com.islandpower.configurator.model.project.ConfigurationModel;
@@ -15,7 +14,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/projects/{projectId}/inverters")
@@ -41,8 +42,25 @@ public class ProjectInverterController {
         logger.info("Inverter with ID: {} was successfully removed from project with ID: {} by user {} (ID: {})", inverterId, projectId, username, userId);
     }
 
+    @GetMapping("/voltage")
+    public ResponseEntity<Map<String, Double>> getVoltage(@PathVariable String projectId) {
+        Project project = projectRepository.findById(projectId)
+                .orElseThrow(() -> new RuntimeException("Project not found: " + projectId));
+
+        ConfigurationModel configModel = project.getConfigurationModel();
+        if (configModel == null) {
+            throw new RuntimeException("Configuration model not found for project: " + projectId);
+        }
+
+        Map<String, Double> response = new HashMap<>();
+        response.put("systemVoltage", configModel.getSystemVoltage() != 0 ? configModel.getSystemVoltage() : null);
+        response.put("recommendedSystemVoltage", configModel.getRecommendedSystemVoltage());
+
+        return ResponseEntity.ok(response);
+    }
+
     @GetMapping("/suitable")
-    public ResponseEntity<List<InverterDTO>> getSuitableInverters(
+    public ResponseEntity<List<Inverter>> getSuitableInverters(
             @PathVariable String projectId,
             @RequestParam double systemVoltage,
             @RequestParam double temperature) {
@@ -74,7 +92,7 @@ public class ProjectInverterController {
         double totalPeakAppliancePower = configModel.getProjectAppliance().getTotalAcPeakPower(); // Adjust if using DC peak power
 
         // Get suitable inverters based on the provided inputs
-        List<InverterDTO> suitableInverters = projectInverterService.getSuitableInverters(
+        List<Inverter> suitableInverters = projectInverterService.getSuitableInverters(
                 systemVoltage, temperature, totalAppliancePower, totalPeakAppliancePower);
 
         // Return the suitable inverters wrapped in a ResponseEntity
@@ -82,14 +100,12 @@ public class ProjectInverterController {
     }
 
     @PostMapping("/select-inverter/{inverterId}")
-    public ResponseEntity<Void> selectInverter(
+    public ResponseEntity<ProjectInverter> selectInverter(
             @PathVariable String projectId,
             @PathVariable String inverterId) {
 
-        // Delegate the logic to the service
-        projectInverterService.selectInverter(projectId, inverterId);
-
-        return ResponseEntity.noContent().build();
+        ProjectInverter updatedInverter = projectInverterService.selectInverter(projectId, inverterId);
+        return ResponseEntity.ok(updatedInverter);
     }
 
     @GetMapping("/")

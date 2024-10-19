@@ -1,6 +1,5 @@
 package com.islandpower.configurator.service.project;
 
-import com.islandpower.configurator.dto.InverterDTO;
 import com.islandpower.configurator.model.Inverter;
 import com.islandpower.configurator.model.project.ConfigurationModel;
 import com.islandpower.configurator.model.project.ProjectInverter;
@@ -41,10 +40,10 @@ public class ProjectInverterService {
     }
 
     // Fetch and filter inverters based on power requirements
-    public List<InverterDTO> getSuitableInverters(double systemVoltage, double temperature,
+    public List<Inverter> getSuitableInverters(double systemVoltage, double temperature,
                                                   double totalAppliancePower, double totalPeakAppliancePower) {
         List<Inverter> allInverters = inverterRepository.findAll();
-        List<InverterDTO> suitableInverterDTOs = new ArrayList<>();
+        List<Inverter> suitableInverterDTOs = new ArrayList<>();
 
         for (Inverter inverter : allInverters) {
             // Check if inverter voltage matches the system voltage
@@ -61,15 +60,7 @@ public class ProjectInverterService {
             // Check if the inverter can handle the total appliance power and peak power requirements
             if (isInverterPowerSufficient(continuousPower, totalAppliancePower)
                     && isInverterPeakPowerSufficient(peakPower, totalPeakAppliancePower)) {
-                InverterDTO inverterDTO = new InverterDTO(
-                        inverter.getId(),
-                        inverter.getName(),
-                        continuousPower,
-                        inverter.getMaxPower(),
-                        inverter.getEfficiency(),
-                        inverter.getVoltage()
-                );
-                suitableInverterDTOs.add(inverterDTO);
+                suitableInverterDTOs.add(inverter);
             }
         }
         return suitableInverterDTOs;
@@ -96,8 +87,7 @@ public class ProjectInverterService {
         return inverterPeakPower > totalPeakAppliancePower;
     }
 
-    // Select inverter and update project
-    public void selectInverter(String projectId, String inverterId) {
+    public ProjectInverter selectInverter(String projectId, String inverterId) {
         Project project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new RuntimeException("Project not found: " + projectId));
 
@@ -123,6 +113,9 @@ public class ProjectInverterService {
 
         // Save the project
         projectRepository.save(project);
+
+        // Return the updated ProjectInverter
+        return projectInverter;
     }
 
     // Calculate energy values for the project based on selected inverter
