@@ -17,7 +17,8 @@ public class Project {
     private String userId;
     private Site site;
     private List<Appliance> appliances; // List of appliances
-    private ConfigurationModel configurationModel; // New field for configuration details
+    private ConfigurationModel configurationModel; // Field for configuration details
+    private int lastCompletedStep; // Field for tracking the last completed step
 
     // Getters and Setters
     public String getId() {
@@ -66,5 +67,13 @@ public class Project {
 
     public void setConfigurationModel(ConfigurationModel configurationModel) {
         this.configurationModel = configurationModel;
+    }
+
+    public int getLastCompletedStep() {
+        return lastCompletedStep;
+    }
+
+    public void setLastCompletedStep(int lastCompletedStep) {
+        this.lastCompletedStep = lastCompletedStep;
     }
 }

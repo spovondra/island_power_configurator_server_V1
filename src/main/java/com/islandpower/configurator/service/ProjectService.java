@@ -129,4 +129,12 @@ public class ProjectService {
         // Save the updated project
         projectRepository.save(project);
     }
+
+    public void updateLastCompletedStep(String projectId, int step) {
+        Project project = projectRepository.findById(projectId)
+                .orElseThrow(() -> new RuntimeException("Project not found: " + projectId));
+
+        project.setLastCompletedStep(step);
+        projectRepository.save(project);
+    }
 }

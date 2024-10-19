@@ -86,6 +86,9 @@ public class ProjectControllerService {
         double U_oc_adjusted = calculateAdjustedOpenCircuitVoltage(solarPanel, ambientMin);
         double U_mp_adjusted = calculateAdjustedVoltageAtMaxPower(solarPanel, ambientMax);
 
+        projectController.setControllerId(controllerId);
+        projectController.setType(controller.getType());
+
         if (controller.getType().equalsIgnoreCase("PWM")) {
             calculatePWMConfig(systemVoltage, U_modul, I_sc, numPanels, controller, projectController);
         } else if (controller.getType().equalsIgnoreCase("MPPT")) {
