@@ -76,7 +76,7 @@ public class JwtUtil {
     }
 
     public Boolean isTokenRefreshable(String token) {
-        return !isTokenExpired(token); // You can add additional checks for refresh tokens here
+        return !isTokenExpired(token);
     }
 
     // Refresh the token by generating a new one if the refresh token is valid

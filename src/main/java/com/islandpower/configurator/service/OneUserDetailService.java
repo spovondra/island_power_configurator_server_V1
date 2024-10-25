@@ -34,10 +34,8 @@ public class OneUserDetailService implements UserDetailsService {
      * @return OneUser - The saved user object with encoded password
      */
     public OneUser saveUser(OneUser oneUser) {
-        String encodedPassword = passwordEncoder.encode(oneUser.getPassword()); // Encode the user's password
-        oneUser.setPassword(encodedPassword); // Set the encoded password
-        userRepository.save(oneUser); // Save the user to the repository
-        return oneUser; // Return the saved user
+        userRepository.save(oneUser);
+        return oneUser;
     }
 
     /**

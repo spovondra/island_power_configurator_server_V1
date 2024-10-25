@@ -45,11 +45,6 @@ public class ComponentController {
     @Autowired
     private InverterRepository inverterRepository;
 
-    /**
-     * Repository for managing Accessory entities.
-     */
-    @Autowired
-    private AccessoryRepository accessoryRepository;
 
     /**
      * Endpoint to retrieve all components of a specified type.
@@ -64,7 +59,6 @@ public class ComponentController {
             case "controllers" -> new ResponseEntity<>(controllerRepository.findAll(), HttpStatus.OK);
             case "batteries" -> new ResponseEntity<>(batteryRepository.findAll(), HttpStatus.OK);
             case "inverters" -> new ResponseEntity<>(inverterRepository.findAll(), HttpStatus.OK);
-            case "accessories" -> new ResponseEntity<>(accessoryRepository.findAll(), HttpStatus.OK);
             default ->
                     new ResponseEntity<>(HttpStatus.BAD_REQUEST); // Return a BAD_REQUEST status for invalid component type
         };
@@ -84,7 +78,6 @@ public class ComponentController {
             case "controllers" -> getComponent(controllerRepository.findById(id));
             case "batteries" -> getComponent(batteryRepository.findById(id));
             case "inverters" -> getComponent(inverterRepository.findById(id));
-            case "accessories" -> getComponent(accessoryRepository.findById(id));
             default ->
                     new ResponseEntity<>(HttpStatus.BAD_REQUEST); // Return a BAD_REQUEST status for invalid component type
         };
@@ -116,10 +109,6 @@ public class ComponentController {
                 Inverter inverter = (Inverter) componentData;
                 yield new ResponseEntity<>(inverterRepository.save(inverter), HttpStatus.CREATED);
             }
-            case "accessories" -> {
-                Accessory accessory = (Accessory) componentData;
-                yield new ResponseEntity<>(accessoryRepository.save(accessory), HttpStatus.CREATED);
-            }
             default ->
                     new ResponseEntity<>(HttpStatus.BAD_REQUEST); // Return a BAD_REQUEST status for invalid component type
         };
@@ -140,7 +129,6 @@ public class ComponentController {
             case "controllers" -> updateComponent(id, (Controller) componentData, controllerRepository);
             case "batteries" -> updateComponent(id, (Battery) componentData, batteryRepository);
             case "inverters" -> updateComponent(id, (Inverter) componentData, inverterRepository);
-            case "accessories" -> updateComponent(id, (Accessory) componentData, accessoryRepository);
             default ->
                     new ResponseEntity<>(HttpStatus.BAD_REQUEST); // Return a BAD_REQUEST status for invalid component type
         };
@@ -160,7 +148,6 @@ public class ComponentController {
             case "controllers" -> deleteComponent(id, controllerRepository);
             case "batteries" -> deleteComponent(id, batteryRepository);
             case "inverters" -> deleteComponent(id, inverterRepository);
-            case "accessories" -> deleteComponent(id, accessoryRepository);
             default ->
                     new ResponseEntity<>(HttpStatus.BAD_REQUEST); // Return a BAD_REQUEST status for invalid component type
         };
