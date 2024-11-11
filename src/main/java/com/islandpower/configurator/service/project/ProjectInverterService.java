@@ -123,18 +123,18 @@ public class ProjectInverterService {
         ConfigurationModel configModel = project.getConfigurationModel();
         ProjectInverter projectInverter = configModel.getProjectInverter();
 
-        double totalDailyDC = configModel.getProjectAppliance().getTotalDcEnergy();
-        double totalDailyAC = configModel.getProjectAppliance().getTotalAcEnergy();
+        double totalDailyDCEnergy = configModel.getProjectAppliance().getTotalDcEnergy();
+        double totalDailyACEnergy = configModel.getProjectAppliance().getTotalAcEnergy();
 
-        logger.info("Total Daily DC Energy: {}", totalDailyDC);
-        logger.info("Total Daily AC Energy: {}", totalDailyAC);
+        logger.info("Total Daily DC Energy: {}", totalDailyDCEnergy);
+        logger.info("Total Daily AC Energy: {}", totalDailyACEnergy);
 
         double inverterEfficiency = selectedInverter.getEfficiency() / 100.0;
         logger.info("Inverter Efficiency: {}%", selectedInverter.getEfficiency());
 
         // Calculate adjusted AC energy
-        double totalAdjustedAcEnergy = totalDailyAC / inverterEfficiency;
-        double totalDailyEnergy = totalDailyDC + totalAdjustedAcEnergy;
+        double totalAdjustedAcEnergy = totalDailyACEnergy / inverterEfficiency;
+        double totalDailyEnergy = totalDailyDCEnergy + totalAdjustedAcEnergy;
 
         logger.info("Total Adjusted AC Energy: {}", totalAdjustedAcEnergy);
         logger.info("Total Daily Energy: {}", totalDailyEnergy);
@@ -158,10 +158,19 @@ public class ProjectInverterService {
                 .orElseThrow(() -> new RuntimeException("Project not found: " + projectId));
 
         ConfigurationModel configModel = project.getConfigurationModel();
-        if (configModel == null || configModel.getProjectInverter() == null) {
+        if (configModel == null) {
+            logger.error("ConfigurationModel is missing for project ID: {}", projectId);
+            throw new RuntimeException("Configuration model not found for project: " + projectId);
+        }
+
+        ProjectInverter projectInverter = configModel.getProjectInverter();
+        if (projectInverter == null) {
+            logger.warn("ProjectInverter not found for project ID: {}", projectId);
             throw new RuntimeException("ProjectInverter not found for project: " + projectId);
         }
 
-        return configModel.getProjectInverter();
+        logger.info("ProjectInverter successfully retrieved for project ID: {}", projectId);
+        return projectInverter;
     }
+
 }

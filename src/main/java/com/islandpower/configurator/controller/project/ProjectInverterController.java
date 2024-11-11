@@ -88,7 +88,7 @@ public class ProjectInverterController {
         projectRepository.save(project);
 
         // Extract total appliance power and peak power from the ProjectAppliance object
-        double totalAppliancePower = configModel.getProjectAppliance().getTotalAcEnergy(); // Adjust as necessary if using DC
+        double totalAppliancePower = configModel.getProjectAppliance().getTotalAcPower(); // Adjust as necessary if using DC
         double totalPeakAppliancePower = configModel.getProjectAppliance().getTotalAcPeakPower(); // Adjust if using DC peak power
 
         // Get suitable inverters based on the provided inputs

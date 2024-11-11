@@ -35,16 +35,17 @@ public class AuthController {
     @Autowired
     private JwtUtil jwtUtil;
 
-    /**
-     * Endpoint to register a new user.
-     *
-     * @param user - The user object to be registered
-     * @return OneUser - The registered user object
-     */
     @PostMapping("/register")
-    public OneUser registerUser(@RequestBody OneUser user) {
+    public ResponseEntity<?> registerUser(@RequestBody OneUser user) {
+        // Check if the username already exists
+        Optional<OneUser> existingUser = userServices.getUserByUsername(user.getUsername());
+        if (existingUser.isPresent()) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Username already exists");
+        }
+
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        return userServices.saveUser(user);
+        OneUser savedUser = userServices.saveUser(user);
+        return ResponseEntity.ok(savedUser);
     }
 
     /**

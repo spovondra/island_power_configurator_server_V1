@@ -79,6 +79,8 @@ public class ProjectApplianceService {
             configModel.setProjectAppliance(projectAppliance);
         }
 
+        double totalAcPower = 0;
+        double totalDcPower = 0;
         double totalAcEnergy = 0;
         double totalDcEnergy = 0;
         double totalAcPeakPower = 0;
@@ -93,15 +95,19 @@ public class ProjectApplianceService {
 
                 // Null check before comparing appliance type
                 if (appliance.getType() != null && appliance.getType().equals("AC")) {
+                    totalAcPower += appliance.getPower();
                     totalAcEnergy += dailyEnergy;
                     totalAcPeakPower += appliance.getPeakPower() * appliance.getQuantity();
                 } else if (appliance.getType() != null && appliance.getType().equals("DC")) {
+                    totalDcPower += appliance.getPower();
                     totalDcEnergy += dailyEnergy;
                     totalDcPeakPower += appliance.getPeakPower() * appliance.getQuantity();
                 }
             }
         }
 
+        projectAppliance.setTotalAcPower(totalAcPower);
+        projectAppliance.setTotalDcPower(totalDcPower);
         projectAppliance.setTotalAcEnergy(totalAcEnergy);
         projectAppliance.setTotalDcEnergy(totalDcEnergy);
         projectAppliance.setTotalAcPeakPower(totalAcPeakPower);

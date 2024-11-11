@@ -8,7 +8,6 @@ import com.islandpower.configurator.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -38,16 +37,20 @@ public class ProjectService {
         Project project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new RuntimeException("Project not found: " + projectId));
 
-        if (!project.getUserId().equals(userId)) {
+        OneUser user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found: " + userId));
+
+        boolean isAdmin = user.getRole().contains("ADMIN");
+        if (!isAdmin && !project.getUserId().equals(userId)) {
             throw new RuntimeException("User does not have permission to delete this project.");
         }
 
         projectRepository.deleteById(projectId);
 
-        OneUser user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found: " + userId));
-        user.getProjects().remove(projectId);
-        userRepository.save(user);
+        if (!isAdmin) { // Only remove the project from the user's list if they are not an admin
+            user.getProjects().remove(projectId);
+            userRepository.save(user);
+        }
     }
 
     // Get all projects
@@ -67,7 +70,11 @@ public class ProjectService {
         Project project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new RuntimeException("Project not found: " + projectId));
 
-        if (!project.getUserId().equals(userId)) {
+        OneUser user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found: " + userId));
+
+        boolean isAdmin = user.getRole().contains("ADMIN");
+        if (!isAdmin && !project.getUserId().equals(userId)) {
             throw new RuntimeException("User does not have permission to access this project.");
         }
 
@@ -83,7 +90,6 @@ public class ProjectService {
                 .orElseThrow(() -> new RuntimeException("User not found: " + userId));
 
         boolean isAdmin = user.getRole().contains("ADMIN");
-
         if (!isAdmin && !existingProject.getUserId().equals(userId)) {
             throw new RuntimeException("User does not have permission to update this project.");
         }
@@ -98,23 +104,23 @@ public class ProjectService {
     public void updateSiteWithLocationData(String projectId, String userId, double latitude, double longitude,
                                            double[] minMaxTemperatures, int panelAngle, int panelAspect,
                                            boolean usedOptimalValues, List<Site.MonthlyData> monthlyData) {
-        // Fetch the project by ID
         Project project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new RuntimeException("Project not found: " + projectId));
 
-        // Check if the user has permission to update this project
-        if (!project.getUserId().equals(userId)) {
-            throw new RuntimeException("User does not have permission to access this project.");
+        OneUser user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found: " + userId));
+
+        boolean isAdmin = user.getRole().contains("ADMIN");
+        if (!isAdmin && !project.getUserId().equals(userId)) {
+            throw new RuntimeException("User does not have permission to update this project.");
         }
 
-        // Create a new Site object if it does not exist
         Site site = project.getSite();
         if (site == null) {
             site = new Site();
             project.setSite(site);
         }
 
-        // Set location data
         site.setLatitude(latitude);
         site.setLongitude(longitude);
         site.setMinTemperature(minMaxTemperatures[0]);
@@ -122,11 +128,8 @@ public class ProjectService {
         site.setPanelAngle(panelAngle);
         site.setPanelAspect(panelAspect);
         site.setUsedOptimalValues(usedOptimalValues);
-
-        // Create and set monthly irradiance list
         site.setMonthlyDataList(monthlyData);
 
-        // Save the updated project
         projectRepository.save(project);
     }
 
