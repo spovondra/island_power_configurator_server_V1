@@ -64,6 +64,7 @@ public class ProjectControllerService {
         int numPanels = project.getConfigurationModel().getProjectSolarPanel().getNumberOfPanels();
         double P_rated = solarPanel.getpRated();
         double I_sc = solarPanel.getIsc();
+        double I_mp = solarPanel.getImp();
         double U_modul = solarPanel.getVmp();
         double K_U_oc = solarPanel.getTempCoefficientVoc();
         double K_P_max = solarPanel.getTempCoefficientPMax();
@@ -90,9 +91,9 @@ public class ProjectControllerService {
         projectController.setType(controller.getType());
 
         if (controller.getType().equalsIgnoreCase("PWM")) {
-            calculatePWMConfig(systemVoltage, U_modul, I_sc, numPanels, controller, projectController);
+            calculatePWMConfig(systemVoltage, U_modul, I_mp, numPanels, controller, projectController);
         } else if (controller.getType().equalsIgnoreCase("MPPT")) {
-            calculateMPPTConfig(systemVoltage, U_modul, totalPanelPower, P_rated, I_sc, U_oc_adjusted, U_mp_adjusted, ambientMax, installationTemp, efficiency, controller, projectController, projectSolarPanel);
+            calculateMPPTConfig(systemVoltage, U_modul, totalPanelPower, P_rated, I_mp, U_oc_adjusted, U_mp_adjusted, ambientMax, installationTemp, efficiency, controller, projectController, projectSolarPanel);
         }
 
         projectRepository.save(project);
@@ -109,7 +110,7 @@ public class ProjectControllerService {
         };
     }
 
-    private void calculatePWMConfig(double systemVoltage, double U_modul, double I_sc, int numPanels, Controller controller, ProjectController projectController) {
+    private void calculatePWMConfig(double systemVoltage, double U_modul, double I_mp, int numPanels, Controller controller, ProjectController projectController) {
         int n_serial = (int) Math.floor(systemVoltage / U_modul);
         if (n_serial < 1) {
             n_serial = 1;
@@ -118,7 +119,7 @@ public class ProjectControllerService {
         }
 
         int maxShortCircuitCurrent = (int) controller.getCurrentRating();
-        int n_parallel = (int) Math.floor(maxShortCircuitCurrent / (I_sc * SAFETY_FACTOR));
+        int n_parallel = (int) Math.floor(maxShortCircuitCurrent / (I_mp * SAFETY_FACTOR));
 
         if (n_serial * n_parallel < numPanels) {
             projectController.setSeriesModules(0);
