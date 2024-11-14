@@ -13,7 +13,6 @@ public class Appliance {
     private double days; // Days per week
     private double peakPower; // in Watts
     private double energy; // Energy consumption calculated
-    private double cost; // New field for cost
 
     // Getters and Setters
     public String getId() {
@@ -86,13 +85,5 @@ public class Appliance {
 
     public void setEnergy(double energy) {
         this.energy = energy;
-    }
-
-    public double getCost() {
-        return cost;
-    }
-
-    public void setCost(double cost) {
-        this.cost = cost;
     }
 }

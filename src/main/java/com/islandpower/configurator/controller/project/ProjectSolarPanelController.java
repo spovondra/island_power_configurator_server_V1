@@ -32,9 +32,18 @@ public class ProjectSolarPanelController {
             @RequestBody Map<String, Object> requestBody) {
 
         String solarPanelId = (String) requestBody.get("solarPanelId");
-        double panelOversizeCoefficient = ((Number) requestBody.get("panelOversizeCoefficient")).doubleValue();
-        double batteryEfficiency = ((Number) requestBody.get("batteryEfficiency")).doubleValue();
-        double cableEfficiency = ((Number) requestBody.get("cableEfficiency")).doubleValue();
+
+        double panelOversizeCoefficient = requestBody.get("panelOversizeCoefficient") != null
+                ? ((Number) requestBody.get("panelOversizeCoefficient")).doubleValue()
+                : 0.0;
+        double batteryEfficiency = requestBody.get("batteryEfficiency") != null
+                ? ((Number) requestBody.get("batteryEfficiency")).doubleValue()
+                : 0.0;
+        double cableEfficiency = requestBody.get("cableEfficiency") != null
+                ? ((Number) requestBody.get("cableEfficiency")).doubleValue()
+                : 0.0;
+
+        // Safely handle selectedMonths
         List<?> selectedMonthsRaw = (List<?>) requestBody.get("selectedMonths");
         List<Integer> selectedMonths = new ArrayList<>();
         if (selectedMonthsRaw != null) {
@@ -44,10 +53,18 @@ public class ProjectSolarPanelController {
                 }
             }
         }
+
         String installationType = (String) requestBody.get("installationType");
-        double manufacturerTolerance = ((Number) requestBody.get("manufacturerTolerance")).doubleValue();
-        double agingLoss = ((Number) requestBody.get("agingLoss")).doubleValue();
-        double dirtLoss = ((Number) requestBody.get("dirtLoss")).doubleValue();
+
+        double manufacturerTolerance = requestBody.get("manufacturerTolerance") != null
+                ? ((Number) requestBody.get("manufacturerTolerance")).doubleValue()
+                : 0.0;
+        double agingLoss = requestBody.get("agingLoss") != null
+                ? ((Number) requestBody.get("agingLoss")).doubleValue()
+                : 0.0;
+        double dirtLoss = requestBody.get("dirtLoss") != null
+                ? ((Number) requestBody.get("dirtLoss")).doubleValue()
+                : 0.0;
 
         ProjectSolarPanel projectSolarPanel = projectSolarPanelService.calculateSolarPanelConfiguration(
                 projectId, solarPanelId, panelOversizeCoefficient, batteryEfficiency, cableEfficiency,
