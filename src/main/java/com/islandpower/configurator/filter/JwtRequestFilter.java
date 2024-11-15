@@ -1,5 +1,6 @@
 package com.islandpower.configurator.filter;
 
+import com.islandpower.configurator.exceptions.TokenExpiredException;
 import com.islandpower.configurator.service.OneUserDetailService;
 import com.islandpower.configurator.util.JwtUtil;
 import jakarta.servlet.FilterChain;
@@ -28,15 +29,6 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     @Autowired
     private JwtUtil jwtUtil;
 
-    /**
-     * Filters the incoming HTTP request to check and validate the JWT token.
-     *
-     * @param request  - The HTTP request
-     * @param response - The HTTP response
-     * @param chain    - The filter chain
-     * @throws ServletException - If an error occurs during filtering
-     * @throws IOException      - If an I/O error occurs during filtering
-     */
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws ServletException, IOException {
@@ -48,7 +40,21 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         // Check if the Authorization header contains a Bearer token
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
             jwt = authorizationHeader.substring(7);  // Extract the JWT token
-            username = jwtUtil.extractUsername(jwt); // Extract username from JWT
+            try {
+                username = jwtUtil.extractUsername(jwt); // Extract username from JWT
+            } catch (TokenExpiredException e) {
+                // Handle expired JWT token
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                response.setContentType("application/json");
+                response.getWriter().write("{\"error\": \"JWT token has expired. Please log in again.\"}");
+                return; // Stop further processing
+            } catch (RuntimeException e) {
+                // Handle other JWT errors (e.g., malformed token)
+                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                response.setContentType("application/json");
+                response.getWriter().write("{\"error\": \"Invalid JWT token.\"}");
+                return; // Stop further processing
+            }
         }
 
         // If username is present and no authentication is set in the security context
@@ -64,6 +70,6 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             }
         }
 
-        chain.doFilter(request, response); // Continue with the next filter in the chain
+        chain.doFilter(request, response); // continue with the next filter in the chain
     }
 }

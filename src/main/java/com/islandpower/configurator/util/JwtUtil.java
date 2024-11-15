@@ -1,5 +1,6 @@
 package com.islandpower.configurator.util;
 
+import com.islandpower.configurator.exceptions.TokenExpiredException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -16,13 +17,13 @@ import java.util.function.Function;
 public class JwtUtil {
 
     @Value("${jwt.secret}")
-    private String secretKey;  // Renamed for clarity and to follow Java naming conventions
+    private String secretKey;
 
     @Value("${jwt.expiration}")
     private long accessTokenExpirationMs;
 
     @Value("${jwt.refreshExpirationMs}")
-    private long refreshTokenExpirationMs; // For refresh token expiration period
+    private long refreshTokenExpirationMs;
 
     private SecretKey getSigningKey() {
         return Keys.hmacShaKeyFor(secretKey.getBytes());
@@ -42,14 +43,20 @@ public class JwtUtil {
     }
 
     private Claims extractAllClaims(String token) {
-        return Jwts.parserBuilder()
-                .setSigningKey(getSigningKey())
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
+        try {
+            return Jwts.parserBuilder()
+                    .setSigningKey(getSigningKey())
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody();
+        } catch (io.jsonwebtoken.ExpiredJwtException e) {
+            throw new TokenExpiredException("JWT token has expired.", e);
+        } catch (Exception e) {
+            throw new RuntimeException("Invalid JWT token.", e);
+        }
     }
 
-    private Boolean isTokenExpired(String token) {
+    public Boolean isTokenExpired(String token) {
         return extractExpiration(token).before(new Date());
     }
 
@@ -58,7 +65,7 @@ public class JwtUtil {
     }
 
     public String generateRefreshToken(UserDetails userDetails) {
-        return createToken(userDetails.getUsername(), refreshTokenExpirationMs); // Longer expiration for refresh token
+        return createToken(userDetails.getUsername(), refreshTokenExpirationMs);
     }
 
     private String createToken(String subject, long expirationMs) {
@@ -79,12 +86,11 @@ public class JwtUtil {
         return !isTokenExpired(token);
     }
 
-    // Refresh the token by generating a new one if the refresh token is valid
     public String refreshToken(String refreshToken) {
         if (isTokenRefreshable(refreshToken)) {
             String username = extractUsername(refreshToken);
             return createToken(username, accessTokenExpirationMs);
         }
-        return null; // Handle invalid refresh tokens
+        throw new com.islandpower.configurator.exceptions.TokenExpiredException("Refresh token is expired.");
     }
 }
