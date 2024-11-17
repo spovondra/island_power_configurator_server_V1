@@ -72,11 +72,25 @@ public class AuthController {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
         }
 
-        existingUser.setUsername(updatedOneUser.getUsername());
-        existingUser.setRole(updatedOneUser.getRole());
-        existingUser.setFirstName(updatedOneUser.getFirstName());
-        existingUser.setLastName(updatedOneUser.getLastName());
-        existingUser.setEmail(updatedOneUser.getEmail());
+        if (updatedOneUser.getUsername() != null && !updatedOneUser.getUsername().isEmpty()) {
+            existingUser.setUsername(updatedOneUser.getUsername());
+        }
+
+        if (updatedOneUser.getRole() != null && !updatedOneUser.getRole().isEmpty()) {
+            existingUser.setRole(updatedOneUser.getRole());
+        }
+
+        if (updatedOneUser.getFirstName() != null && !updatedOneUser.getFirstName().isEmpty()) {
+            existingUser.setFirstName(updatedOneUser.getFirstName());
+        }
+
+        if (updatedOneUser.getLastName() != null && !updatedOneUser.getLastName().isEmpty()) {
+            existingUser.setLastName(updatedOneUser.getLastName());
+        }
+
+        if (updatedOneUser.getEmail() != null && !updatedOneUser.getEmail().isEmpty()) {
+            existingUser.setEmail(updatedOneUser.getEmail());
+        }
 
         if (updatedOneUser.getPassword() != null && !updatedOneUser.getPassword().isEmpty()) {
             existingUser.setPassword(passwordEncoder.encode(updatedOneUser.getPassword()));
