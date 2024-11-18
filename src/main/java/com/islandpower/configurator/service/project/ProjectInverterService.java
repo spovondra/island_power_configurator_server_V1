@@ -9,7 +9,9 @@ import com.islandpower.configurator.repository.ProjectRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.*;
 
@@ -154,23 +156,13 @@ public class ProjectInverterService {
     }
 
     public ProjectInverter getProjectInverter(String projectId) {
-        Project project = projectRepository.findById(projectId)
-                .orElseThrow(() -> new RuntimeException("Project not found: " + projectId));
+        Project project = projectRepository.findById(projectId).orElse(null);
 
-        ConfigurationModel configModel = project.getConfigurationModel();
-        if (configModel == null) {
-            logger.error("ConfigurationModel is missing for project ID: {}", projectId);
-            throw new RuntimeException("Configuration model not found for project: " + projectId);
+        if (project == null || project.getConfigurationModel() == null ||
+                project.getConfigurationModel().getProjectInverter() == null) {
+            return null;
         }
 
-        ProjectInverter projectInverter = configModel.getProjectInverter();
-        if (projectInverter == null) {
-            logger.warn("ProjectInverter not found for project ID: {}", projectId);
-            throw new RuntimeException("ProjectInverter not found for project: " + projectId);
-        }
-
-        logger.info("ProjectInverter successfully retrieved for project ID: {}", projectId);
-        return projectInverter;
+        return project.getConfigurationModel().getProjectInverter();
     }
-
 }

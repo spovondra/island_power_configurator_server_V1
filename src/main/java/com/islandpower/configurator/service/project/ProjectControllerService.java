@@ -175,8 +175,11 @@ public class ProjectControllerService {
 
     public ProjectController getProjectController(String projectId) {
         Project project = findProjectById(projectId);
-        return Optional.ofNullable(project.getConfigurationModel().getProjectController())
-                .orElseThrow(() -> new RuntimeException("ProjectController not configured for project: " + projectId));
+        if (project.getConfigurationModel() == null || project.getConfigurationModel().getProjectController() == null) {
+            logger.warn("ProjectController not configured for project ID: {}", projectId);
+            return null;
+        }
+        return project.getConfigurationModel().getProjectController();
     }
 
     private Project findProjectById(String projectId) {

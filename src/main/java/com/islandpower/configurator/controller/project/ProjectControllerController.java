@@ -4,6 +4,7 @@ import com.islandpower.configurator.model.Controller;
 import com.islandpower.configurator.model.project.ProjectController;
 import com.islandpower.configurator.service.project.ProjectControllerService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -40,8 +41,12 @@ public class ProjectControllerController {
 
     // Get the current controller configuration for a specific project
     @GetMapping
-    public ResponseEntity<ProjectController> getProjectController(@PathVariable String projectId) {
-        ProjectController projectController = projectControllerService.getProjectController(projectId);
-        return ResponseEntity.ok(projectController);
+    public ResponseEntity<?> getProjectController(@PathVariable String projectId) {
+        try {
+            ProjectController projectController = projectControllerService.getProjectController(projectId);
+            return ResponseEntity.ok(projectController);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
     }
 }

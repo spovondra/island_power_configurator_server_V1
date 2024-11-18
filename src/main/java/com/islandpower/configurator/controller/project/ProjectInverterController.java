@@ -111,6 +111,11 @@ public class ProjectInverterController {
     @GetMapping("/")
     public ResponseEntity<ProjectInverter> getProjectInverter(@PathVariable String projectId) {
         ProjectInverter projectInverter = projectInverterService.getProjectInverter(projectId);
+
+        if (projectInverter == null) {
+            return ResponseEntity.ok(null);
+        }
+
         return ResponseEntity.ok(projectInverter);
     }
 }

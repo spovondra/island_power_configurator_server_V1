@@ -1,7 +1,7 @@
 package com.islandpower.configurator.exceptions;
 
 /**
- * Výjimka pro vypršení JWT tokenu.
+ * Výjimka po vypršení JWT tokenu.
  */
 public class TokenExpiredException extends RuntimeException {
     public TokenExpiredException(String message) {
