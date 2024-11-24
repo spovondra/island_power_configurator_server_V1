@@ -59,8 +59,9 @@ public class ProjectSolarPanelService {
         List<ProjectSolarPanel.MonthlySolarData> monthlyCalculations = new ArrayList<>();
 
         int maxPanelsRequired = 0;
-        double totalDailyEnergyProduction = 0;
+        double totalDailyEnergySum = 0;
         double finalEfficiency = 0.0;
+        int monthsCount = monthlyDataList.size();
 
         // Perform calculations for each selected month
         for (Site.MonthlyData monthlyData : monthlyDataList) {
@@ -104,9 +105,11 @@ public class ProjectSolarPanelService {
                         estimatedDailySolarEnergy
                 );
                 monthlyCalculations.add(monthlySolarData);
-                totalDailyEnergyProduction += estimatedDailySolarEnergy;
+                totalDailyEnergySum += estimatedDailySolarEnergy;
             }
         }
+
+        double averageDailyProduction = totalDailyEnergySum / monthsCount;
 
         // Get the configuration model
         ConfigurationModel configModel = project.getConfigurationModel();
@@ -126,7 +129,7 @@ public class ProjectSolarPanelService {
         projectSolarPanel.setNumberOfPanels(maxPanelsRequired);
         projectSolarPanel.setTotalPowerGenerated(selectedPanel.getpRated() * maxPanelsRequired);
         projectSolarPanel.setEfficiencyLoss(1 - finalEfficiency); // Store efficiency loss as 1 - final efficiency
-        projectSolarPanel.setEstimatedDailyEnergyProduction(totalDailyEnergyProduction);
+        projectSolarPanel.setEstimatedDailyEnergyProduction(averageDailyProduction);
         projectSolarPanel.setPanelOversizeCoefficient(panelOversizeCoefficient);
         projectSolarPanel.setBatteryEfficiency(batteryEfficiency);
         projectSolarPanel.setCableEfficiency(cableEfficiency);
