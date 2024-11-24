@@ -65,14 +65,21 @@ public class ProjectControllerService {
         logger.info("Ambient Max Temperature: {}", ambientMax);
         logger.info("Installation Temperature Increase: {}", installationTemp);
 
+        // Výpočet upravených napětí
         double U_oc_adjusted = calculateAdjustedOpenCircuitVoltage(solarPanel, ambientMin, installationTemp);
         double U_mp_adjusted = calculateAdjustedVoltageAtMaxPower(solarPanel, ambientMax, installationTemp);
 
         logger.info("Adjusted Open Circuit Voltage (Voc): {}", U_oc_adjusted);
         logger.info("Adjusted Voltage at Max Power (Vmp): {}", U_mp_adjusted);
 
+        // Načtení nebo vytvoření ProjectController
         ProjectController projectController = Optional.ofNullable(project.getConfigurationModel().getProjectController())
                 .orElseGet(ProjectController::new);
+
+        projectController.setControllerId(controllerId);
+        projectController.setType(controller.getType());
+        projectController.setAdjustedOpenCircuitVoltage(U_oc_adjusted);
+        projectController.setAdjustedVoltageAtMaxPower(U_mp_adjusted);
 
         if (controller.getType().equalsIgnoreCase("PWM")) {
             configurePWMController(systemVoltage, solarPanel.getVmp(), I_mp, numPanels, controller, projectController);
@@ -175,9 +182,9 @@ public class ProjectControllerService {
 
     public ProjectController getProjectController(String projectId) {
         Project project = findProjectById(projectId);
-        if (project.getConfigurationModel() == null || project.getConfigurationModel().getProjectController() == null) {
-            logger.warn("ProjectController not configured for project ID: {}", projectId);
-            return null;
+        if (project.getConfigurationModel().getProjectController() == null) {
+            logger.warn("ProjectController is not configured for project: {}", projectId);
+            return new ProjectController();
         }
         return project.getConfigurationModel().getProjectController();
     }

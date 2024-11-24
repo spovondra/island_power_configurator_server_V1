@@ -133,11 +133,6 @@ public class ProjectBatteryService {
         // C_batteryDOD = C_battery * DOD
         double batteryCapacityDOD = selectedBattery.getCapacity() * selectedBattery.getDod();
 
-        // Check if battery capacity with DOD is greater than or equal to required capacity
-        if (batteryCapacityDOD < requiredCapacity) {
-            throw new RuntimeException("Selected battery does not meet the required capacity.");
-        }
-
         // Calculate the number of parallel batteries required
         // n_batt_parallel = C_require / C_batteryDOD
         int parallelBatteries = (int) Math.ceil(requiredCapacity / batteryCapacityDOD);

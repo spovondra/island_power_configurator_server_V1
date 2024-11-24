@@ -12,15 +12,13 @@ public class ProjectController {
     private boolean isValid; // Indicates if the controller configuration is valid
     private double adjustedOpenCircuitVoltage; // Adjusted open-circuit voltage for MPPT
     private double adjustedVoltageAtMaxPower; // Adjusted voltage at maximum power for MPPT
-    private double totalControllerEfficiency; // Controller efficiency
 
     // Constructors, getters, and setters
     public ProjectController() {}
 
     public ProjectController(String controllerId, String type, double requiredCurrent, double requiredPower,
                              int seriesModules, int parallelModules, int maxModulesInSerial, int minModulesInSerial,
-                             boolean isValid, double adjustedOpenCircuitVoltage, double adjustedVoltageAtMaxPower,
-                             double totalControllerEfficiency) {
+                             boolean isValid, double adjustedOpenCircuitVoltage, double adjustedVoltageAtMaxPower) {
         this.controllerId = controllerId;
         this.type = type;
         this.requiredCurrent = requiredCurrent;
@@ -32,7 +30,6 @@ public class ProjectController {
         this.isValid = isValid;
         this.adjustedOpenCircuitVoltage = adjustedOpenCircuitVoltage;
         this.adjustedVoltageAtMaxPower = adjustedVoltageAtMaxPower;
-        this.totalControllerEfficiency = totalControllerEfficiency;
     }
 
     public String getControllerId() {
@@ -121,13 +118,5 @@ public class ProjectController {
 
     public void setAdjustedVoltageAtMaxPower(double adjustedVoltageAtMaxPower) {
         this.adjustedVoltageAtMaxPower = adjustedVoltageAtMaxPower;
-    }
-
-    public double getTotalControllerEfficiency() {
-        return totalControllerEfficiency;
-    }
-
-    public void setTotalControllerEfficiency(double totalControllerEfficiency) {
-        this.totalControllerEfficiency = totalControllerEfficiency;
     }
 }
