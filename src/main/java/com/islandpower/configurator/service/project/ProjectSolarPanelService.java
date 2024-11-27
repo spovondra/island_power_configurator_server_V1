@@ -85,13 +85,8 @@ public class ProjectSolarPanelService {
                 double requiredPower = (requiredEnergy / psh) * panelOversizeCoefficient;
 
                 // Validate power requirements with battery constraints
-                if (requiredPower > maxChargingPower) {
-                    throw new RuntimeException(String.format("Required power (%.2f W) exceeds max charging power (%.2f W)", requiredPower, maxChargingPower));
-                }
-
-                if (Math.abs(requiredPower - optimalChargingPower) > 0.1 * optimalChargingPower) {
-                    logger.warn(String.format("Required power (%.2f W) significantly differs from optimal charging power (%.2f W).", requiredPower, optimalChargingPower));
-                }
+                String statusMessage = getString(requiredPower, maxChargingPower, optimalChargingPower);
+                project.getConfigurationModel().getProjectSolarPanel().setStatusMessage(statusMessage);
 
                 // Calculate temperature efficiency for solar panels
                 double tempEfficiencyFactor = calculateTemperatureEfficiency(selectedPanel, ambientTemperature, installationType);
@@ -164,6 +159,16 @@ public class ProjectSolarPanelService {
         projectRepository.save(project);
 
         return projectSolarPanel;
+    }
+
+    private static String getString(double requiredPower, double maxChargingPower, double optimalChargingPower) {
+        String statusMessage = "Configuration calculated successfully.";
+        if (requiredPower > maxChargingPower) {
+            statusMessage = String.format("Error: Required power (%.2f W) exceeds max charging power (%.2f W).", requiredPower, maxChargingPower);
+        } else if (Math.abs(requiredPower - optimalChargingPower) > 0.1 * optimalChargingPower) {
+            statusMessage = String.format("Warning: Required power (%.2f W) significantly differs from optimal charging power (%.2f W).", requiredPower, optimalChargingPower);
+        }
+        return statusMessage;
     }
 
     // Method to calculate temperature efficiency

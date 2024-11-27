@@ -20,6 +20,7 @@ public class ProjectSolarPanel {
     private String installationType; // Installation type (ground, roof_angle, parallel_greater_150mm, etc.)
 
     private List<MonthlySolarData> monthlyData; // Monthly data including PSH and ambientTemperature
+    private String statusMessage;
 
     public ProjectSolarPanel() {
     }
@@ -27,7 +28,7 @@ public class ProjectSolarPanel {
     public ProjectSolarPanel(String solarPanelId, int numberOfPanels, double totalPowerGenerated, double totalCost,
                              double efficiencyLoss, double estimatedDailyEnergyProduction, double panelOversizeCoefficient,
                              double batteryEfficiency, double cableEfficiency, double manufacturerTolerance,
-                             double agingLoss, double dirtLoss, String installationType, List<MonthlySolarData> monthlyData) {
+                             double agingLoss, double dirtLoss, String installationType, List<MonthlySolarData> monthlyData, String statusMessage) {
         this.solarPanelId = solarPanelId;
         this.numberOfPanels = numberOfPanels;
         this.totalPowerGenerated = totalPowerGenerated;
@@ -42,6 +43,7 @@ public class ProjectSolarPanel {
         this.dirtLoss = dirtLoss;
         this.installationType = installationType;
         this.monthlyData = monthlyData;
+        this.statusMessage = statusMessage;
     }
 
     // Getters and Setters
@@ -155,6 +157,14 @@ public class ProjectSolarPanel {
 
     public void setMonthlyData(List<MonthlySolarData> monthlyData) {
         this.monthlyData = monthlyData;
+    }
+
+    public String getStatusMessage() {
+        return statusMessage;
+    }
+
+    public void setStatusMessage(String statusMessage) {
+        this.statusMessage = statusMessage;
     }
 
     // Inner class to store data for each month, including PSH and ambient temperature

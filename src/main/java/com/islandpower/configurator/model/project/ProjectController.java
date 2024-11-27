@@ -12,6 +12,7 @@ public class ProjectController {
     private boolean isValid; // Indicates if the controller configuration is valid
     private double adjustedOpenCircuitVoltage; // Adjusted open-circuit voltage for MPPT
     private double adjustedVoltageAtMaxPower; // Adjusted voltage at maximum power for MPPT
+    private String statusMessage;
 
     // Constructors, getters, and setters
     public ProjectController() {}
@@ -118,5 +119,13 @@ public class ProjectController {
 
     public void setAdjustedVoltageAtMaxPower(double adjustedVoltageAtMaxPower) {
         this.adjustedVoltageAtMaxPower = adjustedVoltageAtMaxPower;
+    }
+
+    public String getStatusMessage() {
+        return statusMessage;
+    }
+
+    public void setStatusMessage(String statusMessage) {
+        this.statusMessage = statusMessage;
     }
 }

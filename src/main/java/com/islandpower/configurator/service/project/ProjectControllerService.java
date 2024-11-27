@@ -59,6 +59,7 @@ public class ProjectControllerService {
         double installationTemp = getInstallationTemperatureIncrease(projectSolarPanel.getInstallationType());
         double ratedPower = controller.getRatedPower();
         double I_mp = solarPanel.getImp();
+        double I_sc = solarPanel.getIsc();
 
         logger.info("System Voltage: {}", systemVoltage);
         logger.info("Ambient Min Temperature: {}", ambientMin);
@@ -82,7 +83,7 @@ public class ProjectControllerService {
         projectController.setAdjustedVoltageAtMaxPower(U_mp_adjusted);
 
         if (controller.getType().equalsIgnoreCase("PWM")) {
-            configurePWMController(systemVoltage, solarPanel.getVmp(), I_mp, numPanels, controller, projectController);
+            configurePWMController(systemVoltage, solarPanel.getVmp(), I_mp, I_sc, numPanels, controller, projectController);
         } else if (controller.getType().equalsIgnoreCase("MPPT")) {
             configureMPPTController(systemVoltage, ratedPower, solarPanel.getpRated(), numPanels, U_oc_adjusted, U_mp_adjusted, I_mp, controller, projectController);
         }
@@ -101,7 +102,7 @@ public class ProjectControllerService {
         return suitable;
     }
 
-    private void configurePWMController(double systemVoltage, double U_vmp, double I_mp, int numPanels, Controller controller, ProjectController projectController) {
+    private void configurePWMController(double systemVoltage, double U_vmp, double I_mp, double I_sc, int numPanels, Controller controller, ProjectController projectController) {
         // Výpočet počtu modulů v sérii
         int n_serial = (int) Math.floor(systemVoltage / U_vmp);
         logger.info("Calculated PWM Serial Modules (n_serial): {}", n_serial);
@@ -116,7 +117,7 @@ public class ProjectControllerService {
         projectController.setParallelModules(n_parallel);
 
         // Validace konfigurace
-        double requiredCurrent = K_CONTROLLER_OVERSIZE * n_parallel * I_mp;
+        double requiredCurrent = K_CONTROLLER_OVERSIZE * n_parallel * I_sc;
         boolean isValid = controller.getCurrentRating() >= requiredCurrent;
         projectController.setRequiredCurrent(requiredCurrent);
         projectController.setValid(isValid);
@@ -124,7 +125,10 @@ public class ProjectControllerService {
         logger.info("PWM Configuration - Serial Modules: {}, Parallel Modules: {}, Required Current: {}, Valid Configuration: {}", n_serial, n_parallel, requiredCurrent, isValid);
     }
 
-    private void configureMPPTController(double systemVoltage, double ratedPower, double P_rated, int numPanels, double U_oc_adjusted, double U_mp_adjusted, double I_mp, Controller controller, ProjectController projectController) {
+    private void configureMPPTController(double systemVoltage, double ratedPower, double P_rated, int numPanels,
+                                         double U_oc_adjusted, double U_mp_adjusted, double I_mp,
+                                         Controller controller, ProjectController projectController) {
+
         // Výpočet maximálního a minimálního počtu modulů v sérii
         int maxSerial = (int) Math.floor(controller.getMaxVoltage() / U_oc_adjusted);
         int minSerial = (int) Math.ceil(controller.getMinVoltage() / U_mp_adjusted);
@@ -138,8 +142,35 @@ public class ProjectControllerService {
         double requiredCurrent = totalPower / systemVoltage;
 
         // Výpočet počtu modulů paralelně
-        int n_parallel = (int) Math.floor((ratedPower)/(I_mp*U_mp_adjusted));
-        logger.info("Calculated Parallel Modules (n_parallel): {}; P_rated: {} ", n_parallel, ratedPower);
+        int n_parallel = (int) Math.floor((ratedPower) / (I_mp * U_mp_adjusted));
+        logger.info("Calculated Parallel Modules (n_parallel): {}; P_rated: {}", n_parallel, ratedPower);
+
+        // Validace: kontrola maximálního napětí regulátoru
+        if (controller.getMaxVoltage() < U_oc_adjusted * n_serial) {
+            logger.error("Adjusted open circuit voltage exceeds controller's maximum voltage.");
+            projectController.setStatusMessage(
+                    String.format("Error: Adjusted open circuit voltage (%.2f V) exceeds controller's maximum voltage (%.2f V).",
+                            U_oc_adjusted * n_serial, controller.getMaxVoltage()));
+            projectController.setValid(false);
+            return;
+        }
+
+        // Validace: kontrola výkonu panelů
+        if (totalPower > systemVoltage * controller.getCurrentRating()) {
+            logger.error("Derated power exceeds controller's capacity.");
+            projectController.setStatusMessage(
+                    String.format("Error: Derated power (%.2f W) exceeds controller's capacity (%.2f W).",
+                            totalPower, systemVoltage * controller.getCurrentRating()));
+            projectController.setValid(false);
+            return;
+        } else if (totalPower > 0.9 * systemVoltage * controller.getCurrentRating()) {
+            logger.warn("Derated power is close to controller's maximum capacity.");
+            projectController.setStatusMessage(
+                    String.format("Warning: Derated power (%.2f W) is close to controller's maximum capacity (%.2f W).",
+                            totalPower, systemVoltage * controller.getCurrentRating()));
+        } else {
+            projectController.setStatusMessage("Configuration is valid.");
+        }
 
         // Nastavení hodnot do ProjectController objektu
         projectController.setSeriesModules(n_serial);
@@ -147,12 +178,14 @@ public class ProjectControllerService {
         projectController.setMaxModulesInSerial(maxSerial);
         projectController.setMinModulesInSerial(minSerial);
         projectController.setRequiredCurrent(requiredCurrent);
+        projectController.setRequiredPower(totalPower);
 
         // Validace konfigurace
         boolean isValid = totalPower <= ratedPower && requiredCurrent <= controller.getCurrentRating();
         projectController.setValid(isValid);
 
-        logger.info("MPPT Configuration - Max Serial: {}, Min Serial: {}, Serial Modules: {}, Parallel Modules: {}, Required Current: {}, Total Power: {}, Valid Configuration: {}", maxSerial, minSerial, n_serial, n_parallel, requiredCurrent, totalPower, isValid);
+        logger.info("MPPT Configuration - Max Serial: {}, Min Serial: {}, Serial Modules: {}, Parallel Modules: {}, Required Current: {}, Total Power: {}, Valid Configuration: {}",
+                maxSerial, minSerial, n_serial, n_parallel, requiredCurrent, totalPower, isValid);
     }
 
     private double calculateAdjustedOpenCircuitVoltage(SolarPanel solarPanel, double ambientMin, double installationTemp) {
