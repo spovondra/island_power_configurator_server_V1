@@ -37,6 +37,7 @@ public class ProjectSolarPanelService {
     }
 
     // Calculate and save the solar panel configuration
+    // Calculate and save the solar panel configuration
     public ProjectSolarPanel calculateSolarPanelConfiguration(String projectId, String solarPanelId,
                                                               double panelOversizeCoefficient, double batteryEfficiency,
                                                               double cableEfficiency, List<Integer> selectedMonths,
@@ -63,6 +64,14 @@ public class ProjectSolarPanelService {
         double finalEfficiency = 0.0;
         int monthsCount = monthlyDataList.size();
 
+        // Fetch ProjectBattery configuration
+        if (project.getConfigurationModel().getProjectBattery() == null) {
+            throw new RuntimeException("ProjectBattery configuration not found for project: " + projectId);
+        }
+
+        double maxChargingPower = project.getConfigurationModel().getProjectBattery().getMaxChargingPower();
+        double optimalChargingPower = project.getConfigurationModel().getProjectBattery().getOptimalChargingPower();
+
         // Perform calculations for each selected month
         for (Site.MonthlyData monthlyData : monthlyDataList) {
             if (selectedMonths.contains(monthlyData.getMonth())) {
@@ -74,6 +83,15 @@ public class ProjectSolarPanelService {
 
                 // Calculate required output power from solar panels
                 double requiredPower = (requiredEnergy / psh) * panelOversizeCoefficient;
+
+                // Validate power requirements with battery constraints
+                if (requiredPower > maxChargingPower) {
+                    throw new RuntimeException(String.format("Required power (%.2f W) exceeds max charging power (%.2f W)", requiredPower, maxChargingPower));
+                }
+
+                if (Math.abs(requiredPower - optimalChargingPower) > 0.1 * optimalChargingPower) {
+                    logger.warn(String.format("Required power (%.2f W) significantly differs from optimal charging power (%.2f W).", requiredPower, optimalChargingPower));
+                }
 
                 // Calculate temperature efficiency for solar panels
                 double tempEfficiencyFactor = calculateTemperatureEfficiency(selectedPanel, ambientTemperature, installationType);
