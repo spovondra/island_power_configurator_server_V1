@@ -46,11 +46,8 @@ public class ProjectService {
         }
 
         projectRepository.deleteById(projectId);
-
-        if (!isAdmin) { // Only remove the project from the user's list if they are not an admin
-            user.getProjects().remove(projectId);
-            userRepository.save(user);
-        }
+        user.getProjects().remove(projectId);
+        userRepository.save(user);
     }
 
     // Get all projects

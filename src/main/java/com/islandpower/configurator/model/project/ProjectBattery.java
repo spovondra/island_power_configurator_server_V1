@@ -2,22 +2,24 @@ package com.islandpower.configurator.model.project;
 
 public class ProjectBattery {
     private String batteryId;
-    private String type; // New field for battery type
-    private int temperature; // New field for temperature
-    private double batteryCapacityDod;
-    private int parallelBatteries;
-    private int seriesBatteries;
-    private double requiredBatteryCapacity;
-    private double batteryAutonomy;
-    private double totalAvailableCapacity;
-    private double operationalDays;
+    private String type; // Battery type
+    private int temperature; // Operating temperature
+    private double batteryCapacityDod; // Battery capacity adjusted for depth of discharge (Ah)
+    private int parallelBatteries; // Number of parallel batteries
+    private int seriesBatteries; // Number of series batteries
+    private double requiredBatteryCapacity; // Required capacity (Ah)
+    private double batteryAutonomy; // Autonomy days
+    private double totalAvailableCapacity; // Total available capacity (Ah)
+    private double operationalDays; // Calculated operational days
+    private double maxChargingPower; // Maximum charging power (W)
+    private double optimalChargingPower; // Optimal charging power (W)
 
     public ProjectBattery() {
     }
 
     public ProjectBattery(String batteryId, String type, int temperature, double batteryCapacityDod, int parallelBatteries,
                           int seriesBatteries, double requiredBatteryCapacity, double batteryAutonomy, double totalAvailableCapacity,
-                          double operationalDays) {
+                          double operationalDays, double maxChargingPower, double optimalChargingPower) {
         this.batteryId = batteryId;
         this.type = type;
         this.temperature = temperature;
@@ -28,9 +30,12 @@ public class ProjectBattery {
         this.batteryAutonomy = batteryAutonomy;
         this.totalAvailableCapacity = totalAvailableCapacity;
         this.operationalDays = operationalDays;
+        this.maxChargingPower = maxChargingPower;
+        this.optimalChargingPower = optimalChargingPower;
     }
 
     // Getters and Setters
+
     public String getBatteryId() {
         return batteryId;
     }
@@ -109,5 +114,21 @@ public class ProjectBattery {
 
     public void setOperationalDays(double operationalDays) {
         this.operationalDays = operationalDays;
+    }
+
+    public double getMaxChargingPower() {
+        return maxChargingPower;
+    }
+
+    public void setMaxChargingPower(double maxChargingPower) {
+        this.maxChargingPower = maxChargingPower;
+    }
+
+    public double getOptimalChargingPower() {
+        return optimalChargingPower;
+    }
+
+    public void setOptimalChargingPower(double optimalChargingPower) {
+        this.optimalChargingPower = optimalChargingPower;
     }
 }

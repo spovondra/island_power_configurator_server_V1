@@ -19,10 +19,10 @@ public class ProjectApplianceService {
     @Autowired
     private ProjectRepository projectRepository;
 
-    // Add or update an appliance in a project
+    // Přidání nebo aktualizace spotřebiče v projektu
     public Project addOrUpdateAppliance(String projectId, Appliance appliance) {
         Project project = projectRepository.findById(projectId)
-                .orElseThrow(() -> new RuntimeException("Project not found: " + projectId));
+                .orElseThrow(() -> new RuntimeException("Projekt nebyl nalezen: " + projectId));
 
         List<Appliance> appliances = project.getAppliances();
         if (appliances == null) {
@@ -30,7 +30,7 @@ public class ProjectApplianceService {
             project.setAppliances(appliances);
         }
 
-        // Ensure appliance ID is set
+        // Zajištění ID spotřebiče
         if (appliance.getId() == null || appliance.getId().isEmpty()) {
             appliance.setId(UUID.randomUUID().toString());
         }
@@ -44,29 +44,29 @@ public class ProjectApplianceService {
         }
         appliances.add(appliance);
 
-        // Recalculate energy consumption
-        calculateEnergyConsumption(project);
+        // Přepočet energie
+        calculateEnergy(project);
 
         return projectRepository.save(project);
     }
 
-    // Remove appliance from a project
+    // Odstranění spotřebiče z projektu
     public void removeAppliance(String projectId, String applianceId) {
         Project project = projectRepository.findById(projectId)
-                .orElseThrow(() -> new RuntimeException("Project not found: " + projectId));
+                .orElseThrow(() -> new RuntimeException("Projekt nebyl nalezen: " + projectId));
 
         List<Appliance> appliances = project.getAppliances();
         if (appliances != null) {
             appliances.removeIf(appliance -> appliance.getId().equals(applianceId));
         }
 
-        calculateEnergyConsumption(project);
+        calculateEnergy(project);
 
         projectRepository.save(project);
     }
 
-    // Calculate total energy consumption for a project
-    private void calculateEnergyConsumption(Project project) {
+    // Výpočet celkové energie projektu
+    private void calculateEnergy(Project project) {
         ConfigurationModel configModel = project.getConfigurationModel();
         if (configModel == null) {
             configModel = new ConfigurationModel();
@@ -81,26 +81,31 @@ public class ProjectApplianceService {
 
         double totalAcPower = 0;
         double totalDcPower = 0;
-        double totalAcEnergy = 0;
-        double totalDcEnergy = 0;
+        double totalAcEnergyDaily = 0; // Celková denní energie AC
+        double totalDcEnergyDaily = 0; // Celková denní energie DC
         double totalAcPeakPower = 0;
         double totalDcPeakPower = 0;
 
         List<Appliance> appliances = project.getAppliances();
         if (appliances != null) {
             for (Appliance appliance : appliances) {
-                // Multiply the energy and peak power by the quantity of appliances
-                double dailyEnergy = appliance.getPower() * appliance.getHours() * appliance.getDays() / 7 * appliance.getQuantity(); // Daily energy calculation
-                appliance.setEnergy(dailyEnergy);
+                // Výpočet týdenní energie: E_week = P_appliance ⋅ t_hours ⋅ t_days
+                double energyWeekly = appliance.getPower() * appliance.getHours() * appliance.getDays();
 
-                // Null check before comparing appliance type
+                // Výpočet denní energie: E_day = E_week / 7
+                double energyDaily = energyWeekly / 7;
+
+                // Uložení denní energie do spotřebiče
+                appliance.setEnergy(energyDaily * appliance.getQuantity());
+
+                // Třídění podle typu spotřebiče
                 if (appliance.getType() != null && appliance.getType().equals("AC")) {
-                    totalAcPower += appliance.getPower();
-                    totalAcEnergy += dailyEnergy;
+                    totalAcPower += appliance.getPower() * appliance.getQuantity();
+                    totalAcEnergyDaily += energyDaily * appliance.getQuantity();
                     totalAcPeakPower += appliance.getPeakPower() * appliance.getQuantity();
                 } else if (appliance.getType() != null && appliance.getType().equals("DC")) {
-                    totalDcPower += appliance.getPower();
-                    totalDcEnergy += dailyEnergy;
+                    totalDcPower += appliance.getPower() * appliance.getQuantity();
+                    totalDcEnergyDaily += energyDaily * appliance.getQuantity();
                     totalDcPeakPower += appliance.getPeakPower() * appliance.getQuantity();
                 }
             }
@@ -108,20 +113,21 @@ public class ProjectApplianceService {
 
         projectAppliance.setTotalAcPower(totalAcPower);
         projectAppliance.setTotalDcPower(totalDcPower);
-        projectAppliance.setTotalAcEnergy(totalAcEnergy);
-        projectAppliance.setTotalDcEnergy(totalDcEnergy);
+        projectAppliance.setTotalAcEnergy(totalAcEnergyDaily);
+        projectAppliance.setTotalDcEnergy(totalDcEnergyDaily);
         projectAppliance.setTotalAcPeakPower(totalAcPeakPower);
         projectAppliance.setTotalDcPeakPower(totalDcPeakPower);
 
-        configModel.setRecommendedSystemVoltage(calculateRecommendedSystemVoltage(totalAcEnergy + totalDcEnergy));
+        // Doporučené systémové napětí na základě celkové denní energie: E_daily_total = ∑E_day_i
+        configModel.setRecommendedSystemVoltage(calculateRecommendedSystemVoltage(totalAcEnergyDaily + totalDcEnergyDaily));
     }
 
-    // Calculate recommended system voltage based on energy consumption
-    private double calculateRecommendedSystemVoltage(double totalEnergy) {
-        // Example logic to recommend system voltage
-        if (totalEnergy < 1000) {
+    // Výpočet doporučeného systémového napětí
+    private double calculateRecommendedSystemVoltage(double totalEnergyDaily) {
+        // Doporučení napětí na základě celkové denní energie
+        if (totalEnergyDaily < 1000) {
             return 12;
-        } else if (totalEnergy < 3000) {
+        } else if (totalEnergyDaily < 3000) {
             return 24;
         } else {
             return 48;
