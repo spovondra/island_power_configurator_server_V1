@@ -36,9 +36,8 @@ public class ProjectBatteryService {
      * Removes a battery from the project by clearing its ID.
      *
      * @param projectId the ID of the project
-     * @param batteryId the ID of the battery to be removed
      */
-    public void removeBattery(String projectId, String batteryId) {
+    public void removeBattery(String projectId) {
         Project project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new RuntimeException("Project not found: " + projectId));
 
