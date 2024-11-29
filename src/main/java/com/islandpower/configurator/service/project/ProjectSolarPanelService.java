@@ -39,7 +39,6 @@ public class ProjectSolarPanelService {
     }
 
     // Calculate and save the solar panel configuration
-    // Calculate and save the solar panel configuration
     public ProjectSolarPanel calculateSolarPanelConfiguration(String projectId, String solarPanelId,
                                                               double panelOversizeCoefficient, double batteryEfficiency,
                                                               double cableEfficiency, List<Integer> selectedMonths,
@@ -53,6 +52,20 @@ public class ProjectSolarPanelService {
         // Fetch the selected solar panel
         SolarPanel selectedPanel = solarPanelRepository.findById(solarPanelId)
                 .orElseThrow(() -> new RuntimeException("Solar Panel not found: " + solarPanelId));
+
+        // Fetch ConfigurationModel and ensure it's not null
+        ConfigurationModel configModel = project.getConfigurationModel();
+        if (configModel == null) {
+            configModel = new ConfigurationModel(); // Initialize ConfigurationModel if null
+            project.setConfigurationModel(configModel); // Set it back to the project
+        }
+
+        // Ensure ProjectSolarPanel exists
+        ProjectSolarPanel projectSolarPanel = configModel.getProjectSolarPanel();
+        if (projectSolarPanel == null) {
+            projectSolarPanel = new ProjectSolarPanel(); // Initialize ProjectSolarPanel if null
+            configModel.setProjectSolarPanel(projectSolarPanel); // Set it back to ConfigurationModel
+        }
 
         // Get total daily energy required for AC and DC appliances
         double totalDailyEnergyRequired = project.getConfigurationModel().getProjectInverter().getTotalDailyEnergy();
@@ -125,19 +138,6 @@ public class ProjectSolarPanelService {
         }
 
         double averageDailyProduction = totalDailyEnergySum / monthsCount;
-
-        // Get the configuration model
-        ConfigurationModel configModel = project.getConfigurationModel();
-        if (configModel == null) {
-            configModel = new ConfigurationModel();
-            project.setConfigurationModel(configModel);
-        }
-
-        ProjectSolarPanel projectSolarPanel = configModel.getProjectSolarPanel();
-        if (projectSolarPanel == null) {
-            projectSolarPanel = new ProjectSolarPanel();
-            configModel.setProjectSolarPanel(projectSolarPanel);
-        }
 
         // Save the calculated solar panel configuration, including efficiency and loss factors
         projectSolarPanel.setSolarPanelId(solarPanelId);

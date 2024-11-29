@@ -57,7 +57,8 @@ public class ProjectControllerService {
         double ambientMin = project.getSite().getMinTemperature();
         double ambientMax = project.getSite().getMaxTemperature();
         double installationTemp = getInstallationTemperatureIncrease(projectSolarPanel.getInstallationType());
-        double ratedPower = controller.getRatedPower();
+        double controller_ratedPower = controller.getRatedPower();
+        double solar_ratedPower = solarPanel.getpRated();
         double I_mp = solarPanel.getImp();
         double I_sc = solarPanel.getIsc();
 
@@ -83,9 +84,9 @@ public class ProjectControllerService {
         projectController.setAdjustedVoltageAtMaxPower(U_mp_adjusted);
 
         if (controller.getType().equalsIgnoreCase("PWM")) {
-            configurePWMController(systemVoltage, ratedPower, solarPanel.getVmp(), I_mp, I_sc, numPanels, controller, projectController);
+            configurePWMController(systemVoltage, controller_ratedPower, solarPanel.getVmp(), I_mp, I_sc, numPanels, controller, projectController);
         } else if (controller.getType().equalsIgnoreCase("MPPT")) {
-            configureMPPTController(systemVoltage, ratedPower, solarPanel.getpRated(), numPanels, U_oc_adjusted, U_mp_adjusted, I_mp, controller, projectController);
+            configureMPPTController(systemVoltage, controller_ratedPower, solar_ratedPower, numPanels, U_oc_adjusted, U_mp_adjusted, I_mp, controller, projectController);
         }
 
         project.getConfigurationModel().setProjectController(projectController);
@@ -102,11 +103,11 @@ public class ProjectControllerService {
         return suitable;
     }
 
-    private void configurePWMController(double systemVoltage, double ratedPower, double U_vmp, double I_mp, double I_sc, int numPanels, Controller controller, ProjectController projectController) {
+    private void configurePWMController(double systemVoltage, double controller_ratedPower, double U_vmp, double I_mp, double I_sc, int numPanels, Controller controller, ProjectController projectController) {
         // Počet modulů v sérii
         int n_serial = (int) Math.ceil(systemVoltage / U_vmp);
         // Počet modulů paralelně
-        int n_parallel = (int) Math.ceil(ratedPower / (I_mp * U_vmp));
+        int n_parallel = (int) Math.ceil(controller_ratedPower / (I_mp * U_vmp));
 
         logger.info("PWM - Serial Modules: {}, Parallel Modules: {}", n_serial, n_parallel);
 
@@ -132,17 +133,17 @@ public class ProjectControllerService {
         logger.info("PWM - Required Current: {}, Valid: {}", requiredCurrent, isValid);
     }
 
-    private void configureMPPTController(double systemVoltage, double ratedPower, double P_rated, int numPanels,
+    private void configureMPPTController(double systemVoltage, double controller_ratedPower, double solar_ratedPower, int numPanels,
                                          double U_oc_adjusted, double U_mp_adjusted, double I_mp,
                                          Controller controller, ProjectController projectController) {
         int maxSerial = (int) Math.floor(controller.getMaxVoltage() / U_oc_adjusted);
         int minSerial = (int) Math.ceil(controller.getMinVoltage() / U_mp_adjusted);
         int n_serial = Math.min(maxSerial, Math.max(minSerial, (int) Math.floor(systemVoltage / U_mp_adjusted)));
-        int n_parallel = (int) Math.floor((ratedPower) / (I_mp * U_mp_adjusted));
+        int n_parallel = (int) Math.floor((controller_ratedPower) / (I_mp * U_mp_adjusted));
 
         logger.info("MPPT - Serial Modules: {}, Parallel Modules: {}", n_serial, n_parallel);
 
-        double totalPower = K_CONTROLLER_OVERSIZE * numPanels * P_rated;
+        double totalPower = K_CONTROLLER_OVERSIZE * numPanels * solar_ratedPower;
         double requiredCurrent = totalPower / systemVoltage;
 
         // Validace: kontrola maximálního napětí regulátoru
@@ -172,6 +173,8 @@ public class ProjectControllerService {
             projectController.setStatusMessage("Configuration is valid.");
         }
 
+        projectController.setMaxModulesInSerial(maxSerial);
+        projectController.setMinModulesInSerial(minSerial);
         projectController.setSeriesModules(n_serial);
         projectController.setParallelModules(n_parallel);
         projectController.setRequiredCurrent(requiredCurrent);
