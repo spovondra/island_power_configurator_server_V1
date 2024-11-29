@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -58,9 +59,14 @@ public class ProjectControllerService {
         double ambientMax = project.getSite().getMaxTemperature();
         double installationTemp = getInstallationTemperatureIncrease(projectSolarPanel.getInstallationType());
         double controller_ratedPower = controller.getRatedPower();
-        double solar_ratedPower = solarPanel.getpRated();
         double I_mp = solarPanel.getImp();
         double I_sc = solarPanel.getIsc();
+
+        double solar_deratedPower = projectSolarPanel.getMonthlyData()
+                .stream()
+                .max(Comparator.comparingDouble(ProjectSolarPanel.MonthlySolarData::getDeratedPower))
+                .map(ProjectSolarPanel.MonthlySolarData::getDeratedPower)
+                .orElse(0.0);
 
         logger.info("System Voltage: {}", systemVoltage);
         logger.info("Ambient Min Temperature: {}", ambientMin);
@@ -86,7 +92,7 @@ public class ProjectControllerService {
         if (controller.getType().equalsIgnoreCase("PWM")) {
             configurePWMController(systemVoltage, controller_ratedPower, solarPanel.getVmp(), I_mp, I_sc, numPanels, controller, projectController);
         } else if (controller.getType().equalsIgnoreCase("MPPT")) {
-            configureMPPTController(systemVoltage, controller_ratedPower, solar_ratedPower, numPanels, U_oc_adjusted, U_mp_adjusted, I_mp, controller, projectController);
+            configureMPPTController(systemVoltage, controller_ratedPower, solar_deratedPower, numPanels, U_oc_adjusted, U_mp_adjusted, I_mp, controller, projectController);
         }
 
         project.getConfigurationModel().setProjectController(projectController);
@@ -96,11 +102,10 @@ public class ProjectControllerService {
     }
 
     private boolean isControllerSuitable(Controller controller, String regulatorType, double systemVoltage) {
-        boolean suitable = controller.getType().equalsIgnoreCase(regulatorType)
-                && controller.getMinVoltage() <= systemVoltage
-                && controller.getMaxVoltage() >= systemVoltage;
-        logger.info("Controller {} is suitable: {}", controller.getName(), suitable);
-        return suitable;
+        boolean suitableType = controller.getType().equalsIgnoreCase(regulatorType);
+        boolean suitableMinVoltage = controller.getMinVoltage() == systemVoltage;
+        boolean suitableMaxVoltage = controller.getMaxVoltage() >= systemVoltage;
+        return suitableType && suitableMinVoltage && suitableMaxVoltage;
     }
 
     private void configurePWMController(double systemVoltage, double controller_ratedPower, double U_vmp, double I_mp, double I_sc, int numPanels, Controller controller, ProjectController projectController) {
@@ -133,7 +138,7 @@ public class ProjectControllerService {
         logger.info("PWM - Required Current: {}, Valid: {}", requiredCurrent, isValid);
     }
 
-    private void configureMPPTController(double systemVoltage, double controller_ratedPower, double solar_ratedPower, int numPanels,
+    private void configureMPPTController(double systemVoltage, double controller_ratedPower, double solar_deratedPower, int numPanels,
                                          double U_oc_adjusted, double U_mp_adjusted, double I_mp,
                                          Controller controller, ProjectController projectController) {
         int maxSerial = (int) Math.floor(controller.getMaxVoltage() / U_oc_adjusted);
@@ -143,8 +148,24 @@ public class ProjectControllerService {
 
         logger.info("MPPT - Serial Modules: {}, Parallel Modules: {}", n_serial, n_parallel);
 
-        double totalPower = K_CONTROLLER_OVERSIZE * numPanels * solar_ratedPower;
+        double totalPower = numPanels * solar_deratedPower;
         double requiredCurrent = totalPower / systemVoltage;
+
+        // Kontrola nadměrného dimenzování regulátoru
+        if (controller_ratedPower > 1.5 * totalPower) { // Regulátor má o 50 % vyšší výkon, než je potřeba
+            logger.warn("Controller is overdimensioned. Controller power: {}, System power: {}", controller_ratedPower, totalPower);
+            projectController.setStatusMessage(
+                    String.format("Warning: Controller is overdimensioned. Controller power (%.2f W) exceeds system needs (%.2f W).",
+                            controller_ratedPower, totalPower));
+        }
+
+        if (controller_ratedPower <= totalPower) {
+            projectController.setStatusMessage(
+                    String.format("Error: Controller power (%.2f W) is less than the total required system power (%.2f W).",
+                            controller_ratedPower, totalPower));
+            projectController.setValid(false);
+            return;
+        }
 
         // Validace: kontrola maximálního napětí regulátoru
         if (controller.getMaxVoltage() < U_oc_adjusted * n_serial) {
@@ -158,7 +179,6 @@ public class ProjectControllerService {
 
         // Validace: kontrola výkonu panelů
         if (totalPower > systemVoltage * controller.getCurrentRating()) {
-            logger.error("Derated power exceeds controller's capacity.");
             projectController.setStatusMessage(
                     String.format("Error: Derated power (%.2f W) exceeds controller's capacity (%.2f W).",
                             totalPower, systemVoltage * controller.getCurrentRating()));
