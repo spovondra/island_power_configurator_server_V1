@@ -26,6 +26,8 @@ public class ProjectSolarPanelService {
     @Autowired
     private ProjectRepository projectRepository;
 
+    private static final double T_STC = 25;
+
     // Fetch suitable solar panels based on project needs
     public List<SolarPanel> getSuitableSolarPanels(String projectId) {
         Project project = projectRepository.findById(projectId)
@@ -176,7 +178,7 @@ public class ProjectSolarPanelService {
         double tempCoefficientPMax = solarPanel.getTempCoefficientPMax();
         int installationTemperatureIncrease = getInstallationTemperatureIncrease(installationType);
         logger.info("installationTemperatureIncrease {}", installationTemperatureIncrease);
-        return (100 + (ambientTemperature + installationTemperatureIncrease - 25) * tempCoefficientPMax) / 100;
+        return (100 + (ambientTemperature + installationTemperatureIncrease - T_STC) * tempCoefficientPMax) / 100;
     }
 
     // Method to calculate total efficiency

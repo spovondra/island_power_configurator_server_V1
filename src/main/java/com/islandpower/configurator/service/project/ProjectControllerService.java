@@ -32,7 +32,7 @@ public class ProjectControllerService {
     private SolarPanelRepository solarPanelRepository;
 
     private static final double K_CONTROLLER_OVERSIZE = 1.25;
-    private static final double T_STC = 25.0;
+    private static final double T_STC = 25;
 
     public List<Controller> getSuitableControllers(String projectId, String regulatorType) {
         Project project = findProjectById(projectId);
@@ -83,7 +83,7 @@ public class ProjectControllerService {
         projectController.setAdjustedVoltageAtMaxPower(U_mp_adjusted);
 
         if (controller.getType().equalsIgnoreCase("PWM")) {
-            configurePWMController(systemVoltage, solarPanel.getVmp(), I_mp, I_sc, numPanels, controller, projectController);
+            configurePWMController(systemVoltage, ratedPower, solarPanel.getVmp(), I_mp, I_sc, numPanels, controller, projectController);
         } else if (controller.getType().equalsIgnoreCase("MPPT")) {
             configureMPPTController(systemVoltage, ratedPower, solarPanel.getpRated(), numPanels, U_oc_adjusted, U_mp_adjusted, I_mp, controller, projectController);
         }
@@ -102,48 +102,48 @@ public class ProjectControllerService {
         return suitable;
     }
 
-    private void configurePWMController(double systemVoltage, double U_vmp, double I_mp, double I_sc, int numPanels, Controller controller, ProjectController projectController) {
-        // Výpočet počtu modulů v sérii
-        int n_serial = (int) Math.floor(systemVoltage / U_vmp);
-        logger.info("Calculated PWM Serial Modules (n_serial): {}", n_serial);
+    private void configurePWMController(double systemVoltage, double ratedPower, double U_vmp, double I_mp, double I_sc, int numPanels, Controller controller, ProjectController projectController) {
+        // Počet modulů v sérii
+        int n_serial = (int) Math.ceil(systemVoltage / U_vmp);
+        // Počet modulů paralelně
+        int n_parallel = (int) Math.ceil(ratedPower / (I_mp * U_vmp));
 
-        // Výpočet počtu modulů paralelně
-        double ratedPower = numPanels * U_vmp * I_mp;
-        int n_parallel = (int) Math.floor(ratedPower / (I_mp * U_vmp));
-        logger.info("Calculated PWM Parallel Modules (n_parallel): {}", n_parallel);
+        logger.info("PWM - Serial Modules: {}, Parallel Modules: {}", n_serial, n_parallel);
 
-        // Nastavení hodnot do ProjectController objektu
+        // Výpočet požadovaného proudu
+        double requiredCurrent = K_CONTROLLER_OVERSIZE * n_parallel * I_sc;
         projectController.setSeriesModules(n_serial);
         projectController.setParallelModules(n_parallel);
-
-        // Validace konfigurace
-        double requiredCurrent = K_CONTROLLER_OVERSIZE * n_parallel * I_sc;
-        boolean isValid = controller.getCurrentRating() >= requiredCurrent;
         projectController.setRequiredCurrent(requiredCurrent);
+
+        // Validace
+        boolean isValid = controller.getCurrentRating() >= requiredCurrent;
         projectController.setValid(isValid);
 
-        logger.info("PWM Configuration - Serial Modules: {}, Parallel Modules: {}, Required Current: {}, Valid Configuration: {}", n_serial, n_parallel, requiredCurrent, isValid);
+        // Nastavení zprávy
+        if (isValid) {
+            projectController.setStatusMessage("Configuration is valid.");
+        } else {
+            projectController.setStatusMessage(
+                    String.format("Error: Required current (%.2f A) exceeds controller's rating (%.2f A).",
+                            requiredCurrent, controller.getCurrentRating()));
+        }
+
+        logger.info("PWM - Required Current: {}, Valid: {}", requiredCurrent, isValid);
     }
 
     private void configureMPPTController(double systemVoltage, double ratedPower, double P_rated, int numPanels,
                                          double U_oc_adjusted, double U_mp_adjusted, double I_mp,
                                          Controller controller, ProjectController projectController) {
-
-        // Výpočet maximálního a minimálního počtu modulů v sérii
         int maxSerial = (int) Math.floor(controller.getMaxVoltage() / U_oc_adjusted);
         int minSerial = (int) Math.ceil(controller.getMinVoltage() / U_mp_adjusted);
-
-        // Výpočet počtu modulů v sérii
         int n_serial = Math.min(maxSerial, Math.max(minSerial, (int) Math.floor(systemVoltage / U_mp_adjusted)));
-        logger.info("Calculated Serial Modules (n_serial): {}", n_serial);
-
-        // Výpočet celkového výkonu a požadovaného proudu
-        double totalPower = numPanels * P_rated;
-        double requiredCurrent = totalPower / systemVoltage;
-
-        // Výpočet počtu modulů paralelně
         int n_parallel = (int) Math.floor((ratedPower) / (I_mp * U_mp_adjusted));
-        logger.info("Calculated Parallel Modules (n_parallel): {}; P_rated: {}", n_parallel, ratedPower);
+
+        logger.info("MPPT - Serial Modules: {}, Parallel Modules: {}", n_serial, n_parallel);
+
+        double totalPower = K_CONTROLLER_OVERSIZE * numPanels * P_rated;
+        double requiredCurrent = totalPower / systemVoltage;
 
         // Validace: kontrola maximálního napětí regulátoru
         if (controller.getMaxVoltage() < U_oc_adjusted * n_serial) {
@@ -172,45 +172,36 @@ public class ProjectControllerService {
             projectController.setStatusMessage("Configuration is valid.");
         }
 
-        // Nastavení hodnot do ProjectController objektu
         projectController.setSeriesModules(n_serial);
         projectController.setParallelModules(n_parallel);
-        projectController.setMaxModulesInSerial(maxSerial);
-        projectController.setMinModulesInSerial(minSerial);
         projectController.setRequiredCurrent(requiredCurrent);
         projectController.setRequiredPower(totalPower);
 
-        // Validace konfigurace
-        boolean isValid = totalPower <= ratedPower && requiredCurrent <= controller.getCurrentRating();
+        boolean isValid = controller.getCurrentRating() >= requiredCurrent && controller.getRatedPower() >= totalPower;
         projectController.setValid(isValid);
 
-        logger.info("MPPT Configuration - Max Serial: {}, Min Serial: {}, Serial Modules: {}, Parallel Modules: {}, Required Current: {}, Total Power: {}, Valid Configuration: {}",
-                maxSerial, minSerial, n_serial, n_parallel, requiredCurrent, totalPower, isValid);
+        if (!isValid) {
+            logger.error("MPPT configuration invalid. Required Current: {}, Required Power: {}", requiredCurrent, totalPower);
+        }
     }
 
     private double calculateAdjustedOpenCircuitVoltage(SolarPanel solarPanel, double ambientMin, double installationTemp) {
         double adjustment = solarPanel.getTempCoefficientVoc() * (ambientMin - T_STC + installationTemp) / 100;
-        double adjustedVoc = solarPanel.getVoc() + solarPanel.getVoc() * adjustment;
-        logger.info("Adjusted Open Circuit Voltage (Voc) calculation - Voc: {}, Adjustment: {}, Result: {}", solarPanel.getVoc(), adjustment, adjustedVoc);
-        return adjustedVoc;
+        return solarPanel.getVoc() * (1 + adjustment);
     }
 
     private double calculateAdjustedVoltageAtMaxPower(SolarPanel solarPanel, double ambientMax, double installationTemp) {
         double adjustment = solarPanel.getTempCoefficientPMax() * (ambientMax - T_STC + installationTemp) / 100;
-        double adjustedVmp = solarPanel.getVmp() + solarPanel.getVmp() * adjustment;
-        logger.info("Adjusted Voltage at Max Power (Vmp) calculation - Vmp: {}, Adjustment: {}, Result: {}", solarPanel.getVmp(), adjustment, adjustedVmp);
-        return adjustedVmp;
+        return solarPanel.getVmp() * (1 + adjustment);
     }
 
     private int getInstallationTemperatureIncrease(String installationType) {
-        int increase = switch (installationType) {
+        return switch (installationType) {
             case "ground", "roof_angle" -> 25;
             case "parallel_greater_150mm" -> 30;
             case "parallel_less_150mm" -> 35;
             default -> 0;
         };
-        logger.info("Installation Temperature Increase for type {}: {}", installationType, increase);
-        return increase;
     }
 
     public ProjectController getProjectController(String projectId) {
