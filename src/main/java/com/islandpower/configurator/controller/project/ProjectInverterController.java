@@ -60,7 +60,7 @@ public class ProjectInverterController {
      * Retrieves the system voltage and recommended system voltage for a project.
      *
      * @param projectId The ID of the project
-     * @return ResponseEntity<Map<String, Double>> A map containing system voltage and recommended system voltage
+     * @return {@code ResponseEntity<Map<String, Double>>} A map containing system voltage and recommended system voltage
      */
     @GetMapping("/voltage")
     public ResponseEntity<Map<String, Double>> getVoltage(@PathVariable String projectId) {
@@ -85,7 +85,7 @@ public class ProjectInverterController {
      * @param projectId The ID of the project
      * @param systemVoltage The system voltage for the configuration
      * @param temperature The installation temperature of the inverters
-     * @return ResponseEntity<List<Inverter>> A list of suitable inverters
+     * @return {@code ResponseEntity<List<Inverter>>} A list of suitable inverters
      */
     @GetMapping("/suitable")
     public ResponseEntity<List<Inverter>> getSuitableInverters(
@@ -128,7 +128,7 @@ public class ProjectInverterController {
      *
      * @param projectId The ID of the project
      * @param inverterId The ID of the selected inverter
-     * @return ResponseEntity<ProjectInverter> The updated project inverter configuration
+     * @return {@code ResponseEntity<ProjectInverter>} The updated project inverter configuration
      */
     @PostMapping("/select-inverter/{inverterId}")
     public ResponseEntity<ProjectInverter> selectInverter(
@@ -143,7 +143,7 @@ public class ProjectInverterController {
      * Retrieves the current inverter configuration for a project.
      *
      * @param projectId The ID of the project
-     * @return ResponseEntity<ProjectInverter> The current inverter configuration
+     * @return {@code ResponseEntity<ProjectInverter>} The current inverter configuration
      */
     @GetMapping("/")
     public ResponseEntity<ProjectInverter> getProjectInverter(@PathVariable String projectId) {

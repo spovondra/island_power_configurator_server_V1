@@ -29,7 +29,7 @@ public class ProjectControllerController {
      *
      * @param projectId The ID of the project for which suitable controllers are fetched
      * @param regulatorType The type of regulator (PWM or MPPT)
-     * @return ResponseEntity<List<Controller>> The list of suitable controllers
+     * @return {@link ResponseEntity} containing a list of {@link Controller} objects
      */
     @GetMapping("/suitable")
     public ResponseEntity<List<Controller>> getSuitableControllers(
@@ -45,7 +45,7 @@ public class ProjectControllerController {
      *
      * @param projectId The ID of the project for which the controller is selected
      * @param controllerId The ID of the selected controller
-     * @return ResponseEntity<ProjectController> The updated project controller configuration
+     * @return {@link ResponseEntity} containing the updated {@link ProjectController} configuration
      */
     @PostMapping("/select")
     public ResponseEntity<ProjectController> selectControllerForProject(
@@ -60,7 +60,8 @@ public class ProjectControllerController {
      * Retrieves the current controller configuration for a specific project.
      *
      * @param projectId The ID of the project for which the controller configuration is retrieved
-     * @return ResponseEntity<?> The current controller configuration or an error message if not found
+     * @return {@link ResponseEntity} containing the current {@link ProjectController} configuration,
+     *         or an error message if not found
      */
     @GetMapping
     public ResponseEntity<?> getProjectController(@PathVariable String projectId) {

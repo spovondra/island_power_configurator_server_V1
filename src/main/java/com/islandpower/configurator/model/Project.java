@@ -102,7 +102,7 @@ public class Project {
     /**
      * Retrieves the list of appliances included in the project.
      *
-     * @return List<Appliance> The list of appliances in the project
+     * @return List containing {@link com.islandpower.configurator.model.project.Appliance} objects included in the project
      */
     public List<Appliance> getAppliances() {
         return appliances;

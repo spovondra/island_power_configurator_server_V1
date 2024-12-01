@@ -26,6 +26,12 @@ public class ProjectBatteryService {
     private final BatteryRepository batteryRepository;
     private final ProjectRepository projectRepository;
 
+    /**
+     * Constructs a ProjectBatteryService with the specified repositories.
+     *
+     * @param batteryRepository Repository for managing battery entities
+     * @param projectRepository Repository for managing project entities
+     */
     @Autowired
     public ProjectBatteryService(BatteryRepository batteryRepository, ProjectRepository projectRepository) {
         this.batteryRepository = batteryRepository;
@@ -54,7 +60,7 @@ public class ProjectBatteryService {
      *
      * @param projectId The ID of the project
      * @param technology The technology type of the batteries (e.g., Li-ion, LiFePO4)
-     * @return List<Battery> A list of suitable batteries
+     * @return List of {@link com.islandpower.configurator.model.Battery} objects
      */
     public List<Battery> getSuitableBatteries(String projectId, String technology) {
         Project project = projectRepository.findById(projectId)

@@ -40,7 +40,7 @@ public class ProjectController {
      *
      * @param project The project details to create
      * @param request The HTTP request containing the JWT token
-     * @return Project The created project
+     * @return {@link Project} The created project
      */
     @PostMapping
     public Project createProject(@RequestBody Project project, HttpServletRequest request) {
@@ -65,7 +65,7 @@ public class ProjectController {
     /**
      * Retrieves all projects in the system.
      *
-     * @return List<Project> A list of all projects
+     * @return List of {@link Project} objects
      */
     @GetMapping
     public List<Project> getAllProjects() {
@@ -76,7 +76,7 @@ public class ProjectController {
      * Retrieves all projects associated with the authenticated user.
      *
      * @param request The HTTP request containing the JWT token
-     * @return List<Project> A list of the user's projects
+     * @return List of {@link Project} objects associated with the user
      */
     @GetMapping("/user-projects")
     public List<Project> getProjectsByUserId(HttpServletRequest request) {
@@ -90,7 +90,7 @@ public class ProjectController {
      *
      * @param projectId The ID of the project to retrieve
      * @param request The HTTP request containing the JWT token
-     * @return Project The requested project
+     * @return {@link Project} The requested project
      */
     @GetMapping("/{projectId}")
     public Project getProjectById(@PathVariable String projectId, HttpServletRequest request) {
@@ -105,7 +105,7 @@ public class ProjectController {
      * @param projectId The ID of the project to update
      * @param project The updated project details
      * @param request The HTTP request containing the JWT token
-     * @return Project The updated project
+     * @return {@link Project} The updated project
      */
     @PutMapping("/{projectId}")
     public Project updateProject(@PathVariable String projectId, @RequestBody Project project, HttpServletRequest request) {
@@ -119,7 +119,7 @@ public class ProjectController {
      *
      * @param projectId The ID of the project
      * @param step The step number to mark as completed
-     * @return ResponseEntity<Void> HTTP OK status if successful
+     * @return {@link ResponseEntity} with HTTP OK status if successful
      */
     @PostMapping("/{projectId}/complete-step")
     public ResponseEntity<Void> completeStep(@PathVariable String projectId, @RequestParam int step) {

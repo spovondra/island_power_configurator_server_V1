@@ -269,7 +269,8 @@ public class ProjectSolarPanel {
     /**
      * Retrieves the monthly solar panel data.
      *
-     * @return List<@link ProjectSolarPanel.MonthlySolarData> List of monthly solar data
+     * @return {@link List} of {@link ProjectSolarPanel.MonthlySolarData} objects representing the monthly solar data
+     *
      */
     public List<MonthlySolarData> getMonthlyData() {
         return monthlyData;

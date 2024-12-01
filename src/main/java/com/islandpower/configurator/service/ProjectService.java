@@ -71,7 +71,7 @@ public class ProjectService {
     /**
      * Retrieves all projects in the system.
      *
-     * @return java.util.List<com.islandpower.configurator.model.Project> A list of all projects
+     * @return {@code java.util.List<com.islandpower.configurator.model.Project>} A list of all projects
      */
     public List<Project> getAllProjects() {
         return projectRepository.findAll();
@@ -81,7 +81,7 @@ public class ProjectService {
      * Retrieves all projects associated with a specific user.
      *
      * @param userId The ID of the user whose projects to retrieve
-     * @return java.util.List<com.islandpower.configurator.model.Project> A list of projects associated with the user
+     * @return {@code java.util.List<com.islandpower.configurator.model.Project>} A list of projects associated with the user
      */
     public List<Project> getProjectsByUserId(String userId) {
         OneUser user = userRepository.findById(userId)

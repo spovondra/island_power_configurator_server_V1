@@ -34,7 +34,7 @@ public class ProjectLocationController {
      * @param aspect The panel aspect
      * @param useOptimalValues Whether to use optimal angle and aspect values
      * @param request The HTTP request containing the JWT token
-     * @return ResponseEntity<Site>The updated site data or an error response
+     * @return {@code ResponseEntity<Site>} The updated site data or an error response
      */
     @PostMapping("/process")
     public ResponseEntity<Site> processLocationData(
@@ -63,7 +63,7 @@ public class ProjectLocationController {
      *
      * @param projectId The ID of the project
      * @param request The HTTP request containing the JWT token
-     * @return ResponseEntity<Site>The site data or an error response
+     * @return {@code ResponseEntity<Site>} The site data or an error response
      */
     @GetMapping("/sites")
     public ResponseEntity<Site> getSites(

@@ -44,7 +44,7 @@ public class ProjectControllerService {
      *
      * @param projectId     The ID of the project
      * @param regulatorType The type of regulator required (e.g., PWM, MPPT)
-     * @return List<Controller> A list of controllers suitable for the project's configuration
+     * @return {@code List<Controller>} A list of controllers suitable for the project's configuration
      */
     public List<Controller> getSuitableControllers(String projectId, String regulatorType) {
         Project project = findProjectById(projectId);
