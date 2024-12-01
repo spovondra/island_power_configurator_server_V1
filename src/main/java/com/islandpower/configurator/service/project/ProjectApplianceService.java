@@ -118,7 +118,7 @@ public class ProjectApplianceService {
         projectAppliance.setTotalAcPeakPower(totalAcPeakPower);
         projectAppliance.setTotalDcPeakPower(totalDcPeakPower);
 
-        // Doporučené systémové napětí na základě celkové denní energie: E_daily_total = ∑E_day_i
+        // Doporučené systémové napětí na základě celkové denní energie: E_daily_total = suma E_day_i
         configModel.setRecommendedSystemVoltage(calculateRecommendedSystemVoltage(totalAcEnergyDaily + totalDcEnergyDaily));
     }
 

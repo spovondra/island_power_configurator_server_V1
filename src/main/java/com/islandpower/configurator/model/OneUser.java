@@ -8,224 +8,164 @@ import java.util.List;
 
 /**
  * Represents a user in the system.
- * This class is used to store user information, including authentication details and user-specific data.
+ * <p>
+ * This class stores user information, including authentication details, roles, and project associations.
  * It is mapped to a MongoDB collection named "users".
+ * <p>
  *
  * @version 1.0
  */
 @Document(collection = "users")
 public class OneUser {
-
-    /**
-     * Unique identifier for the user, used as the primary key in the database.
-     */
     @Id
-    private String id;
+    private String id; // unique identifier for the user
+    private String username; // username used for authentication
+    private String password; // encoded password for secure authentication
+    private String role; // role of the user within the system (e.g., admin, user)
+    private String firstName; // first name of the user
+    private String lastName; // last name of the user
+    private String email; // email address of the user
+    private List<String> projects = new ArrayList<>(); // list of project IDs associated with the user
 
     /**
-     * Username of the user used for authentication.
-     */
-    private String username;
-
-    /**
-     * Password of the user, stored in an encoded format.
-     */
-    private String password;
-
-    /**
-     * Role assigned to the user, defining their permissions within the system.
-     */
-    private String role;
-
-    /**
-     * First name of the user.
-     */
-    private String firstName;
-
-    /**
-     * Last name of the user.
-     */
-    private String lastName;
-
-    /**
-     * Email address of the user.
-     */
-    private String email;
-
-    /**
-     * List of project IDs or names associated with the user.
-     * This can be used to track the user's involvement in various projects.
-     */
-    private List<String> projects = new ArrayList<>();
-
-    /**
-     * Default constructor for the OneUser class.
-     */
-    public OneUser() {}
-
-    /**
-     * Parameterized constructor for creating a new OneUser instance.
-     * Initializes the user with the given details and sets default values for optional fields.
+     * Retrieves the unique identifier for the user.
      *
-     * @param id - The unique identifier for the user
-     * @param username - The username for authentication
-     * @param password - The encoded password for the user
-     * @param role - The role of the user in the system
-     * @param firstName - The first name of the user
-     * @param lastName - The last name of the user
-     * @param email - The email address of the user
-     */
-    public OneUser(String id, String username, String password, String role, String firstName, String lastName, String email) {
-        this.id = id;
-        this.username = username;
-        this.password = password;
-        this.role = role;
-        this.firstName = firstName != null ? firstName : "";
-        this.lastName = lastName != null ? lastName : "";
-        this.email = email != null ? email : "";
-    }
-
-    // Getters and Setters
-
-    /**
-     * Gets the unique identifier for the user.
-     *
-     * @return The unique ID of the user.
+     * @return String The unique ID of the user
      */
     public String getId() {
         return id;
     }
 
     /**
-     * Sets the unique identifier for the user.
+     * Updates the unique identifier for the user.
      *
-     * @param id The unique ID of the user.
+     * @param id The new unique ID of the user
      */
     public void setId(String id) {
         this.id = id;
     }
 
     /**
-     * Gets the username of the user.
+     * Retrieves the username used for authentication.
      *
-     * @return The username used for authentication.
+     * @return String The username of the user
      */
     public String getUsername() {
         return username;
     }
 
     /**
-     * Sets the username of the user.
+     * Updates the username used for authentication.
      *
-     * @param username The username used for authentication.
+     * @param username The new username of the user
      */
     public void setUsername(String username) {
         this.username = username;
     }
 
     /**
-     * Gets the password of the user.
+     * Retrieves the encoded password for the user.
      *
-     * @return The encoded password of the user.
+     * @return String The encoded password of the user
      */
     public String getPassword() {
         return password;
     }
 
     /**
-     * Sets the password of the user.
+     * Updates the encoded password for the user.
      *
-     * @param password The encoded password of the user.
+     * @param password The new encoded password of the user
      */
     public void setPassword(String password) {
         this.password = password;
     }
 
     /**
-     * Gets the role assigned to the user.
+     * Retrieves the role assigned to the user.
      *
-     * @return The role of the user.
+     * @return String The role of the user
      */
     public String getRole() {
         return role;
     }
 
     /**
-     * Sets the role assigned to the user.
+     * Updates the role assigned to the user.
      *
-     * @param role The role of the user.
+     * @param role The new role of the user
      */
     public void setRole(String role) {
         this.role = role;
     }
 
     /**
-     * Gets the first name of the user.
+     * Retrieves the first name of the user.
      *
-     * @return The first name of the user.
+     * @return String The first name of the user
      */
     public String getFirstName() {
         return firstName;
     }
 
     /**
-     * Sets the first name of the user.
+     * Updates the first name of the user.
      *
-     * @param firstName The first name of the user.
+     * @param firstName The new first name of the user
      */
     public void setFirstName(String firstName) {
         this.firstName = firstName;
     }
 
     /**
-     * Gets the last name of the user.
+     * Retrieves the last name of the user.
      *
-     * @return The last name of the user.
+     * @return String The last name of the user
      */
     public String getLastName() {
         return lastName;
     }
 
     /**
-     * Sets the last name of the user.
+     * Updates the last name of the user.
      *
-     * @param lastName The last name of the user.
+     * @param lastName The new last name of the user
      */
     public void setLastName(String lastName) {
         this.lastName = lastName;
     }
 
     /**
-     * Gets the email address of the user.
+     * Retrieves the email address of the user.
      *
-     * @return The email address of the user.
+     * @return String The email address of the user
      */
     public String getEmail() {
         return email;
     }
 
     /**
-     * Sets the email address of the user.
+     * Updates the email address of the user.
      *
-     * @param email The email address of the user.
+     * @param email The new email address of the user
      */
     public void setEmail(String email) {
         this.email = email;
     }
 
     /**
-     * Gets the list of projects associated with the user.
+     * Retrieves the list of project IDs associated with the user.
      *
-     * @return The list of project IDs or names associated with the user.
+     * @return List<String> The list of project IDs
      */
     public List<String> getProjects() {
         return projects;
     }
 
     /**
-     * Sets the list of projects associated with the user.
+     * Updates the list of project IDs associated with the user.
      *
-     * @param projects The list of project IDs or names associated with the user.
+     * @param projects The new list of project IDs
      */
     public void setProjects(List<String> projects) {
         this.projects = projects;

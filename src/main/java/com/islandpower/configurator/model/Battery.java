@@ -4,135 +4,203 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 /**
  * Represents a battery used in the system, including its technical specifications and performance parameters.
+ * <p>
+ * This model defines the attributes of a battery, such as its capacity, voltage, depth of discharge (DOD),
+ * and efficiency, along with pricing and charging parameters.
+ * </p>
+ *
+ * @version 1.0
  */
 @Document(collection = "batteries")
 public class Battery {
-    private String id; // Unique identifier for the battery
-    private String name; // Name of the battery
-    private String type; // Battery type (e.g., Li-ion, LiFePO4, Lead Acid)
-    private int capacity; // Capacity of the battery in Ah
-    private int voltage; // Voltage of the battery in V
-    private double dod; // Depth of Discharge (DOD) as a fraction (e.g., 0.8 for 80%)
-    private double price; // Price of the battery in the local currency
-    private double optimalChargingCurrent; // Optimal charging current (I_battery_optimal) in A
-    private double maxChargingCurrent; // Maximum charging current (I_battery_max) in A
-    private double efficiency; // Efficiency of the battery in percentage (e.g., 95 for 95%)
+
+    private String id; // unique identifier for the battery
+    private String name; // name of the battery
+    private String type; // battery type (e.g., Li-ion, LiFePO4, Lead Acid)
+    private int capacity; // capacity of the battery in ampere-hours (Ah)
+    private int voltage; // voltage of the battery in volts (V)
+    private double dod; // depth of discharge (DOD) as a fraction (e.g., 0.8 for 80%)
+    private double price; // price of the battery in the local currency
+    private double optimalChargingCurrent; // optimal charging current in amperes (A)
+    private double maxChargingCurrent; // maximum charging current in amperes (A)
+    private double efficiency; // efficiency of the battery as a percentage (e.g., 95 for 95%)
 
     /**
-     * Default constructor.
-     */
-    public Battery() {
-        // Initialize default values if needed
-        this.optimalChargingCurrent = 0.0;
-        this.maxChargingCurrent = 0.0;
-        this.efficiency = 100.0; // Default efficiency is 100%
-    }
-
-    /**
-     * Parameterized constructor to initialize all fields.
+     * Retrieves the unique identifier of the battery.
      *
-     * @param id the unique identifier
-     * @param name the name of the battery
-     * @param type the type of the battery (e.g., Li-ion)
-     * @param capacity the capacity in Ah
-     * @param voltage the voltage in V
-     * @param dod the depth of discharge
-     * @param price the price of the battery
-     * @param optimalChargingCurrent the optimal charging current in A
-     * @param maxChargingCurrent the maximum charging current in A
-     * @param efficiency the efficiency in percentage
+     * @return String The unique ID of the battery
      */
-    public Battery(String id, String name, String type, int capacity, int voltage, double dod, double price,
-                   double optimalChargingCurrent, double maxChargingCurrent, double efficiency) {
-        this.id = id;
-        this.name = name;
-        this.type = type;
-        this.capacity = capacity;
-        this.voltage = voltage;
-        this.dod = dod;
-        this.price = price;
-        this.optimalChargingCurrent = optimalChargingCurrent;
-        this.maxChargingCurrent = maxChargingCurrent;
-        this.efficiency = efficiency;
-    }
-
-    // Getters and setters
     public String getId() {
         return id;
     }
 
+    /**
+     * Updates the unique identifier of the battery.
+     *
+     * @param id The new unique ID of the battery
+     */
     public void setId(String id) {
         this.id = id;
     }
 
+    /**
+     * Retrieves the name of the battery.
+     *
+     * @return String The name of the battery
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * Updates the name of the battery.
+     *
+     * @param name The new name of the battery
+     */
     public void setName(String name) {
         this.name = name;
     }
 
+    /**
+     * Retrieves the type of the battery.
+     *
+     * @return String The type of the battery (e.g., Li-ion, LiFePO4, Lead Acid)
+     */
     public String getType() {
         return type;
     }
 
+    /**
+     * Updates the type of the battery.
+     *
+     * @param type The new type of the battery
+     */
     public void setType(String type) {
         this.type = type;
     }
 
+    /**
+     * Retrieves the capacity of the battery in ampere-hours.
+     *
+     * @return int The capacity of the battery
+     */
     public int getCapacity() {
         return capacity;
     }
 
+    /**
+     * Updates the capacity of the battery in ampere-hours.
+     *
+     * @param capacity The new capacity of the battery
+     */
     public void setCapacity(int capacity) {
         this.capacity = capacity;
     }
 
+    /**
+     * Retrieves the voltage of the battery in volts.
+     *
+     * @return int The voltage of the battery
+     */
     public int getVoltage() {
         return voltage;
     }
 
+    /**
+     * Updates the voltage of the battery in volts.
+     *
+     * @param voltage The new voltage of the battery
+     */
     public void setVoltage(int voltage) {
         this.voltage = voltage;
     }
 
+    /**
+     * Retrieves the depth of discharge (DOD) of the battery as a fraction.
+     *
+     * @return double The DOD of the battery
+     */
     public double getDod() {
         return dod;
     }
 
+    /**
+     * Updates the depth of discharge (DOD) of the battery as a fraction.
+     *
+     * @param dod The new DOD of the battery
+     */
     public void setDod(double dod) {
         this.dod = dod;
     }
 
+    /**
+     * Retrieves the price of the battery in the local currency.
+     *
+     * @return double The price of the battery
+     */
     public double getPrice() {
         return price;
     }
 
+    /**
+     * Updates the price of the battery in the local currency.
+     *
+     * @param price The new price of the battery
+     */
     public void setPrice(double price) {
         this.price = price;
     }
 
+    /**
+     * Retrieves the optimal charging current of the battery in amperes.
+     *
+     * @return double The optimal charging current
+     */
     public double getOptimalChargingCurrent() {
         return optimalChargingCurrent;
     }
 
+    /**
+     * Updates the optimal charging current of the battery in amperes.
+     *
+     * @param optimalChargingCurrent The new optimal charging current
+     */
     public void setOptimalChargingCurrent(double optimalChargingCurrent) {
         this.optimalChargingCurrent = optimalChargingCurrent;
     }
 
+    /**
+     * Retrieves the maximum charging current of the battery in amperes.
+     *
+     * @return double The maximum charging current
+     */
     public double getMaxChargingCurrent() {
         return maxChargingCurrent;
     }
 
+    /**
+     * Updates the maximum charging current of the battery in amperes.
+     *
+     * @param maxChargingCurrent The new maximum charging current
+     */
     public void setMaxChargingCurrent(double maxChargingCurrent) {
         this.maxChargingCurrent = maxChargingCurrent;
     }
 
+    /**
+     * Retrieves the efficiency of the battery as a percentage.
+     *
+     * @return double The efficiency of the battery
+     */
     public double getEfficiency() {
         return efficiency;
     }
 
+    /**
+     * Updates the efficiency of the battery as a percentage.
+     *
+     * @param efficiency The new efficiency of the battery
+     */
     public void setEfficiency(double efficiency) {
         this.efficiency = efficiency;
     }

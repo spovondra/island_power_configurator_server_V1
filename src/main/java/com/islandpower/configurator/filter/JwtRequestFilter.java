@@ -4,6 +4,7 @@ import com.islandpower.configurator.exceptions.TokenExpiredException;
 import com.islandpower.configurator.service.OneUserDetailService;
 import com.islandpower.configurator.util.JwtUtil;
 import jakarta.servlet.FilterChain;
+import org.springframework.lang.NonNull;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -19,6 +20,10 @@ import java.io.IOException;
 
 /**
  * Filter to validate the JWT token and set the authentication in the security context.
+ * <p>
+ * This filter is executed once per request to ensure the security context is populated
+ * with authentication details if the JWT token is valid.
+ * </p>
  */
 @Component
 public class JwtRequestFilter extends OncePerRequestFilter {
@@ -29,39 +34,63 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     @Autowired
     private JwtUtil jwtUtil;
 
+    /**
+     * Filters incoming HTTP requests, validates the JWT token if present, and sets the authentication in the security context.
+     *
+     * @param request - the incoming HTTP request
+     * @param response- the outgoing HTTP response
+     * @param chain - the filter chain
+     * @throws ServletException - if any error occurs during request processing
+     * @throws IOException - if any I/O error occurs
+     */
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
+    protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain chain)
             throws ServletException, IOException {
 
-        final String authorizationHeader = request.getHeader("Authorization");
-        String username = null;
-        String jwt = null;
+        String jwt = extractJwtFromRequest(request);
 
-        // Check if the Authorization header contains a Bearer token
-        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
-            jwt = authorizationHeader.substring(7);  // Extract the JWT token
+        if (jwt != null) {
             try {
-                username = jwtUtil.extractUsername(jwt); // Extract username from JWT
+                String username = jwtUtil.extractUsername(jwt); // Extract username from JWT
+                processAuthentication(request, jwt, username);
             } catch (TokenExpiredException e) {
-                // Handle expired JWT token
-                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                response.setContentType("application/json");
-                response.getWriter().write("{\"error\": \"JWT token has expired. Please log in again.\"}");
-                return; // Stop further processing
+                handleJwtError(response, HttpServletResponse.SC_UNAUTHORIZED, "JWT token has expired. Please log in again.");
+                return; // stop further processing
             } catch (RuntimeException e) {
-                // Handle other JWT errors (e.g., malformed token)
-                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                response.setContentType("application/json");
-                response.getWriter().write("{\"error\": \"Invalid JWT token.\"}");
-                return; // Stop further processing
+                handleJwtError(response, HttpServletResponse.SC_BAD_REQUEST, "Invalid JWT token.");
+                return; // stop further processing
             }
         }
 
-        // If username is present and no authentication is set in the security context
+        chain.doFilter(request, response); // continue with the next filter in the chain
+    }
+
+    /**
+     * Extracts the JWT token from the Authorization header of the HTTP request.
+     *
+     * @param request - the HTTP request
+     * @return - the JWT token if present, otherwise null
+     */
+    private String extractJwtFromRequest(HttpServletRequest request) {
+        final String authorizationHeader = request.getHeader("Authorization");
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            return authorizationHeader.substring(7); // Extract JWT token
+        }
+        return null;
+    }
+
+    /**
+     * Processes authentication by validating the token and setting the security context if valid.
+     *
+     * @param request - the HTTP request
+     * @param jwt - the JWT token
+     * @param username - the username extracted from the token
+     */
+    private void processAuthentication(HttpServletRequest request, String jwt, String username) {
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = userDetailsService.loadUserByUsername(username); // Load user details
 
-            // Validate the token and set the authentication in the security context if valid
+            /*  validate the token and set the authentication in the context of security if it is valid */
             if (jwtUtil.validateToken(jwt, userDetails)) {
                 UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
                         userDetails, null, userDetails.getAuthorities());
@@ -69,7 +98,19 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                 SecurityContextHolder.getContext().setAuthentication(authenticationToken);
             }
         }
+    }
 
-        chain.doFilter(request, response); // continue with the next filter in the chain
+    /**
+     * Handles JWT-related errors by setting the appropriate HTTP status and response message.
+     *
+     * @param response - the HTTP response
+     * @param httpStatus - the HTTP status code
+     * @param message - the error message
+     * @throws IOException - if an error occurs while writing the response
+     */
+    private void handleJwtError(HttpServletResponse response, int httpStatus, String message) throws IOException {
+        response.setStatus(httpStatus);
+        response.setContentType("application/json");
+        response.getWriter().write("{\"error\": \"" + message + "\"}");
     }
 }

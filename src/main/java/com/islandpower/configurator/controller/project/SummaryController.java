@@ -10,6 +10,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+/**
+ * Controller for retrieving project summaries.
+ * <p>
+ * Provides an endpoint for fetching summarized data of a specific project,
+ * including relevant details processed by the summary service.
+ * </p>
+ *
+ * @version 1.0
+ */
 @RestController
 @RequestMapping("/api/projects")
 public class SummaryController {
@@ -22,6 +31,13 @@ public class SummaryController {
     @Autowired
     private JwtUtilService jwtUtilService;
 
+    /**
+     * Retrieves the summary data for a specific project.
+     *
+     * @param projectId - the ID of the project for which summary data is retrieved
+     * @param request - the HTTP request containing the JWT token
+     * @return ResponseEntity<SummaryDto> - the summary data for the specified project
+     */
     @GetMapping("/{projectId}/summary")
     public ResponseEntity<SummaryDto> getProjectSummary(@PathVariable String projectId, HttpServletRequest request) {
         String username = jwtUtilService.extractUsernameFromToken(request);

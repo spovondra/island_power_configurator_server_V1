@@ -10,8 +10,16 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Controller for managing inverter components.
+ * <p>
+ * Provides endpoints for creating, retrieving, updating, and deleting inverter components.
+ * </p>
+ *
+ * @version 1.0
+ */
 @RestController
-@RequestMapping("/api/components/inverters") // Updated path
+@RequestMapping("/api/components/inverters")
 public class InverterController {
 
     private final InverterService inverterService;
@@ -21,35 +29,60 @@ public class InverterController {
         this.inverterService = inverterService;
     }
 
-    // Create a new inverter
+    /**
+     * Creates a new inverter.
+     *
+     * @param inverter - the inverter object to be created
+     * @return ResponseEntity<Inverter> - the created inverter with HTTP CREATED status
+     */
     @PostMapping
     public ResponseEntity<Inverter> createInverter(@RequestBody Inverter inverter) {
         Inverter createdInverter = inverterService.addInverter(inverter);
         return new ResponseEntity<>(createdInverter, HttpStatus.CREATED);
     }
 
-    // Get all inverters
+    /**
+     * Retrieves all inverters.
+     *
+     * @return ResponseEntity<List<Inverter>> - a list of all inverters with HTTP OK status
+     */
     @GetMapping
     public ResponseEntity<List<Inverter>> getAllInverters() {
         List<Inverter> inverters = inverterService.getAllInverters();
         return new ResponseEntity<>(inverters, HttpStatus.OK);
     }
 
-    // Get an inverter by ID
+    /**
+     * Retrieves an inverter by its ID.
+     *
+     * @param id - the ID of the inverter to retrieve
+     * @return ResponseEntity<Inverter> - the inverter object with HTTP OK status, or NOT_FOUND if not present
+     */
     @GetMapping("/{id}")
     public ResponseEntity<Inverter> getInverterById(@PathVariable String id) {
         Optional<Inverter> inverter = inverterService.getInverterById(id);
         return inverter.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    // Update an inverter
+    /**
+     * Updates an existing inverter.
+     *
+     * @param id - the ID of the inverter to update
+     * @param inverter - the updated inverter object
+     * @return ResponseEntity<Inverter> - the updated inverter with HTTP OK status, or NOT_FOUND if not present
+     */
     @PutMapping("/{id}")
     public ResponseEntity<Inverter> updateInverter(@PathVariable String id, @RequestBody Inverter inverter) {
         Inverter updatedInverter = inverterService.updateInverter(id, inverter);
         return updatedInverter != null ? ResponseEntity.ok(updatedInverter) : ResponseEntity.notFound().build();
     }
 
-    // Delete an inverter
+    /**
+     * Deletes an inverter by its ID.
+     *
+     * @param id - the ID of the inverter to delete
+     * @return ResponseEntity<Void> - HTTP NO_CONTENT status if deletion is successful
+     */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteInverter(@PathVariable String id) {
         inverterService.deleteInverter(id);

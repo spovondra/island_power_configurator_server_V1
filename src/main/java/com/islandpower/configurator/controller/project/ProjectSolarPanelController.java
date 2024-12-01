@@ -11,6 +11,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Controller for managing solar panel configurations within a specific project.
+ * <p>
+ * Provides endpoints for fetching suitable solar panels, selecting a solar panel,
+ * calculating its configuration, and retrieving the current solar panel configuration.
+ * </p>
+ *
+ * @version 1.0
+ */
 @RestController
 @RequestMapping("/api/projects/{projectId}/solar-panels")
 public class ProjectSolarPanelController {
@@ -18,14 +27,25 @@ public class ProjectSolarPanelController {
     @Autowired
     private ProjectSolarPanelService projectSolarPanelService;
 
-    // Endpoint to fetch suitable solar panels for a project
+    /**
+     * Fetches a list of suitable solar panels for a specific project.
+     *
+     * @param projectId - the ID of the project
+     * @return ResponseEntity<List<SolarPanel>> - the list of suitable solar panels
+     */
     @GetMapping("/suitable")
     public ResponseEntity<List<SolarPanel>> getSuitableSolarPanels(@PathVariable String projectId) {
         List<SolarPanel> suitablePanels = projectSolarPanelService.getSuitableSolarPanels(projectId);
         return ResponseEntity.ok(suitablePanels);
     }
 
-    // Endpoint to select a solar panel and calculate its configuration
+    /**
+     * Selects a solar panel and calculates its configuration for the project.
+     *
+     * @param projectId - the ID of the project
+     * @param requestBody - a map containing solar panel details and efficiency parameters
+     * @return ResponseEntity<ProjectSolarPanel> - the updated solar panel configuration
+     */
     @PostMapping("/select")
     public ResponseEntity<ProjectSolarPanel> selectSolarPanel(
             @PathVariable String projectId,
@@ -43,7 +63,6 @@ public class ProjectSolarPanelController {
                 ? ((Number) requestBody.get("cableEfficiency")).doubleValue()
                 : 0.0;
 
-        // Safely handle selectedMonths
         List<?> selectedMonthsRaw = (List<?>) requestBody.get("selectedMonths");
         List<Integer> selectedMonths = new ArrayList<>();
         if (selectedMonthsRaw != null) {
@@ -73,7 +92,12 @@ public class ProjectSolarPanelController {
         return ResponseEntity.ok(projectSolarPanel);
     }
 
-    // Endpoint to get the current solar panel configuration for a project
+    /**
+     * Retrieves the current solar panel configuration for a specific project.
+     *
+     * @param projectId - the ID of the project
+     * @return ResponseEntity<ProjectSolarPanel> - the current solar panel configuration
+     */
     @GetMapping
     public ResponseEntity<ProjectSolarPanel> getProjectSolarPanel(@PathVariable String projectId) {
         ProjectSolarPanel projectSolarPanel = projectSolarPanelService.getProjectSolarPanel(projectId);

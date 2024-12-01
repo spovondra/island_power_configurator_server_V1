@@ -19,7 +19,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 /**
  * Configuration class for setting up Spring Security in the application.
- * This class configures authentication, authorization, and security filters.
+ * This class configures authentication, authorization, security filters and integrates a custom JWT filter.
  *
  * @version 1.0
  */
@@ -35,17 +35,17 @@ public class SecurityConfiguration {
     private OneUserDetailService userDetailService;
 
     /**
-     * JWT filter for processing JWT tokens
+     * JWT filter for validating JWT tokens in incoming requests
      */
     @Autowired
     private JwtRequestFilter jwtRequestFilter;
 
     /**
-     * Configures the security filter chain for HTTP requests.
+     * Configures the security filter chain for requests.
      *
-     * @param httpSecurity - The HttpSecurity object to configure
-     * @return SecurityFilterChain - The configured security filter chain
-     * @throws Exception - If an error occurs during configuration
+     * @param httpSecurity - the HttpSecurity object to configure
+     * @return SecurityFilterChain - the configured security filter chain
+     * @throws Exception - if an error occurs during configuration
      */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
@@ -53,7 +53,7 @@ public class SecurityConfiguration {
                 .csrf(AbstractHttpConfigurer::disable) // Disable CSRF protection
                 .authorizeHttpRequests(registry -> {
 
-                    // Public endpoints accessible to everyone
+                    // endpoints accessible to everyone (public)
                     registry.requestMatchers(
                             "/api/location/**",
                             "/api/auth/register/**",
@@ -61,7 +61,7 @@ public class SecurityConfiguration {
                             "/api/auth/refresh-token/**"
                     ).permitAll();
 
-                    // Endpoints accessible to users with USER or ADMIN roles
+                    // endpoints accessible to users with USER or ADMIN roles
                     registry.requestMatchers(
                             "/api/auth/user/{id}",
                             "/api/auth/update/{id}",
@@ -70,36 +70,36 @@ public class SecurityConfiguration {
                             "/api/projects/**"
                     ).hasAnyRole("USER", "ADMIN");
 
-                    // Endpoints accessible only to users with ADMIN role
+                    // endpoints accessible only to users with ADMIN role
                     registry.requestMatchers(
                             "/api/**"
                     ).hasRole("ADMIN");
                 })
-                .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class) // Add JWT filter before the username-password authentication filter
-                .httpBasic(Customizer.withDefaults()); // Enable HTTP Basic authentication
+                .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class) // Add JWT filter before the authentication filter
+                .httpBasic(Customizer.withDefaults()); //enable HTTP Basic authentication
         return httpSecurity.build();
     }
 
     /**
      * Provides the UserDetailsService bean.
      *
-     * @return UserDetailsService - The user details service
+     * @return UserDetailsService - the user details service
      */
     @Bean
     public UserDetailsService userDetailsService() {
-        return userDetailService; // Return the user detail service instance
+        return userDetailService;
     }
 
     /**
      * Provides the AuthenticationProvider bean.
      *
-     * @return AuthenticationProvider - The authentication provider
+     * @return AuthenticationProvider - the authentication provider
      */
     @Bean
     public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-        provider.setUserDetailsService(userDetailService); // Set the user details service
-        provider.setPasswordEncoder(passwordEncoder()); // Set the password encoder
+        provider.setUserDetailsService(userDetailService); // Set the userDetailsService
+        provider.setPasswordEncoder(passwordEncoder()); // Set the passwordEncoder
         return provider; // Return the configured authentication provider
     }
 
@@ -107,14 +107,14 @@ public class SecurityConfiguration {
      * Provides the PasswordEncoder bean.
      * <p>
      * This method configures a password encoder using BCrypt for hashing passwords,
-     * ensuring that user passwords are securely hashed before storage.
+     * ensuring that user passwords are securely hashed before their storage.
      *
-     * @return PasswordEncoder - The password encoder instance
+     * @return PasswordEncoder - the PasswordEncoder instance
      */
     @Bean
     public PasswordEncoder passwordEncoder() {
         PasswordEncoder encoder = new BCryptPasswordEncoder(); // Create an instance of BCryptPasswordEncoder
-        userDetailService.setPasswordEncoder(encoder); // Set the password encoder in the user detail service
+        userDetailService.setPasswordEncoder(encoder); // Set the password encoder in the userDetailService
         return encoder; // Return the configured password encoder
     }
 }

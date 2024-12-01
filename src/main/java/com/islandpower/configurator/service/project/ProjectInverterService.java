@@ -1,7 +1,5 @@
 package com.islandpower.configurator.service.project;
 
-import com.islandpower.configurator.exceptions.InverterNotFoundException;
-import com.islandpower.configurator.exceptions.ProjectNotFoundException;
 import com.islandpower.configurator.model.Inverter;
 import com.islandpower.configurator.model.project.ConfigurationModel;
 import com.islandpower.configurator.model.project.ProjectInverter;
@@ -10,10 +8,13 @@ import com.islandpower.configurator.repository.InverterRepository;
 import com.islandpower.configurator.repository.ProjectRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 /**
  * Service for managing inverters in a project configuration.
@@ -39,11 +40,12 @@ public class ProjectInverterService {
      * Removes an inverter from the specified project.
      * @param projectId ID of the project.
      * @param inverterId ID of the inverter to remove.
-     * @throws ProjectNotFoundException if the project is not found.
+     * @throws
      */
     public void removeInverter(String projectId, String inverterId) {
         Project project = projectRepository.findById(projectId)
-                .orElseThrow(() -> new ProjectNotFoundException(projectId));
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "Project with ID " + projectId + " was not found"));
 
         ConfigurationModel configModel = project.getConfigurationModel();
         if (configModel != null && configModel.getProjectInverter() != null) {
@@ -126,12 +128,12 @@ public class ProjectInverterService {
      * @param projectId ID of the project.
      * @param inverterId ID of the inverter to select.
      * @return the selected ProjectInverter object.
-     * @throws ProjectNotFoundException if the project is not found.
-     * @throws InverterNotFoundException if the inverter is not found.
+     * @throws
      */
     public ProjectInverter selectInverter(String projectId, String inverterId) {
         Project project = projectRepository.findById(projectId)
-                .orElseThrow(() -> new ProjectNotFoundException(projectId));
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "Project with ID " + projectId + " was not found"));
 
         ConfigurationModel configModel = project.getConfigurationModel();
         if (configModel == null) {
@@ -180,22 +182,23 @@ public class ProjectInverterService {
      * Retrieves the selected inverter by its ID.
      * @param inverterId ID of the inverter.
      * @return the selected inverter object.
-     * @throws InverterNotFoundException if the inverter is not found.
+     * @throws
      */
     public Inverter getSelectedInverter(String inverterId) {
         return inverterRepository.findById(inverterId)
-                .orElseThrow(() -> new InverterNotFoundException(inverterId));
+                .orElseThrow(() -> new NoSuchElementException("Inverter with ID " + inverterId + " was not found"));
     }
 
     /**
      * Retrieves the inverter configuration for a specific project.
      * @param projectId ID of the project.
      * @return ProjectInverter object, or an empty object if not configured.
-     * @throws ProjectNotFoundException if the project is not found.
+     * @throws
      */
     public ProjectInverter getProjectInverter(String projectId) {
         Project project = projectRepository.findById(projectId)
-                .orElseThrow(() -> new ProjectNotFoundException(projectId));
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "Project with ID " + projectId + " was not found"));
 
         if (project.getConfigurationModel() == null || project.getConfigurationModel().getProjectInverter() == null) {
             return new ProjectInverter(); // Returns an empty object instead of null

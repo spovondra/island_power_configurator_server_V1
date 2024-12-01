@@ -20,8 +20,11 @@ import java.util.List;
 import java.util.Locale;
 
 /**
- * Controller class for handling location-related requests.
- * This class provides endpoints for calculating PVGIS data, fetching optimal values, and retrieving minimum and maximum temperatures.
+ * Controller for managing location-based calculations and data retrieval.
+ * <p>
+ * Provides endpoints for calculating PVGIS data, retrieving optimal installation parameters,
+ * and fetching minimum and maximum temperatures for a given location.
+ * </p>
  *
  * @version 1.0
  */
@@ -30,28 +33,32 @@ import java.util.Locale;
 public class LocationController {
 
     /**
-     * Service for location-related calculations and PVGIS data retrieval.
+     * Service for performing location-related calculations and retrieving PVGIS data.
      */
     @Autowired
     private LocationService locationService;
 
     /**
-     * ObjectMapper for converting Java objects to JSON.
+     * Utility for converting objects to JSON format.
      */
     @Autowired
     private ObjectMapper objectMapper;
 
     /**
-     * Endpoint to calculate PVGIS data based on latitude, longitude, angle, and aspect.
+     * Calculates PVGIS data based on location and panel configuration.
      *
      * @param latitude - Latitude coordinate of the location
      * @param longitude - Longitude coordinate of the location
-     * @param angle - Angle of panel for the calculation
-     * @param aspect - Aspect of panel for the calculation
-     * @return ResponseEntity<String> - JSON response containing PVGIS data or error message
+     * @param angle - Installation angle of the solar panels
+     * @param aspect - Orientation aspect of the solar panels
+     * @return ResponseEntity<String> - JSON containing PVGIS data or an error message
      */
     @GetMapping("/calculatePVGISData")
-    public ResponseEntity<String> calculatePVGISData(@RequestParam String latitude, @RequestParam String longitude, @RequestParam String angle, @RequestParam String aspect) {
+    public ResponseEntity<String> calculatePVGISData(
+            @RequestParam String latitude,
+            @RequestParam String longitude,
+            @RequestParam String angle,
+            @RequestParam String aspect) {
         try {
             List<LocationService.MonthlyHI_d> monthlyHI_dList = locationService.calculatePVGISData(latitude, longitude, angle, aspect);
 
@@ -61,21 +68,19 @@ public class LocationController {
             String jsonResult = objectMapper.writeValueAsString(monthlyHI_dList);
 
             return new ResponseEntity<>(jsonResult, headers, HttpStatus.OK);
-        } catch (JsonProcessingException e) {
-            // Error processing JSON response
+        } catch (JsonProcessingException e) { // error processing JSON response
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("{\"error\":\"Error processing JSON\"}");
-        } catch (RuntimeException e) {
-            // General error while processing API request
+        } catch (RuntimeException e) { // general error while processing API request
             return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body("{\"error\":\"Service unavailable\"}");
         }
     }
 
     /**
-     * Endpoint to fetch optimal values (angle and aspect) based on latitude and longitude.
+     * Retrieves the optimal angle and aspect for solar panel installation based on location.
      *
      * @param latitude - Latitude coordinate of the location
      * @param longitude - Longitude coordinate of the location
-     * @return ResponseEntity<String> - JSON response containing optimal angle and aspect or error message
+     * @return ResponseEntity<String> - JSON containing the optimal angle and aspect or an error message
      */
     @GetMapping("/fetchOptimalValues")
     public ResponseEntity<String> fetchOptimalValues(@RequestParam String latitude, @RequestParam String longitude) {
@@ -91,11 +96,11 @@ public class LocationController {
     }
 
     /**
-     * Endpoint to retrieve the minimum and maximum temperatures for a given latitude and longitude.
+     * Retrieves minimum and maximum temperatures for a given location.
      *
      * @param latitude - Latitude coordinate of the location
      * @param longitude - Longitude coordinate of the location
-     * @return ResponseEntity<String> - JSON response containing min and max temperatures or error message
+     * @return ResponseEntity<String> - JSON containing the min and max temperatures or an error message
      */
     @GetMapping("/min-max-temperatures")
     public ResponseEntity<String> getMinMaxTemperatures(@RequestParam String latitude, @RequestParam String longitude) {
@@ -116,17 +121,16 @@ public class LocationController {
     // Utility methods
 
     /**
-     * Utility method to format minimum and maximum temperatures as a JSON string.
+     * Formats an array of temperatures into a JSON string.
      *
      * @param minMaxTemperatures - Array containing minimum and maximum temperatures
-     * @return String - JSON formatted string with temperatures
+     * @return String - JSON string with formatted temperature values
      */
     private static String getString(double[] minMaxTemperatures) {
         DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.US);
         symbols.setDecimalSeparator('.');
         DecimalFormat decimalFormat = new DecimalFormat("#.00", symbols);
 
-        // Format temperatures to two decimal places
         String minTempFormatted = decimalFormat.format(minMaxTemperatures[0]);
         String maxTempFormatted = decimalFormat.format(minMaxTemperatures[1]);
 
