@@ -38,7 +38,7 @@ public class ComponentController {
      * Retrieves all components of a specified type.
      *
      * @param type The type of component (e.g., "solar-panels", "controllers", etc.)
-     * @return ResponseEntity<List<?>> A list of all components of the specified type
+     * @return {@code ResponseEntity<List<?>>} A list of all components of the specified type
      */
     @GetMapping("/{type}")
     public ResponseEntity<List<?>> getAllComponents(@PathVariable String type) {
@@ -56,7 +56,7 @@ public class ComponentController {
      *
      * @param type The type of component
      * @param id The ID of the component
-     * @return ResponseEntity<?> The component or a NOT_FOUND status if it does not exist
+     * @return {@code ResponseEntity<?>} The component or a NOT_FOUND status if it does not exist
      */
     @GetMapping("/{type}/{id}")
     public ResponseEntity<?> getComponentById(@PathVariable String type, @PathVariable String id) {
@@ -74,27 +74,15 @@ public class ComponentController {
      *
      * @param type The type of component
      * @param componentData The data for the new component
-     * @return ResponseEntity<?> The created component or a BAD_REQUEST status if the type is invalid
+     * @return {@code ResponseEntity<?>} The created component or a BAD_REQUEST status if the type is invalid
      */
     @PostMapping("/{type}")
     public ResponseEntity<?> createComponent(@PathVariable String type, @RequestBody Object componentData) {
         return switch (type) {
-            case "solar-panels" -> {
-                SolarPanel solarPanel = (SolarPanel) componentData;
-                yield new ResponseEntity<>(solarPanelRepository.save(solarPanel), HttpStatus.CREATED);
-            }
-            case "controllers" -> {
-                Controller controller = (Controller) componentData;
-                yield new ResponseEntity<>(controllerRepository.save(controller), HttpStatus.CREATED);
-            }
-            case "batteries" -> {
-                Battery battery = (Battery) componentData;
-                yield new ResponseEntity<>(batteryRepository.save(battery), HttpStatus.CREATED);
-            }
-            case "inverters" -> {
-                Inverter inverter = (Inverter) componentData;
-                yield new ResponseEntity<>(inverterRepository.save(inverter), HttpStatus.CREATED);
-            }
+            case "solar-panels" -> new ResponseEntity<>(solarPanelRepository.save((SolarPanel) componentData), HttpStatus.CREATED);
+            case "controllers" -> new ResponseEntity<>(controllerRepository.save((Controller) componentData), HttpStatus.CREATED);
+            case "batteries" -> new ResponseEntity<>(batteryRepository.save((Battery) componentData), HttpStatus.CREATED);
+            case "inverters" -> new ResponseEntity<>(inverterRepository.save((Inverter) componentData), HttpStatus.CREATED);
             default -> new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         };
     }
@@ -105,7 +93,7 @@ public class ComponentController {
      * @param type The type of component
      * @param id The ID of the component
      * @param componentData The new data for the component
-     * @return ResponseEntity<?> The updated component or a NOT_FOUND status if it does not exist
+     * @return {@code ResponseEntity<?>} The updated component or a NOT_FOUND status if it does not exist
      */
     @PutMapping("/{type}/{id}")
     public ResponseEntity<?> updateComponent(@PathVariable String type, @PathVariable String id, @RequestBody Object componentData) {
@@ -123,7 +111,7 @@ public class ComponentController {
      *
      * @param type The type of component
      * @param id The ID of the component
-     * @return ResponseEntity<Void> A NO_CONTENT status if successful or NOT_FOUND if it does not exist
+     * @return {@code ResponseEntity<Void>} A NO_CONTENT status if successful or NOT_FOUND if it does not exist
      */
     @DeleteMapping("/{type}/{id}")
     public ResponseEntity<Void> deleteComponent(@PathVariable String type, @PathVariable String id) {
@@ -141,11 +129,10 @@ public class ComponentController {
      *
      * @param componentOptional Optional containing the component if found
      * @param <T> The type of the component
-     * @return ResponseEntity<?> The component with HTTP OK status, or NOT_FOUND if not present
+     * @return {@code ResponseEntity<?>} The component with HTTP OK status, or NOT_FOUND if not present
      */
     private <T> ResponseEntity<?> getComponent(Optional<T> componentOptional) {
-        return componentOptional
-                .map(component -> new ResponseEntity<>(component, HttpStatus.OK))
+        return componentOptional.map(component -> new ResponseEntity<>(component, HttpStatus.OK))
                 .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
@@ -156,7 +143,7 @@ public class ComponentController {
      * @param componentData The updated data for the component
      * @param repository The repository managing the component type
      * @param <T> The type of the component
-     * @return ResponseEntity<?> The updated component with HTTP OK status, or NOT_FOUND if not found
+     * @return {@code ResponseEntity<?>} The updated component with HTTP OK status, or NOT_FOUND if not found
      */
     private <T> ResponseEntity<?> updateComponent(String id, T componentData, MongoRepository<T, String> repository) {
         return repository.findById(id)
@@ -173,7 +160,7 @@ public class ComponentController {
      * @param id The ID of the component to delete
      * @param repository The repository managing the component type
      * @param <T> The type of the component
-     * @return ResponseEntity<Void> HTTP NO_CONTENT status if deletion is successful, or NOT_FOUND if not found
+     * @return {@code ResponseEntity<Void>} HTTP NO_CONTENT status if deletion is successful, or NOT_FOUND if not found
      */
     private <T> ResponseEntity<Void> deleteComponent(String id, MongoRepository<T, String> repository) {
         return repository.findById(id)
@@ -191,7 +178,7 @@ public class ComponentController {
         /**
          * Updates the component's data with the provided object.
          *
-         * @param data - the new data to update the component
+         * @param data The new data to update the component
          */
         void update(Object data);
     }

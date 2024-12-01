@@ -28,7 +28,7 @@ public class OneUser {
     /**
      * Retrieves the unique identifier for the user.
      *
-     * @return String The unique ID of the user
+     * @return {@code String} The unique ID of the user
      */
     public String getId() {
         return id;
@@ -46,7 +46,7 @@ public class OneUser {
     /**
      * Retrieves the username used for authentication.
      *
-     * @return String The username of the user
+     * @return {@code String} The username of the user
      */
     public String getUsername() {
         return username;
@@ -64,7 +64,7 @@ public class OneUser {
     /**
      * Retrieves the encoded password for the user.
      *
-     * @return String The encoded password of the user
+     * @return {@code String} The encoded password of the user
      */
     public String getPassword() {
         return password;
@@ -82,7 +82,7 @@ public class OneUser {
     /**
      * Retrieves the role assigned to the user.
      *
-     * @return String The role of the user
+     * @return {@code String} The role of the user
      */
     public String getRole() {
         return role;
@@ -100,7 +100,7 @@ public class OneUser {
     /**
      * Retrieves the first name of the user.
      *
-     * @return String The first name of the user
+     * @return {@code String} The first name of the user
      */
     public String getFirstName() {
         return firstName;
@@ -118,7 +118,7 @@ public class OneUser {
     /**
      * Retrieves the last name of the user.
      *
-     * @return String The last name of the user
+     * @return {@code String} The last name of the user
      */
     public String getLastName() {
         return lastName;
@@ -136,7 +136,7 @@ public class OneUser {
     /**
      * Retrieves the email address of the user.
      *
-     * @return String The email address of the user
+     * @return {@code String} The email address of the user
      */
     public String getEmail() {
         return email;
@@ -154,7 +154,7 @@ public class OneUser {
     /**
      * Retrieves the list of project IDs associated with the user.
      *
-     * @return List<String> The list of project IDs
+     * @return {@code List<String>} The list of project IDs
      */
     public List<String> getProjects() {
         return projects;

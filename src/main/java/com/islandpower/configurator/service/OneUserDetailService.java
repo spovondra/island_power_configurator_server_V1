@@ -14,8 +14,8 @@ import java.util.Optional;
 
 /**
  * Service class for handling user-related operations and security details.
- * This class implements the UserDetailsService interface and provides methods
- * for managing user information and authentication.
+ * This class implements the {@link UserDetailsService} interface and provides methods
+ * for managing user information and authentication, including password validation and user role management.
  *
  * @version 1.0
  */
@@ -31,7 +31,7 @@ public class OneUserDetailService implements UserDetailsService {
      * Saves a new user to the repository with an encoded password.
      *
      * @param oneUser The user object to be saved
-     * @return OneUser The saved user object with encoded password
+     * @return {@code OneUser} The saved user object with encoded password
      */
     public OneUser saveUser(OneUser oneUser) {
         userRepository.save(oneUser);
@@ -41,7 +41,7 @@ public class OneUserDetailService implements UserDetailsService {
     /**
      * Retrieves all users from the repository.
      *
-     * @return Iterable<OneUser> An iterable collection of all users
+     * @return {@code Iterable<OneUser>} An iterable collection of all users
      */
     public Iterable<OneUser> getAll() {
         return userRepository.findAll();
@@ -60,7 +60,7 @@ public class OneUserDetailService implements UserDetailsService {
      * Retrieves a user by their ID.
      *
      * @param userId The ID of the user to retrieve
-     * @return OneUser The user object corresponding to the provided ID
+     * @return {@code OneUser} The user object corresponding to the provided ID
      * @throws RuntimeException if the user is not found
      */
     public OneUser getUserById(String userId) {
@@ -72,16 +72,16 @@ public class OneUserDetailService implements UserDetailsService {
      * Retrieves a user by their username.
      *
      * @param username The username of the user to retrieve
-     * @return Optional<OneUser> An optional user object, which may be empty if the user is not found
+     * @return {@code Optional<OneUser>} An optional user object, which may be empty if the user is not found
      */
     public Optional<OneUser> getUserByUsername(String username) {
         return userRepository.findByUsername(username);
     }
 
     /**
-     * Sets the PasswordEncoder used for encoding passwords.
+     * Sets the {@link PasswordEncoder} used for encoding passwords.
      *
-     * @param passwordEncoder The PasswordEncoder to set
+     * @param passwordEncoder The {@code PasswordEncoder} to set
      */
     public void setPasswordEncoder(PasswordEncoder passwordEncoder) {
         this.passwordEncoder = passwordEncoder;
@@ -92,14 +92,14 @@ public class OneUserDetailService implements UserDetailsService {
      *
      * @param username    The username of the user to authenticate
      * @param rawPassword The raw password provided for authentication
-     * @return boolean True if authentication is successful, false otherwise
+     * @return {@code boolean} True if authentication is successful, false otherwise
      */
     public boolean authenticateUser(String username, String rawPassword) {
         /* Find user by username */
         Optional<OneUser> optionalUser = userRepository.findByUsername(username);
         if (optionalUser.isPresent()) {
             OneUser user = optionalUser.get();
-            return passwordEncoder.matches(rawPassword, user.getPassword()); //validate the provided password
+            return passwordEncoder.matches(rawPassword, user.getPassword());
         }
         /* Authentication fails if user not found */
         return false;
@@ -109,7 +109,7 @@ public class OneUserDetailService implements UserDetailsService {
      * Loads user details by their username for authentication.
      *
      * @param username The username of the user to load
-     * @return UserDetails The user details object for the specified username
+     * @return {@link UserDetails} The user details object for the specified username
      * @throws UsernameNotFoundException if the user is not found
      */
     @Override
@@ -117,7 +117,7 @@ public class OneUserDetailService implements UserDetailsService {
         /* Find user by username */
         Optional<OneUser> user = userRepository.findByUsername(username);
         if (user.isPresent()) {
-            var userObj = user.get();
+            OneUser userObj = user.get();
             return User.builder()
                     .username(userObj.getUsername())
                     .password(userObj.getPassword())
@@ -131,8 +131,8 @@ public class OneUserDetailService implements UserDetailsService {
     /**
      * Extracts roles from the user object and converts them into an array of role strings.
      *
-     * @param user The user object from which roles are extracted
-     * @return String[] An array of role strings
+     * @param user The {@code OneUser} object from which roles are extracted
+     * @return {@code String[]} An array of role strings
      */
     private String[] getRoles(OneUser user) {
         if (user.getRole() == null) {

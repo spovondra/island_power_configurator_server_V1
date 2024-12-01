@@ -31,7 +31,7 @@ public class ProjectService {
      *
      * @param project The project object to create
      * @param userId  The ID of the user who owns the project
-     * @return Project The newly created project object
+     * @return com.islandpower.configurator.model.Project The newly created project object
      */
     public Project createProject(Project project, String userId) {
         project.setUserId(userId);
@@ -71,7 +71,7 @@ public class ProjectService {
     /**
      * Retrieves all projects in the system.
      *
-     * @return List<Project> A list of all projects
+     * @return java.util.List<com.islandpower.configurator.model.Project> A list of all projects
      */
     public List<Project> getAllProjects() {
         return projectRepository.findAll();
@@ -81,7 +81,7 @@ public class ProjectService {
      * Retrieves all projects associated with a specific user.
      *
      * @param userId The ID of the user whose projects to retrieve
-     * @return List<Project> A list of projects associated with the user
+     * @return java.util.List<com.islandpower.configurator.model.Project> A list of projects associated with the user
      */
     public List<Project> getProjectsByUserId(String userId) {
         OneUser user = userRepository.findById(userId)
@@ -93,8 +93,8 @@ public class ProjectService {
      * Retrieves a project by its ID, ensuring the user has permission to access it.
      *
      * @param projectId The ID of the project to retrieve
-     * @param userId    The ID of the user requesting the project
-     * @return Project The requested project
+     * @param userId The ID of the user requesting the project
+     * @return com.islandpower.configurator.model.Project The requested project
      * @throws RuntimeException if the project is not found or the user lacks permission
      */
     public Project getProjectById(String projectId, String userId) {
@@ -115,9 +115,9 @@ public class ProjectService {
     /**
      * Updates an existing project, ensuring the user has permission to modify it.
      *
-     * @param projectId      The ID of the project to update
+     * @param projectId The ID of the project to update
      * @param updatedProject The updated project object
-     * @param userId         The ID of the user making the update
+     * @param userId The ID of the user making the update
      * @return Project The updated project
      */
     public Project updateProject(String projectId, Project updatedProject, String userId) {
@@ -142,15 +142,15 @@ public class ProjectService {
     /**
      * Updates the site information for a project, including location data.
      *
-     * @param projectId            The ID of the project to update
-     * @param userId               The ID of the user performing the update
-     * @param latitude             The latitude of the project location
-     * @param longitude            The longitude of the project location
-     * @param minMaxTemperatures   The minimum and maximum temperatures for the site
-     * @param panelAngle           The angle of the solar panels
-     * @param panelAspect          The aspect (orientation) of the solar panels
-     * @param usedOptimalValues    Whether optimal values were used for the configuration
-     * @param monthlyData          The monthly solar irradiance and temperature data
+     * @param projectId The ID of the project to update
+     * @param userId The ID of the user performing the update
+     * @param latitude The latitude of the project location
+     * @param longitude The longitude of the project location
+     * @param minMaxTemperatures The minimum and maximum temperatures for the site
+     * @param panelAngle The angle of the solar panels
+     * @param panelAspect The aspect (orientation) of the solar panels
+     * @param usedOptimalValues Whether optimal values were used for the configuration
+     * @param monthlyData The monthly solar irradiance and temperature data
      */
     public void updateSiteWithLocationData(String projectId, String userId, double latitude, double longitude,
                                            double[] minMaxTemperatures, int panelAngle, int panelAspect,
@@ -188,7 +188,7 @@ public class ProjectService {
      * Updates the last completed step in the project.
      *
      * @param projectId The ID of the project
-     * @param step      The step number to set as the last completed step
+     * @param step The step number to set as the last completed step
      */
     public void updateLastCompletedStep(String projectId, int step) {
         Project project = projectRepository.findById(projectId)

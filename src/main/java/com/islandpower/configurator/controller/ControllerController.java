@@ -36,7 +36,7 @@ public class ControllerController {
      * Creates a new controller.
      *
      * @param controller The controller object to be created
-     * @return ResponseEntity<Controller> The created controller with HTTP CREATED status
+     * @return {@code ResponseEntity<Controller>} The created controller with HTTP CREATED status
      */
     @PostMapping
     public ResponseEntity<Controller> createController(@RequestBody Controller controller) {
@@ -47,7 +47,7 @@ public class ControllerController {
     /**
      * Retrieves all controllers.
      *
-     * @return ResponseEntity<List<Controller>> A list of all controllers with HTTP OK status
+     * @return {@code ResponseEntity<List<Controller>>} A list of all controllers with HTTP OK status
      */
     @GetMapping
     public ResponseEntity<List<Controller>> getAllControllers() {
@@ -59,7 +59,7 @@ public class ControllerController {
      * Retrieves a controller by its ID.
      *
      * @param id The ID of the controller to retrieve
-     * @return ResponseEntity<Controller> The controller object with HTTP OK status, or NOT_FOUND if not present
+     * @return {@code ResponseEntity<Controller>} The controller object with HTTP OK status, or NOT_FOUND if not present
      */
     @GetMapping("/{id}")
     public ResponseEntity<Controller> getControllerById(@PathVariable String id) {
@@ -72,7 +72,7 @@ public class ControllerController {
      *
      * @param id The ID of the controller to update
      * @param controller The updated controller object
-     * @return ResponseEntity<Controller> The updated controller with HTTP OK status, or NOT_FOUND if not present
+     * @return {@code ResponseEntity<Controller>} The updated controller with HTTP OK status, or NOT_FOUND if not present
      */
     @PutMapping("/{id}")
     public ResponseEntity<Controller> updateController(@PathVariable String id, @RequestBody Controller controller) {
@@ -84,7 +84,7 @@ public class ControllerController {
      * Deletes a controller by its ID.
      *
      * @param id The ID of the controller to delete
-     * @return ResponseEntity<Void> HTTP NO_CONTENT status if deletion is successful
+     * @return {@code ResponseEntity<Void>} HTTP NO_CONTENT status if deletion is successful
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteController(@PathVariable String id) {

@@ -11,6 +11,8 @@ import java.util.Optional;
 /**
  * Service for managing controllers in the system.
  * Provides CRUD operations for controller configurations.
+ *
+ * @version 1.0
  */
 @Service
 public class ControllerService {
@@ -31,7 +33,7 @@ public class ControllerService {
      * Adds a new controller to the system.
      *
      * @param controller The controller to add
-     * @return Controller The added controller
+     * @return {@code Controller} The added controller
      */
     public Controller addController(Controller controller) {
         return controllerRepository.save(controller);
@@ -40,7 +42,7 @@ public class ControllerService {
     /**
      * Retrieves all controllers in the system.
      *
-     * @return List<Controller> List of all controllers
+     * @return {@code List<Controller>} A list of all controllers
      */
     public List<Controller> getAllControllers() {
         return controllerRepository.findAll();
@@ -50,7 +52,7 @@ public class ControllerService {
      * Retrieves a controller by its ID.
      *
      * @param id The ID of the controller
-     * @return Optional<Controller> The controller wrapped in an Optional
+     * @return {@code Optional<Controller>} The controller wrapped in an Optional
      */
     public Optional<Controller> getControllerById(String id) {
         return controllerRepository.findById(id);
@@ -61,7 +63,7 @@ public class ControllerService {
      *
      * @param id The ID of the controller to update
      * @param controllerDetails The updated controller details
-     * @return Controller The updated controller, or null if not found
+     * @return {@code Controller} The updated controller, or {@code null} if not found
      */
     public Controller updateController(String id, Controller controllerDetails) {
         Optional<Controller> optionalController = controllerRepository.findById(id);

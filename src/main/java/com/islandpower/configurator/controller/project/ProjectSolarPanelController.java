@@ -29,7 +29,7 @@ public class ProjectSolarPanelController {
      * Fetches a list of suitable solar panels for a specific project.
      *
      * @param projectId The ID of the project
-     * @return ResponseEntity<List<SolarPanel>> The list of suitable solar panels
+     * @return ResponseEntity containing a list of {@link SolarPanel} objects representing the suitable solar panels
      */
     @GetMapping("/suitable")
     public ResponseEntity<List<SolarPanel>> getSuitableSolarPanels(@PathVariable String projectId) {
@@ -42,31 +42,31 @@ public class ProjectSolarPanelController {
      *
      * @param projectId   The ID of the project
      * @param requestBody A map containing solar panel details and efficiency parameters
-     * @return ResponseEntity<ProjectSolarPanel> The updated solar panel configuration
+     * @return ResponseEntity containing the updated {@link ProjectSolarPanel} configuration
      */
     @PostMapping("/select")
     public ResponseEntity<ProjectSolarPanel> selectSolarPanel(
             @PathVariable String projectId,
             @RequestBody Map<String, Object> requestBody) {
 
-        /* Extract solar panel ID */
+        // Extract solar panel ID
         String solarPanelId = (String) requestBody.get("solarPanelId");
 
-        /* Extract efficiency and loss parameters with defaults */
+        // Extract efficiency and loss parameters with defaults
         double panelOversizeCoefficient = extractDoubleFromRequest(requestBody, "panelOversizeCoefficient");
         double batteryEfficiency = extractDoubleFromRequest(requestBody, "batteryEfficiency");
         double cableEfficiency = extractDoubleFromRequest(requestBody, "cableEfficiency");
 
-        /* Extract selected months */
+        // Extract selected months
         List<Integer> selectedMonths = extractIntegerListFromRequest(requestBody);
 
-        /* Extract other configuration parameters */
+        // Extract other configuration parameters
         String installationType = (String) requestBody.get("installationType");
         double manufacturerTolerance = extractDoubleFromRequest(requestBody, "manufacturerTolerance");
         double agingLoss = extractDoubleFromRequest(requestBody, "agingLoss");
         double dirtLoss = extractDoubleFromRequest(requestBody, "dirtLoss");
 
-        /* Calculate and save the solar panel configuration */
+        // Calculate and save the solar panel configuration
         ProjectSolarPanel projectSolarPanel = projectSolarPanelService.calculateSolarPanelConfiguration(
                 projectId, solarPanelId, panelOversizeCoefficient, batteryEfficiency, cableEfficiency,
                 selectedMonths, installationType, manufacturerTolerance, agingLoss, dirtLoss);
@@ -78,7 +78,7 @@ public class ProjectSolarPanelController {
      * Retrieves the current solar panel configuration for a specific project.
      *
      * @param projectId The ID of the project
-     * @return ResponseEntity<ProjectSolarPanel> The current solar panel configuration
+     * @return ResponseEntity containing the current {@link ProjectSolarPanel} configuration
      */
     @GetMapping
     public ResponseEntity<ProjectSolarPanel> getProjectSolarPanel(@PathVariable String projectId) {
@@ -101,7 +101,7 @@ public class ProjectSolarPanelController {
      * Utility method to extract a list of integers from the request body.
      *
      * @param requestBody The request body as a map
-     * @return List<Integer> The list of integers or an empty list if the key is absent
+     * @return List of integers representing selected months or an empty list if the key is absent
      */
     private List<Integer> extractIntegerListFromRequest(Map<String, Object> requestBody) {
         List<?> rawList = (List<?>) requestBody.get("selectedMonths");

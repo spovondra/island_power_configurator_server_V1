@@ -19,25 +19,30 @@ public class SolarPanelService {
 
     private final SolarPanelRepository solarPanelRepository;
 
+    /**
+     * Constructs a SolarPanelService with the specified repository.
+     *
+     * @param solarPanelRepository The repository for managing solar panel entities
+     */
     @Autowired
     public SolarPanelService(SolarPanelRepository solarPanelRepository) {
         this.solarPanelRepository = solarPanelRepository;
     }
 
     /**
-     * Creates a new solar panel in the repository.
+     * Creates and saves a new solar panel.
      *
-     * @param solarPanel The solar panel object to be saved
-     * @return SolarPanel The saved solar panel object
+     * @param solarPanel The solar panel object to save
+     * @return {@link SolarPanel} The saved solar panel object
      */
     public SolarPanel addSolarPanel(SolarPanel solarPanel) {
         return solarPanelRepository.save(solarPanel);
     }
 
     /**
-     * Retrieves all solar panels from the repository.
+     * Retrieves all solar panels.
      *
-     * @return List<SolarPanel> A list of all solar panels
+     * @return {@link List} of {@link SolarPanel} objects in the repository
      */
     public List<SolarPanel> getAllSolarPanels() {
         return solarPanelRepository.findAll();
@@ -47,19 +52,18 @@ public class SolarPanelService {
      * Retrieves a solar panel by its ID.
      *
      * @param id The ID of the solar panel to retrieve
-     * @return Optional<SolarPanel> An optional solar panel object, which may be empty if not found
+     * @return {@link Optional} containing the {@link SolarPanel} if found, or empty if not found
      */
     public Optional<SolarPanel> getSolarPanelById(String id) {
         return solarPanelRepository.findById(id);
     }
 
     /**
-     * Updates an existing solar panel.
-     * If the solar panel with the specified ID is found, its details are updated.
+     * Updates the details of an existing solar panel.
      *
      * @param id The ID of the solar panel to update
-     * @param solarPanelDetails The updated solar panel details
-     * @return SolarPanel The updated solar panel object
+     * @param solarPanelDetails The new details for the solar panel
+     * @return {@link SolarPanel} The updated solar panel object, or null if not found
      */
     public SolarPanel updateSolarPanel(String id, SolarPanel solarPanelDetails) {
         Optional<SolarPanel> optionalSolarPanel = solarPanelRepository.findById(id);
@@ -79,11 +83,11 @@ public class SolarPanelService {
             solarPanel.setPrice(solarPanelDetails.getPrice());
             return solarPanelRepository.save(solarPanel);
         }
-        return null; // or throw an exception
+        return null;
     }
 
     /**
-     * Deletes a solar panel from the repository.
+     * Deletes a solar panel by its ID.
      *
      * @param id The ID of the solar panel to delete
      */

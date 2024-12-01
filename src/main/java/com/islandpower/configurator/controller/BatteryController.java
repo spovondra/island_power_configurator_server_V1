@@ -35,8 +35,8 @@ public class BatteryController {
     /**
      * Creates a new battery.
      *
-     * @param battery The battery object to be created
-     * @return ResponseEntity<Battery> The created battery with HTTP CREATED status
+     * @param battery The {@link Battery} object to be created
+     * @return {@code ResponseEntity<Battery>} The created battery with HTTP CREATED status
      */
     @PostMapping
     public ResponseEntity<Battery> createBattery(@RequestBody Battery battery) {
@@ -47,7 +47,7 @@ public class BatteryController {
     /**
      * Retrieves all batteries.
      *
-     * @return ResponseEntity<List<Battery>> A list of all batteries with HTTP OK status
+     * @return {@code ResponseEntity<List<Battery>>} A list of all batteries with HTTP OK status
      */
     @GetMapping
     public ResponseEntity<List<Battery>> getAllBatteries() {
@@ -59,7 +59,7 @@ public class BatteryController {
      * Retrieves a battery by its ID.
      *
      * @param id The ID of the battery to retrieve
-     * @return ResponseEntity<Battery> The battery object with HTTP OK status, or 404 if not found
+     * @return {@code ResponseEntity<Battery>} The battery object with HTTP OK status, or 404 if not found
      */
     @GetMapping("/{id}")
     public ResponseEntity<Battery> getBatteryById(@PathVariable String id) {
@@ -71,8 +71,8 @@ public class BatteryController {
      * Updates an existing battery.
      *
      * @param id The ID of the battery to update
-     * @param battery The updated battery object
-     * @return ResponseEntity<Battery> The updated battery with HTTP OK status, or 404 if not found
+     * @param battery The updated {@link Battery} object
+     * @return {@code ResponseEntity<Battery>} The updated battery with HTTP OK status, or 404 if not found
      */
     @PutMapping("/{id}")
     public ResponseEntity<Battery> updateBattery(@PathVariable String id, @RequestBody Battery battery) {
@@ -84,7 +84,7 @@ public class BatteryController {
      * Deletes a battery by its ID.
      *
      * @param id The ID of the battery to delete
-     * @return ResponseEntity<Void> A no-content response with HTTP NO_CONTENT status
+     * @return {@code ResponseEntity<Void>} A no-content response with HTTP NO_CONTENT status
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteBattery(@PathVariable String id) {

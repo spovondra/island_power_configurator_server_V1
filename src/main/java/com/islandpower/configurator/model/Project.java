@@ -17,14 +17,15 @@ import java.util.List;
  */
 @Document(collection = "projects")
 public class Project {
+
     @Id
     private String id; // unique identifier for the project
     private String name; // name of the project
     private String userId; // identifier of the user associated with the project
-    private Site site; // details of the project's geographical and environmental site
+    private Site site; // geographical and environmental details of the project site
     private List<Appliance> appliances; // list of appliances included in the project
     private ConfigurationModel configurationModel; // configuration details of the project
-    private int lastCompletedStep; // tracks the last completed step in the project workflow
+    private int lastCompletedStep; // tracks the last completed step in the project setup process
 
     /**
      * Retrieves the unique identifier of the project.
@@ -81,7 +82,7 @@ public class Project {
     }
 
     /**
-     * Retrieves the details of the project's geographical and environmental site.
+     * Retrieves the geographical and environmental details of the project's site.
      *
      * @return Site The site details of the project
      */
@@ -90,7 +91,7 @@ public class Project {
     }
 
     /**
-     * Updates the details of the project's geographical and environmental site.
+     * Updates the geographical and environmental details of the project's site.
      *
      * @param site The new site details of the project
      */
@@ -135,7 +136,7 @@ public class Project {
     }
 
     /**
-     * Retrieves the last completed step in the project workflow.
+     * Retrieves the last completed step in the project's setup process.
      *
      * @return int The last completed step in the project
      */
@@ -144,7 +145,7 @@ public class Project {
     }
 
     /**
-     * Updates the last completed step in the project workflow.
+     * Updates the last completed step in the project's setup process.
      *
      * @param lastCompletedStep The new last completed step in the project
      */

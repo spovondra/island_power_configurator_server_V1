@@ -150,7 +150,7 @@ public class Site {
     /**
      * Retrieves the list of monthly solar data for the site.
      *
-     * @return List<MonthlyData> The monthly solar data
+     * @return {@link List} of {@link MonthlyData} The monthly solar data
      */
     public List<MonthlyData> getMonthlyDataList() {
         return monthlyDataList;

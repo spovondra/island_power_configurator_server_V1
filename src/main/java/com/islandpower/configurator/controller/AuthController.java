@@ -39,7 +39,7 @@ public class AuthController {
      * Registers a new user in the system.
      *
      * @param user The user object containing registration details
-     * @return ResponseEntity<?> The created user or an error message if the username already exists
+     * @return {@code ResponseEntity<?>} The created user or an error message if the username already exists
      */
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@RequestBody OneUser user) {
@@ -56,7 +56,7 @@ public class AuthController {
     /**
      * Retrieves all registered users.
      *
-     * @return Iterable<OneUser> A list of all users
+     * @return {@code Iterable<}{@link OneUser}{@code >} A list of all users
      */
     @GetMapping("/getAll")
     public Iterable<OneUser> getAllUsers() {
@@ -68,7 +68,7 @@ public class AuthController {
      *
      * @param userId The ID of the user to update
      * @param updatedOneUser The updated user details
-     * @return String The ID of the updated user
+     * @return {@code String} The ID of the updated user
      */
     @PutMapping("/update/{id}")
     public String updateUser(@PathVariable("id") String userId, @RequestBody OneUser updatedOneUser) {
@@ -126,7 +126,7 @@ public class AuthController {
      *
      * @param username The username of the user
      * @param password The password of the user
-     * @return ResponseEntity<?> JWT tokens and user details if authentication succeeds
+     * @return {@code ResponseEntity<?>} JWT tokens and user details if authentication succeeds
      */
     @PostMapping("/login")
     public ResponseEntity<?> authenticateUser(@RequestParam String username, @RequestParam String password) {
@@ -158,7 +158,7 @@ public class AuthController {
      * Refreshes JWT token using a refresh token.
      *
      * @param refreshToken The refresh token
-     * @return ResponseEntity<?> A new JWT token
+     * @return {@code ResponseEntity<?>} A new JWT token
      */
     @PostMapping("/refresh-token")
     public ResponseEntity<?> refreshJwtToken(@RequestParam String refreshToken) {

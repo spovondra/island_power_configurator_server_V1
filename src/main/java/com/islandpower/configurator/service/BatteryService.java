@@ -11,6 +11,8 @@ import java.util.Optional;
 /**
  * Service for managing batteries in the system.
  * Provides CRUD operations for battery configurations.
+ *
+ * @version 1.0
  */
 @Service
 public class BatteryService {
@@ -20,7 +22,7 @@ public class BatteryService {
     /**
      * Constructs a BatteryService instance.
      *
-     * @param batteryRepository Repository for managing batteries
+     * @param batteryRepository {@link BatteryRepository} for managing batteries
      */
     @Autowired
     public BatteryService(BatteryRepository batteryRepository) {
@@ -30,8 +32,8 @@ public class BatteryService {
     /**
      * Adds a new battery to the system.
      *
-     * @param battery The battery to add
-     * @return Battery The added battery
+     * @param battery {@link Battery} The battery to add
+     * @return {@link Battery} The added battery
      */
     public Battery addBattery(Battery battery) {
         return batteryRepository.save(battery);
@@ -40,7 +42,7 @@ public class BatteryService {
     /**
      * Retrieves all batteries in the system.
      *
-     * @return List<Battery> List of all batteries
+     * @return {@code List<Battery>} A list of all batteries
      */
     public List<Battery> getAllBatteries() {
         return batteryRepository.findAll();
@@ -50,7 +52,7 @@ public class BatteryService {
      * Retrieves a battery by its ID.
      *
      * @param id The ID of the battery
-     * @return Optional<Battery> The battery wrapped in an Optional
+     * @return {@code Optional<Battery>} The battery wrapped in an {@code Optional}
      */
     public Optional<Battery> getBatteryById(String id) {
         return batteryRepository.findById(id);
@@ -60,8 +62,8 @@ public class BatteryService {
      * Updates the details of an existing battery.
      *
      * @param id The ID of the battery to update
-     * @param batteryDetails The updated battery details
-     * @return Battery The updated battery, or null if not found
+     * @param batteryDetails {@link Battery} The updated battery details
+     * @return {@link Battery} The updated battery, or {@code null} if not found
      */
     public Battery updateBattery(String id, Battery batteryDetails) {
         Optional<Battery> optionalBattery = batteryRepository.findById(id);

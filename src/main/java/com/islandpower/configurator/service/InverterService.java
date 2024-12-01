@@ -11,6 +11,8 @@ import java.util.Optional;
 /**
  * Service for managing inverters in the system.
  * Provides CRUD operations for inverter configurations.
+ *
+ * @version 1.0
  */
 @Service
 public class InverterService {
@@ -31,7 +33,7 @@ public class InverterService {
      * Adds a new inverter to the system.
      *
      * @param inverter The inverter to add
-     * @return Inverter The added inverter
+     * @return {@code Inverter} The added inverter
      */
     public Inverter addInverter(Inverter inverter) {
         return inverterRepository.save(inverter);
@@ -40,7 +42,7 @@ public class InverterService {
     /**
      * Retrieves all inverters in the system.
      *
-     * @return List<Inverter> List of all inverters
+     * @return {@code List<Inverter>} A list of all inverters
      */
     public List<Inverter> getAllInverters() {
         return inverterRepository.findAll();
@@ -50,7 +52,7 @@ public class InverterService {
      * Retrieves an inverter by its ID.
      *
      * @param id The ID of the inverter
-     * @return Optional<Inverter> The inverter wrapped in an Optional
+     * @return {@code Optional<Inverter>} The inverter wrapped in an Optional
      */
     public Optional<Inverter> getInverterById(String id) {
         return inverterRepository.findById(id);
@@ -59,9 +61,9 @@ public class InverterService {
     /**
      * Updates the details of an existing inverter.
      *
-     * @param id               The ID of the inverter to update
+     * @param id The ID of the inverter to update
      * @param inverterDetails The updated inverter details
-     * @return Inverter The updated inverter, or null if not found
+     * @return {@code Inverter} The updated inverter, or {@code null} if not found
      */
     public Inverter updateInverter(String id, Inverter inverterDetails) {
         Optional<Inverter> optionalInverter = inverterRepository.findById(id);
