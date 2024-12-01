@@ -12,9 +12,7 @@ import java.util.Optional;
 
 /**
  * Controller for managing solar panel components.
- * <p>
  * Provides endpoints for creating, retrieving, updating, and deleting solar panels.
- * </p>
  *
  * @version 1.0
  */
@@ -24,6 +22,11 @@ public class SolarPanelController {
 
     private final SolarPanelService solarPanelService;
 
+    /**
+     * Constructs a SolarPanelController with the specified SolarPanelService.
+     *
+     * @param solarPanelService The service handling solar panel operations
+     */
     @Autowired
     public SolarPanelController(SolarPanelService solarPanelService) {
         this.solarPanelService = solarPanelService;
@@ -32,8 +35,8 @@ public class SolarPanelController {
     /**
      * Creates a new solar panel.
      *
-     * @param solarPanel - the solar panel object to be created
-     * @return ResponseEntity<SolarPanel> - the created solar panel with HTTP CREATED status
+     * @param solarPanel The solar panel object to be created
+     * @return ResponseEntity<SolarPanel> The created solar panel with HTTP CREATED status
      */
     @PostMapping
     public ResponseEntity<SolarPanel> createSolarPanel(@RequestBody SolarPanel solarPanel) {
@@ -44,7 +47,7 @@ public class SolarPanelController {
     /**
      * Retrieves all solar panels.
      *
-     * @return ResponseEntity<List<SolarPanel>> - a list of all solar panels with HTTP OK status
+     * @return ResponseEntity<List<SolarPanel>> A list of all solar panels with HTTP OK status
      */
     @GetMapping
     public ResponseEntity<List<SolarPanel>> getAllSolarPanels() {
@@ -55,8 +58,8 @@ public class SolarPanelController {
     /**
      * Retrieves a solar panel by its ID.
      *
-     * @param id - the ID of the solar panel to retrieve
-     * @return ResponseEntity<SolarPanel> - the solar panel object with HTTP OK status, or NOT_FOUND if not present
+     * @param id The ID of the solar panel to retrieve
+     * @return ResponseEntity<SolarPanel> The solar panel object with HTTP OK status, or NOT_FOUND if not present
      */
     @GetMapping("/{id}")
     public ResponseEntity<SolarPanel> getSolarPanelById(@PathVariable String id) {
@@ -67,9 +70,9 @@ public class SolarPanelController {
     /**
      * Updates an existing solar panel.
      *
-     * @param id - the ID of the solar panel to update
-     * @param solarPanel - the updated solar panel object
-     * @return ResponseEntity<SolarPanel> - the updated solar panel with HTTP OK status, or NOT_FOUND if not present
+     * @param id The ID of the solar panel to update
+     * @param solarPanel The updated solar panel object
+     * @return ResponseEntity<SolarPanel> The updated solar panel with HTTP OK status, or NOT_FOUND if not present
      */
     @PutMapping("/{id}")
     public ResponseEntity<SolarPanel> updateSolarPanel(@PathVariable String id, @RequestBody SolarPanel solarPanel) {
@@ -80,8 +83,8 @@ public class SolarPanelController {
     /**
      * Deletes a solar panel by its ID.
      *
-     * @param id - the ID of the solar panel to delete
-     * @return ResponseEntity<Void> - HTTP NO_CONTENT status if deletion is successful
+     * @param id The ID of the solar panel to delete
+     * @return ResponseEntity<Void> HTTP NO_CONTENT status if deletion is successful
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteSolarPanel(@PathVariable String id) {

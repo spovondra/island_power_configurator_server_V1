@@ -13,20 +13,18 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 /**
  * Controller for managing inverters within a specific project.
- * <p>
  * Provides endpoints for removing an inverter, retrieving system voltage and recommended system voltage,
  * fetching suitable inverters based on configuration, selecting an inverter, and retrieving the current inverter configuration.
- * </p>
  *
  * @version 1.0
  */
-
 @RestController
 @RequestMapping("/api/projects/{projectId}/inverters")
 public class ProjectInverterController {
@@ -45,9 +43,9 @@ public class ProjectInverterController {
     /**
      * Removes an inverter from a project.
      *
-     * @param projectId - the ID of the project from which the inverter is removed
-     * @param inverterId - the ID of the inverter to be removed
-     * @param request - the HTTP request containing the JWT token
+     * @param projectId The ID of the project from which the inverter is removed
+     * @param inverterId The ID of the inverter to be removed
+     * @param request The HTTP request containing the JWT token
      */
     @DeleteMapping("/{inverterId}")
     public void removeInverter(@PathVariable String projectId, @PathVariable String inverterId, HttpServletRequest request) {
@@ -61,8 +59,8 @@ public class ProjectInverterController {
     /**
      * Retrieves the system voltage and recommended system voltage for a project.
      *
-     * @param projectId - the ID of the project
-     * @return ResponseEntity<Map<String, Double>> - a map containing system voltage and recommended system voltage
+     * @param projectId The ID of the project
+     * @return ResponseEntity<Map<String, Double>> A map containing system voltage and recommended system voltage
      */
     @GetMapping("/voltage")
     public ResponseEntity<Map<String, Double>> getVoltage(@PathVariable String projectId) {
@@ -84,10 +82,10 @@ public class ProjectInverterController {
     /**
      * Retrieves a list of suitable inverters based on the project's configuration and user inputs.
      *
-     * @param projectId - the ID of the project
-     * @param systemVoltage - the system voltage for the configuration
-     * @param temperature - the installation temperature of the inverters
-     * @return ResponseEntity<List<Inverter>> - a list of suitable inverters
+     * @param projectId The ID of the project
+     * @param systemVoltage The system voltage for the configuration
+     * @param temperature The installation temperature of the inverters
+     * @return ResponseEntity<List<Inverter>> A list of suitable inverters
      */
     @GetMapping("/suitable")
     public ResponseEntity<List<Inverter>> getSuitableInverters(
@@ -128,9 +126,9 @@ public class ProjectInverterController {
     /**
      * Selects an inverter for a specific project.
      *
-     * @param projectId - the ID of the project
-     * @param inverterId - the ID of the selected inverter
-     * @return ResponseEntity<ProjectInverter> - the updated project inverter configuration
+     * @param projectId The ID of the project
+     * @param inverterId The ID of the selected inverter
+     * @return ResponseEntity<ProjectInverter> The updated project inverter configuration
      */
     @PostMapping("/select-inverter/{inverterId}")
     public ResponseEntity<ProjectInverter> selectInverter(
@@ -144,8 +142,8 @@ public class ProjectInverterController {
     /**
      * Retrieves the current inverter configuration for a project.
      *
-     * @param projectId - the ID of the project
-     * @return ResponseEntity<ProjectInverter> - the current inverter configuration
+     * @param projectId The ID of the project
+     * @return ResponseEntity<ProjectInverter> The current inverter configuration
      */
     @GetMapping("/")
     public ResponseEntity<ProjectInverter> getProjectInverter(@PathVariable String projectId) {

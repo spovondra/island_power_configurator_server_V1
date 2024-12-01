@@ -12,9 +12,7 @@ import java.util.Optional;
 
 /**
  * Controller for managing inverter components.
- * <p>
  * Provides endpoints for creating, retrieving, updating, and deleting inverter components.
- * </p>
  *
  * @version 1.0
  */
@@ -24,6 +22,11 @@ public class InverterController {
 
     private final InverterService inverterService;
 
+    /**
+     * Constructs an InverterController with the specified service.
+     *
+     * @param inverterService The service handling inverter operations
+     */
     @Autowired
     public InverterController(InverterService inverterService) {
         this.inverterService = inverterService;
@@ -32,8 +35,8 @@ public class InverterController {
     /**
      * Creates a new inverter.
      *
-     * @param inverter - the inverter object to be created
-     * @return ResponseEntity<Inverter> - the created inverter with HTTP CREATED status
+     * @param inverter The inverter object to be created
+     * @return ResponseEntity<Inverter> The created inverter with HTTP CREATED status
      */
     @PostMapping
     public ResponseEntity<Inverter> createInverter(@RequestBody Inverter inverter) {
@@ -44,7 +47,7 @@ public class InverterController {
     /**
      * Retrieves all inverters.
      *
-     * @return ResponseEntity<List<Inverter>> - a list of all inverters with HTTP OK status
+     * @return ResponseEntity<List<Inverter>> A list of all inverters with HTTP OK status
      */
     @GetMapping
     public ResponseEntity<List<Inverter>> getAllInverters() {
@@ -55,8 +58,8 @@ public class InverterController {
     /**
      * Retrieves an inverter by its ID.
      *
-     * @param id - the ID of the inverter to retrieve
-     * @return ResponseEntity<Inverter> - the inverter object with HTTP OK status, or NOT_FOUND if not present
+     * @param id The ID of the inverter to retrieve
+     * @return ResponseEntity<Inverter> The inverter object with HTTP OK status, or NOT_FOUND if not present
      */
     @GetMapping("/{id}")
     public ResponseEntity<Inverter> getInverterById(@PathVariable String id) {
@@ -67,9 +70,9 @@ public class InverterController {
     /**
      * Updates an existing inverter.
      *
-     * @param id - the ID of the inverter to update
-     * @param inverter - the updated inverter object
-     * @return ResponseEntity<Inverter> - the updated inverter with HTTP OK status, or NOT_FOUND if not present
+     * @param id The ID of the inverter to update
+     * @param inverter The updated inverter object
+     * @return ResponseEntity<Inverter> The updated inverter with HTTP OK status, or NOT_FOUND if not present
      */
     @PutMapping("/{id}")
     public ResponseEntity<Inverter> updateInverter(@PathVariable String id, @RequestBody Inverter inverter) {
@@ -80,8 +83,8 @@ public class InverterController {
     /**
      * Deletes an inverter by its ID.
      *
-     * @param id - the ID of the inverter to delete
-     * @return ResponseEntity<Void> - HTTP NO_CONTENT status if deletion is successful
+     * @param id The ID of the inverter to delete
+     * @return ResponseEntity<Void> HTTP NO_CONTENT status if deletion is successful
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteInverter(@PathVariable String id) {

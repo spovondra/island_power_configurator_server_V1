@@ -4,29 +4,27 @@ import com.islandpower.configurator.model.*;
 
 /**
  * Data Transfer Object (DTO) for summarizing project configurations.
- * <p>
  * This DTO aggregates project-related data, including the project itself,
  * and its associated inverter, battery, solar panel, and controller.
- * </p>
  *
  * @version 1.0
  */
 public class SummaryDto {
 
-    private Project project;
-    private Inverter inverter;
-    private Battery battery;
-    private SolarPanel solarPanel;
-    private Controller controller;
+    private Project project; // the project details
+    private Inverter inverter; // the associated inverter details
+    private Battery battery; // the associated battery details
+    private SolarPanel solarPanel; // the associated solar panel details
+    private Controller controller; // the associated controller details
 
     /**
-     * Constructor for initializing a summary DTO.
+     * Constructs a new SummaryDto with the specified project and component details.
      *
-     * @param project - the project details
-     * @param inverter - the associated inverter details
-     * @param battery - the associated battery details
-     * @param solarPanel - the associated solar panel details
-     * @param controller - the associated controller details
+     * @param project The project details
+     * @param inverter The associated inverter details
+     * @param battery The associated battery details
+     * @param solarPanel The associated solar panel details
+     * @param controller The associated controller details
      */
     public SummaryDto(Project project, Inverter inverter, Battery battery, SolarPanel solarPanel, Controller controller) {
         this.project = project;
@@ -36,12 +34,10 @@ public class SummaryDto {
         this.controller = controller;
     }
 
-    // Getters and setters
-
     /**
      * Retrieves the project details.
      *
-     * @return Project - the project details
+     * @return Project the project details
      */
     public Project getProject() {
         return project;
@@ -50,7 +46,7 @@ public class SummaryDto {
     /**
      * Updates the project details.
      *
-     * @param project - the updated project details
+     * @param project The updated project details
      */
     public void setProject(Project project) {
         this.project = project;
@@ -59,7 +55,7 @@ public class SummaryDto {
     /**
      * Retrieves the inverter details.
      *
-     * @return Inverter - the inverter details
+     * @return Inverter the inverter details
      */
     public Inverter getInverter() {
         return inverter;
@@ -68,7 +64,7 @@ public class SummaryDto {
     /**
      * Updates the inverter details.
      *
-     * @param inverter - the updated inverter details
+     * @param inverter The updated inverter details
      */
     public void setInverter(Inverter inverter) {
         this.inverter = inverter;
@@ -77,7 +73,7 @@ public class SummaryDto {
     /**
      * Retrieves the battery details.
      *
-     * @return Battery - the battery details
+     * @return Battery the battery details
      */
     public Battery getBattery() {
         return battery;
@@ -86,7 +82,7 @@ public class SummaryDto {
     /**
      * Updates the battery details.
      *
-     * @param battery - the updated battery details
+     * @param battery The updated battery details
      */
     public void setBattery(Battery battery) {
         this.battery = battery;
@@ -95,7 +91,7 @@ public class SummaryDto {
     /**
      * Retrieves the solar panel details.
      *
-     * @return SolarPanel - the solar panel details
+     * @return SolarPanel the solar panel details
      */
     public SolarPanel getSolarPanel() {
         return solarPanel;
@@ -104,7 +100,7 @@ public class SummaryDto {
     /**
      * Updates the solar panel details.
      *
-     * @param solarPanel - the updated solar panel details
+     * @param solarPanel The updated solar panel details
      */
     public void setSolarPanel(SolarPanel solarPanel) {
         this.solarPanel = solarPanel;
@@ -113,7 +109,7 @@ public class SummaryDto {
     /**
      * Retrieves the controller details.
      *
-     * @return Controller - the controller details
+     * @return Controller the controller details
      */
     public Controller getController() {
         return controller;
@@ -122,7 +118,7 @@ public class SummaryDto {
     /**
      * Updates the controller details.
      *
-     * @param controller - the updated controller details
+     * @param controller The updated controller details
      */
     public void setController(Controller controller) {
         this.controller = controller;

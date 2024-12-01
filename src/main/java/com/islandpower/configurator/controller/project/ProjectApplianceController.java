@@ -12,9 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 /**
  * Controller for managing appliances within a specific project.
- * <p>
  * Provides endpoints for adding, updating, and removing appliances in a project.
- * </p>
  *
  * @version 1.0
  */
@@ -33,10 +31,10 @@ public class ProjectApplianceController {
     /**
      * Adds or updates an appliance in a project.
      *
-     * @param projectId - the ID of the project to which the appliance belongs
-     * @param appliance - the appliance details to be added or updated
-     * @param request - the HTTP request containing the JWT token
-     * @return Project - the updated project
+     * @param projectId The ID of the project to which the appliance belongs
+     * @param appliance The appliance details to be added or updated
+     * @param request The HTTP request containing the JWT token
+     * @return Project The updated project
      */
     @PostMapping
     public Project addOrUpdateAppliance(@PathVariable String projectId, @RequestBody Appliance appliance, HttpServletRequest request) {
@@ -49,9 +47,9 @@ public class ProjectApplianceController {
     /**
      * Removes an appliance from a project.
      *
-     * @param projectId - the ID of the project from which the appliance is removed
-     * @param applianceId - the ID of the appliance to be removed
-     * @param request - the HTTP request containing the JWT token
+     * @param projectId The ID of the project from which the appliance is removed
+     * @param applianceId The ID of the appliance to be removed
+     * @param request The HTTP request containing the JWT token
      */
     @DeleteMapping("/{applianceId}")
     public void removeAppliance(@PathVariable String projectId, @PathVariable String applianceId, HttpServletRequest request) {

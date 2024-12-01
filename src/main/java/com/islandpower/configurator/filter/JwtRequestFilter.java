@@ -19,11 +19,10 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 
 /**
- * Filter to validate the JWT token and set the authentication in the security context.
- * <p>
- * This filter is executed once per request to ensure the security context is populated
- * with authentication details if the JWT token is valid.
- * </p>
+ * Filter to validate JWT tokens and set the authentication in the security context.
+ * This filter intercepts incoming HTTP requests, extracts the JWT token, validates it,
+ * and sets the authentication in the security context if valid. It ensures that the
+ * application is protected by verifying the user's identity using the JWT.
  */
 @Component
 public class JwtRequestFilter extends OncePerRequestFilter {
@@ -37,25 +36,26 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     /**
      * Filters incoming HTTP requests, validates the JWT token if present, and sets the authentication in the security context.
      *
-     * @param request - the incoming HTTP request
-     * @param response- the outgoing HTTP response
-     * @param chain - the filter chain
-     * @throws ServletException - if any error occurs during request processing
-     * @throws IOException - if any I/O error occurs
+     * @param request The incoming HTTP request
+     * @param response The outgoing HTTP response
+     * @param chain The filter chain
+     * @throws ServletException If an error occurs during request processing
+     * @throws IOException If an I/O error occurs
      */
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain chain)
             throws ServletException, IOException {
 
+        /* Extract JWT from the Authorization header */
         String jwt = extractJwtFromRequest(request);
 
         if (jwt != null) {
             try {
-                String username = jwtUtil.extractUsername(jwt); // Extract username from JWT
-                processAuthentication(request, jwt, username);
+                String username = jwtUtil.extractUsername(jwt); // extract username from JWT
+                processAuthentication(request, jwt, username); // process authentication
             } catch (TokenExpiredException e) {
                 handleJwtError(response, HttpServletResponse.SC_UNAUTHORIZED, "JWT token has expired. Please log in again.");
-                return; // stop further processing
+                return; //sop further processing
             } catch (RuntimeException e) {
                 handleJwtError(response, HttpServletResponse.SC_BAD_REQUEST, "Invalid JWT token.");
                 return; // stop further processing
@@ -68,13 +68,13 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     /**
      * Extracts the JWT token from the Authorization header of the HTTP request.
      *
-     * @param request - the HTTP request
-     * @return - the JWT token if present, otherwise null
+     * @param request The HTTP request
+     * @return The JWT token if present, otherwise null
      */
     private String extractJwtFromRequest(HttpServletRequest request) {
         final String authorizationHeader = request.getHeader("Authorization");
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
-            return authorizationHeader.substring(7); // Extract JWT token
+            return authorizationHeader.substring(7); //extract JWT token
         }
         return null;
     }
@@ -82,13 +82,13 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     /**
      * Processes authentication by validating the token and setting the security context if valid.
      *
-     * @param request - the HTTP request
-     * @param jwt - the JWT token
-     * @param username - the username extracted from the token
+     * @param request The HTTP request
+     * @param jwt The JWT token
+     * @param username The username extracted from the token
      */
     private void processAuthentication(HttpServletRequest request, String jwt, String username) {
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = userDetailsService.loadUserByUsername(username); // Load user details
+            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
             /*  validate the token and set the authentication in the context of security if it is valid */
             if (jwtUtil.validateToken(jwt, userDetails)) {
@@ -103,10 +103,10 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     /**
      * Handles JWT-related errors by setting the appropriate HTTP status and response message.
      *
-     * @param response - the HTTP response
-     * @param httpStatus - the HTTP status code
-     * @param message - the error message
-     * @throws IOException - if an error occurs while writing the response
+     * @param response The HTTP response
+     * @param httpStatus The HTTP status code
+     * @param message The error message
+     * @throws IOException If an error occurs while writing the response
      */
     private void handleJwtError(HttpServletResponse response, int httpStatus, String message) throws IOException {
         response.setStatus(httpStatus);

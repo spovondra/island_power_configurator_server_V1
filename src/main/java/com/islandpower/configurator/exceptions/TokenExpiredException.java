@@ -6,19 +6,19 @@ package com.islandpower.configurator.exceptions;
 public class TokenExpiredException extends RuntimeException {
 
     /**
-     * Constructs the exception with a specified message.
+     * Constructs a new TokenExpiredException with the specified detail message.
      *
-     * @param message - the detail message
+     * @param message The detail message explaining the reason for the exception
      */
     public TokenExpiredException(String message) {
         super(message);
     }
 
     /**
-     * Constructs the exception with a specified message and cause.
+     * Constructs a new TokenExpiredException with the specified detail message and cause.
      *
-     * @param message - the detail message
-     * @param cause   - the cause of the exception
+     * @param message The detail message explaining the reason for the exception
+     * @param cause The underlying cause of the exception
      */
     public TokenExpiredException(String message, Throwable cause) {
         super(message, cause);

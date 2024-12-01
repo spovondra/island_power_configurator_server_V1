@@ -33,8 +33,8 @@ public class ProjectBatteryController {
     /**
      * Removes the battery configuration from a project.
      *
-     * @param projectId - the ID of the project from which the battery is removed
-     * @param request - the HTTP request containing the JWT token
+     * @param projectId The ID of the project from which the battery is removed
+     * @param request The HTTP request containing the JWT token
      */
     @DeleteMapping("/{batteryId}")
     public void removeBattery(@PathVariable String projectId, HttpServletRequest request) {
@@ -48,9 +48,9 @@ public class ProjectBatteryController {
     /**
      * Retrieves a list of suitable batteries for a specific project based on the battery technology.
      *
-     * @param projectId - the ID of the project for which suitable batteries are fetched
-     * @param technology - the battery technology type (e.g., Li-ion, Lead Acid)
-     * @return ResponseEntity<List<Battery>> - the list of suitable batteries
+     * @param projectId The ID of the project for which suitable batteries are fetched
+     * @param technology The battery technology type (e.g., Li-ion, Lead Acid)
+     * @return ResponseEntity<List<Battery>> The list of suitable batteries
      */
     @GetMapping("/suitable")
     public ResponseEntity<List<Battery>> getSuitableBatteries(
@@ -64,11 +64,11 @@ public class ProjectBatteryController {
     /**
      * Selects a battery for a specific project and sets its configuration.
      *
-     * @param projectId - the ID of the project for which the battery is selected
-     * @param batteryId - the ID of the selected battery
-     * @param autonomyDays - the number of autonomy days to configure
-     * @param temperature - the temperature for battery configuration
-     * @return ResponseEntity<ProjectBattery> - the updated project battery configuration
+     * @param projectId The ID of the project for which the battery is selected
+     * @param batteryId The ID of the selected battery
+     * @param autonomyDays The number of autonomy days to configure
+     * @param temperature The temperature for battery configuration
+     * @return ResponseEntity<ProjectBattery> The updated project battery configuration
      */
     @PostMapping("/select-battery/{batteryId}")
     public ResponseEntity<ProjectBattery> selectBattery(
@@ -84,8 +84,8 @@ public class ProjectBatteryController {
     /**
      * Retrieves the current battery configuration for a specific project.
      *
-     * @param projectId - the ID of the project for which the battery configuration is retrieved
-     * @return ResponseEntity<ProjectBattery> - the current battery configuration
+     * @param projectId The ID of the project for which the battery configuration is retrieved
+     * @return ResponseEntity<ProjectBattery> The current battery configuration
      */
     @GetMapping("/")
     public ResponseEntity<ProjectBattery> getProjectBattery(@PathVariable String projectId) {

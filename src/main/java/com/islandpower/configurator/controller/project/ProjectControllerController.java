@@ -12,10 +12,8 @@ import java.util.List;
 
 /**
  * Controller for managing controller configurations within a project.
- * <p>
  * Provides endpoints for fetching suitable controllers, selecting a controller,
  * and retrieving the current controller configuration.
- * </p>
  *
  * @version 1.0
  */
@@ -29,9 +27,9 @@ public class ProjectControllerController {
     /**
      * Retrieves a list of suitable controllers for a specific project based on the regulator type.
      *
-     * @param projectId - the ID of the project for which suitable controllers are fetched
-     * @param regulatorType - the type of regulator (PWM x MPPT)
-     * @return ResponseEntity<List<Controller>> - the list of suitable controllers
+     * @param projectId The ID of the project for which suitable controllers are fetched
+     * @param regulatorType The type of regulator (PWM or MPPT)
+     * @return ResponseEntity<List<Controller>> The list of suitable controllers
      */
     @GetMapping("/suitable")
     public ResponseEntity<List<Controller>> getSuitableControllers(
@@ -45,9 +43,9 @@ public class ProjectControllerController {
     /**
      * Selects a controller for a specific project and performs calculations based on the selection.
      *
-     * @param projectId - the ID of the project for which the controller is selected
-     * @param controllerId - the ID of the selected controller
-     * @return ResponseEntity<ProjectController> - the updated project controller configuration
+     * @param projectId The ID of the project for which the controller is selected
+     * @param controllerId The ID of the selected controller
+     * @return ResponseEntity<ProjectController> The updated project controller configuration
      */
     @PostMapping("/select")
     public ResponseEntity<ProjectController> selectControllerForProject(
@@ -61,8 +59,8 @@ public class ProjectControllerController {
     /**
      * Retrieves the current controller configuration for a specific project.
      *
-     * @param projectId - the ID of the project for which the controller configuration is retrieved
-     * @return ResponseEntity<?> - the current controller configuration or an error message if not found
+     * @param projectId The ID of the project for which the controller configuration is retrieved
+     * @return ResponseEntity<?> The current controller configuration or an error message if not found
      */
     @GetMapping
     public ResponseEntity<?> getProjectController(@PathVariable String projectId) {

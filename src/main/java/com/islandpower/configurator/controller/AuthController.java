@@ -17,12 +17,10 @@ import java.util.Optional;
 
 /**
  * Controller class for handling authentication and user management endpoints.
- * <p>
  * Provides endpoints for user registration, authentication, and management,
  * including login, logout, user retrieval, and token refresh.
- * </p>
  *
- * @version 1.1
+ * @version 1.0
  */
 @RestController
 @RequestMapping("/api/auth")
@@ -40,8 +38,8 @@ public class AuthController {
     /**
      * Registers a new user in the system.
      *
-     * @param user - the user object containing registration details
-     * @return ResponseEntity<?> - the created user or an error message if the username already exists
+     * @param user The user object containing registration details
+     * @return ResponseEntity<?> The created user or an error message if the username already exists
      */
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@RequestBody OneUser user) {
@@ -58,7 +56,7 @@ public class AuthController {
     /**
      * Retrieves all registered users.
      *
-     * @return Iterable<OneUser> - a list of all users
+     * @return Iterable<OneUser> A list of all users
      */
     @GetMapping("/getAll")
     public Iterable<OneUser> getAllUsers() {
@@ -68,9 +66,9 @@ public class AuthController {
     /**
      * Updates an existing user.
      *
-     * @param userId - the ID of the user to update
-     * @param updatedOneUser - the updated user details
-     * @return String - the ID of the updated user
+     * @param userId The ID of the user to update
+     * @param updatedOneUser The updated user details
+     * @return String The ID of the updated user
      */
     @PutMapping("/update/{id}")
     public String updateUser(@PathVariable("id") String userId, @RequestBody OneUser updatedOneUser) {
@@ -78,6 +76,7 @@ public class AuthController {
         if (existingUser == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
         }
+
         if (updatedOneUser.getUsername() != null && !updatedOneUser.getUsername().isEmpty()) {
             existingUser.setUsername(updatedOneUser.getUsername());
         }
@@ -104,7 +103,7 @@ public class AuthController {
     /**
      * Deletes a user by ID.
      *
-     * @param userId - the ID of the user to delete
+     * @param userId The ID of the user to delete
      */
     @DeleteMapping("/delete/{id}")
     public void deleteUser(@PathVariable("id") String userId) {
@@ -114,8 +113,8 @@ public class AuthController {
     /**
      * Retrieves a user by ID.
      *
-     * @param userId - the ID of the user to retrieve
-     * @return OneUser - the user object
+     * @param userId The ID of the user to retrieve
+     * @return OneUser The user object
      */
     @GetMapping("/user/{id}")
     public OneUser getUserById(@PathVariable("id") String userId) {
@@ -125,9 +124,9 @@ public class AuthController {
     /**
      * Authenticates a user and generates JWT tokens.
      *
-     * @param username - the username of the user
-     * @param password - the password of the user
-     * @return ResponseEntity<?> - JWT tokens and user details if authentication succeeds
+     * @param username The username of the user
+     * @param password The password of the user
+     * @return ResponseEntity<?> JWT tokens and user details if authentication succeeds
      */
     @PostMapping("/login")
     public ResponseEntity<?> authenticateUser(@RequestParam String username, @RequestParam String password) {
@@ -158,8 +157,8 @@ public class AuthController {
     /**
      * Refreshes JWT token using a refresh token.
      *
-     * @param refreshToken - the refresh token
-     * @return ResponseEntity<?> - a new JWT token
+     * @param refreshToken The refresh token
+     * @return ResponseEntity<?> A new JWT token
      */
     @PostMapping("/refresh-token")
     public ResponseEntity<?> refreshJwtToken(@RequestParam String refreshToken) {

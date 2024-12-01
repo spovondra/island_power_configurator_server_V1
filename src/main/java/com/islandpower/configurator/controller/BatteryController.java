@@ -12,9 +12,7 @@ import java.util.Optional;
 
 /**
  * Controller for managing battery components.
- * <p>
  * Provides endpoints for creating, retrieving, updating, and deleting battery components.
- * </p>
  *
  * @version 1.0
  */
@@ -24,6 +22,11 @@ public class BatteryController {
 
     private final BatteryService batteryService;
 
+    /**
+     * Constructs a BatteryController with the required BatteryService dependency.
+     *
+     * @param batteryService The service handling battery-related operations
+     */
     @Autowired
     public BatteryController(BatteryService batteryService) {
         this.batteryService = batteryService;
@@ -32,8 +35,8 @@ public class BatteryController {
     /**
      * Creates a new battery.
      *
-     * @param battery - the battery object to be created
-     * @return ResponseEntity<Battery> - the created battery
+     * @param battery The battery object to be created
+     * @return ResponseEntity<Battery> The created battery with HTTP CREATED status
      */
     @PostMapping
     public ResponseEntity<Battery> createBattery(@RequestBody Battery battery) {
@@ -44,7 +47,7 @@ public class BatteryController {
     /**
      * Retrieves all batteries.
      *
-     * @return ResponseEntity<List<Battery>> - a list of all batteries
+     * @return ResponseEntity<List<Battery>> A list of all batteries with HTTP OK status
      */
     @GetMapping
     public ResponseEntity<List<Battery>> getAllBatteries() {
@@ -55,8 +58,8 @@ public class BatteryController {
     /**
      * Retrieves a battery by its ID.
      *
-     * @param id - the ID of the battery to retrieve
-     * @return ResponseEntity<Battery> - the battery object, or 404 if not found
+     * @param id The ID of the battery to retrieve
+     * @return ResponseEntity<Battery> The battery object with HTTP OK status, or 404 if not found
      */
     @GetMapping("/{id}")
     public ResponseEntity<Battery> getBatteryById(@PathVariable String id) {
@@ -67,9 +70,9 @@ public class BatteryController {
     /**
      * Updates an existing battery.
      *
-     * @param id - the ID of the battery to update
-     * @param battery - the updated battery object
-     * @return ResponseEntity<Battery> - the updated battery object, or 404 if not found
+     * @param id The ID of the battery to update
+     * @param battery The updated battery object
+     * @return ResponseEntity<Battery> The updated battery with HTTP OK status, or 404 if not found
      */
     @PutMapping("/{id}")
     public ResponseEntity<Battery> updateBattery(@PathVariable String id, @RequestBody Battery battery) {
@@ -80,8 +83,8 @@ public class BatteryController {
     /**
      * Deletes a battery by its ID.
      *
-     * @param id - the ID of the battery to delete
-     * @return ResponseEntity<Void> - no content response
+     * @param id The ID of the battery to delete
+     * @return ResponseEntity<Void> A no-content response with HTTP NO_CONTENT status
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteBattery(@PathVariable String id) {
