@@ -8,6 +8,12 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Service class for managing solar panels.
+ * This class provides methods to add, update, retrieve, and delete solar panel entities.
+ *
+ * @version 1.0
+ */
 @Service
 public class SolarPanelService {
 
@@ -18,22 +24,43 @@ public class SolarPanelService {
         this.solarPanelRepository = solarPanelRepository;
     }
 
-    // Create a new solar panel
+    /**
+     * Creates a new solar panel in the repository.
+     *
+     * @param solarPanel The solar panel object to be saved
+     * @return SolarPanel The saved solar panel object
+     */
     public SolarPanel addSolarPanel(SolarPanel solarPanel) {
         return solarPanelRepository.save(solarPanel);
     }
 
-    // Get all solar panels
+    /**
+     * Retrieves all solar panels from the repository.
+     *
+     * @return List<SolarPanel> A list of all solar panels
+     */
     public List<SolarPanel> getAllSolarPanels() {
         return solarPanelRepository.findAll();
     }
 
-    // Get a solar panel by ID
+    /**
+     * Retrieves a solar panel by its ID.
+     *
+     * @param id The ID of the solar panel to retrieve
+     * @return Optional<SolarPanel> An optional solar panel object, which may be empty if not found
+     */
     public Optional<SolarPanel> getSolarPanelById(String id) {
         return solarPanelRepository.findById(id);
     }
 
-    // Update a solar panel
+    /**
+     * Updates an existing solar panel.
+     * If the solar panel with the specified ID is found, its details are updated.
+     *
+     * @param id The ID of the solar panel to update
+     * @param solarPanelDetails The updated solar panel details
+     * @return SolarPanel The updated solar panel object
+     */
     public SolarPanel updateSolarPanel(String id, SolarPanel solarPanelDetails) {
         Optional<SolarPanel> optionalSolarPanel = solarPanelRepository.findById(id);
         if (optionalSolarPanel.isPresent()) {
@@ -55,7 +82,11 @@ public class SolarPanelService {
         return null; // or throw an exception
     }
 
-    // Delete a solar panel
+    /**
+     * Deletes a solar panel from the repository.
+     *
+     * @param id The ID of the solar panel to delete
+     */
     public void deleteSolarPanel(String id) {
         solarPanelRepository.deleteById(id);
     }

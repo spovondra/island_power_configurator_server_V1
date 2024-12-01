@@ -35,7 +35,7 @@ public class ProjectBatteryService {
     /**
      * Removes a battery from the project by clearing its ID.
      *
-     * @param projectId the ID of the project
+     * @param projectId The ID of the project
      */
     public void removeBattery(String projectId) {
         Project project = projectRepository.findById(projectId)
@@ -52,9 +52,9 @@ public class ProjectBatteryService {
     /**
      * Retrieves a list of suitable batteries based on system voltage and battery technology type.
      *
-     * @param projectId the ID of the project
-     * @param technology the technology type of the batteries (e.g., Li-ion, LiFePO4)
-     * @return a list of suitable batteries
+     * @param projectId The ID of the project
+     * @param technology The technology type of the batteries (e.g., Li-ion, LiFePO4)
+     * @return List<Battery> A list of suitable batteries
      */
     public List<Battery> getSuitableBatteries(String projectId, String technology) {
         Project project = projectRepository.findById(projectId)
@@ -70,10 +70,10 @@ public class ProjectBatteryService {
     /**
      * Checks if a battery is suitable based on voltage and type.
      *
-     * @param battery the battery object to evaluate
-     * @param systemVoltage the system voltage of the project
-     * @param type the desired battery technology type
-     * @return true if the battery matches criteria, false otherwise
+     * @param battery The battery object to evaluate
+     * @param systemVoltage The system voltage of the project
+     * @param type The desired battery technology type
+     * @return boolean True if the battery matches criteria, false otherwise
      */
     private boolean isSuitableBattery(Battery battery, double systemVoltage, String type) {
         boolean voltageMatch = (battery.getVoltage() <= systemVoltage);
@@ -85,11 +85,11 @@ public class ProjectBatteryService {
     /**
      * Selects a battery for a project, updates the configuration, and calculates the battery setup.
      *
-     * @param projectId the ID of the project
-     * @param batteryId the ID of the selected battery
-     * @param autonomyDays the desired autonomy days
-     * @param temperature the operating temperature
-     * @return the updated ProjectBattery configuration
+     * @param projectId The ID of the project
+     * @param batteryId The ID of the selected battery
+     * @param autonomyDays The desired autonomy days
+     * @param temperature The operating temperature
+     * @return ProjectBattery The updated ProjectBattery configuration
      */
     public ProjectBattery selectBattery(String projectId, String batteryId, int autonomyDays, int temperature) {
         Project project = projectRepository.findById(projectId)
@@ -128,11 +128,11 @@ public class ProjectBatteryService {
     /**
      * Calculates the battery configuration for a project.
      *
-     * @param projectId the ID of the project
-     * @param batteryId the ID of the selected battery
-     * @param autonomyDays the desired autonomy days
-     * @param temperature the operating temperature
-     * @return the calculated ProjectBattery configuration
+     * @param projectId The ID of the project
+     * @param batteryId The ID of the selected battery
+     * @param autonomyDays The desired autonomy days
+     * @param temperature The operating temperature
+     * @return ProjectBattery The calculated ProjectBattery configuration
      */
     public ProjectBattery calculateBatteryConfiguration(String projectId, String batteryId, int autonomyDays, int temperature) {
         Project project = projectRepository.findById(projectId)
@@ -155,14 +155,12 @@ public class ProjectBatteryService {
         double totalAvailableCapacity = batteryCapacityDOD * parallelBatteries;
         double operationalDays = totalAvailableCapacity / ((totalDailyEnergy / systemVoltage) * (1 / temperatureCoefficient));
 
-
         double maxChargingPower = (selectedBattery.getVoltage() * seriesBatteries)
                 * (selectedBattery.getMaxChargingCurrent() * parallelBatteries);
 
         double optimalChargingPower = (selectedBattery.getVoltage() * seriesBatteries)
                 * (selectedBattery.getOptimalChargingCurrent() * parallelBatteries);
 
-        // Save values to ProjectBattery
         projectBattery.setBatteryCapacityDod(batteryCapacityDOD);
         projectBattery.setParallelBatteries(parallelBatteries);
         projectBattery.setSeriesBatteries(seriesBatteries);
@@ -183,9 +181,9 @@ public class ProjectBatteryService {
     /**
      * Retrieves the temperature coefficient for a given battery type and temperature.
      *
-     * @param batteryType the type of the battery
-     * @param temperature the operating temperature
-     * @return the temperature coefficient
+     * @param batteryType The type of the battery
+     * @param temperature The operating temperature
+     * @return double The temperature coefficient
      */
     private double getTemperatureCoefficient(String batteryType, int temperature) {
         Map<Integer, Double> coefficientsForType = temperatureCoefficients.get(batteryType);
@@ -198,8 +196,8 @@ public class ProjectBatteryService {
     /**
      * Retrieves a battery by its ID.
      *
-     * @param batteryId the ID of the battery
-     * @return the selected battery
+     * @param batteryId The ID of the battery
+     * @return Battery The selected battery
      */
     public Battery getSelectedBattery(String batteryId) {
         return batteryRepository.findById(batteryId)
@@ -209,8 +207,8 @@ public class ProjectBatteryService {
     /**
      * Retrieves the ProjectBattery configuration for a project.
      *
-     * @param projectId the ID of the project
-     * @return the ProjectBattery configuration
+     * @param projectId The ID of the project
+     * @return ProjectBattery The ProjectBattery configuration
      */
     public ProjectBattery getProjectBattery(String projectId) {
         Project project = projectRepository.findById(projectId)

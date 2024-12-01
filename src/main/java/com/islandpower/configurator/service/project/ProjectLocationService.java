@@ -13,6 +13,10 @@ import org.springframework.web.client.RestTemplate;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Service class for managing location data for projects, including integration with external APIs
+ * for solar irradiance, temperature data, and optimal PV system configurations.
+ */
 @Service
 public class ProjectLocationService {
 
@@ -21,15 +25,26 @@ public class ProjectLocationService {
     private final RestTemplate restTemplate = new RestTemplate();
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    // API URLs
+    /* API urls for retrieving location-based data */
     private static final String PVGIS_API_URL = "https://re.jrc.ec.europa.eu/api/v5_3/PVcalc?lat=%s&lon=%s&outputformat=json&peakpower=1&loss=1&angle=%s&aspect=%s";
     private static final String OPTIMAL_VALUES_API_URL = "https://re.jrc.ec.europa.eu/api/v5_3/PVcalc?lat=%s&lon=%s&raddatabase=PVGIS-SARAH3&usehorizon=1&outputformat=json&js=1&select_database_grid=PVGIS-SARAH2&pvtechchoice=crystSi&peakpower=1&loss=21&mountingplace=free&optimalangles=1";
     private static final String MIN_MAX_TEMP_API_URL = "https://re.jrc.ec.europa.eu/api/v5_3/seriescalc?lat=%s&lon=%s&raddatabase=PVGIS-SARAH3&outputformat=json&&startyear=2023&endyear=2023";
     private static final String AVERAGE_TEMP_API_URL = "https://re.jrc.ec.europa.eu/api/v5_3/MRcalc?lat=%s&lon=%s&startyear=2023&endyear=2023&raddatabase=PVGIS-SARAH3&outputformat=json&userhorizon=&usehorizon=1&js=1&select_database_month=PVGIS-SARAH3&mstartyear=2023&mendyear=2023&avtemp=1";
 
     @Autowired
-    private ProjectService projectService; // Assuming you have a service to handle projects
+    private ProjectService projectService;
 
+    /**
+     * Processes location data for a project, fetching temperature and irradiance details and storing them in the project.
+     *
+     * @param projectId The ID of the project
+     * @param userId The ID of the user
+     * @param latitude The latitude of the location
+     * @param longitude The longitude of the location
+     * @param angle The panel angle for PV system
+     * @param aspect The panel aspect (azimuth)
+     * @param useOptimalValues Indicates whether to use optimal values for angle and aspect
+     */
     public void processLocationData(String projectId, String userId, double latitude, double longitude, int angle, int aspect, boolean useOptimalValues) {
         double[] minMaxTemperatures = getMinMaxTemperatures(latitude, longitude);
 
@@ -43,89 +58,44 @@ public class ProjectLocationService {
         }
     }
 
+    /**
+     * Calculates PVGIS data for the specified location, angle, and aspect.
+     *
+     * @param latitude The latitude of the location
+     * @param longitude The longitude of the location
+     * @param angle The panel angle for PV system
+     * @param aspect The panel aspect (azimuth)
+     * @return List of monthly solar data including irradiance and temperature
+     */
     public List<Site.MonthlyData> calculatePVGISData(double latitude, double longitude, double angle, double aspect) {
-        List<Site.MonthlyData> monthlyDataList = new ArrayList<>();
+        List<Site.MonthlyData> monthlyDataList = initializeMonthlyData();
 
-        // Initialize the monthly data for all 12 months
-        for (int month = 1; month <= 12; month++) {
-            Site.MonthlyData monthlyData = new Site.MonthlyData();
-            monthlyData.setMonth(month); // Set month (1 to 12)
-            monthlyData.setIrradiance(0.0); // Default irradiance
-            monthlyData.setAmbientTemperature(0.0); // Default temperature
-            monthlyDataList.add(monthlyData);
-        }
-
-        // Fetch average ambient temperature
-        try {
-            String AvgTempApiUrl = String.format(AVERAGE_TEMP_API_URL, latitude, longitude);
-            String AvgTempResponse = restTemplate.getForObject(AvgTempApiUrl, String.class);
-            JsonNode rootNode = objectMapper.readTree(AvgTempResponse);
-            JsonNode temperatureNode = rootNode.path("outputs").path("monthly");
-
-            if (!temperatureNode.isArray()) {
-                throw new RuntimeException("Expected an array of monthly average temperatures in the response");
-            }
-
-            // Update the ambient temperatures in the monthlyDataList
-            for (JsonNode monthNode : temperatureNode) {
-                int monthIndex = monthNode.path("month").asInt(); // Assuming month is 1-indexed
-                if (monthIndex >= 1 && monthIndex <= 12) {
-                    double temp = monthNode.path("T2m").asDouble();
-                    monthlyDataList.get(monthIndex - 1).setAmbientTemperature(temp); // Update the correct month
-                }
-            }
-        } catch (Exception e) {
-            logger.error("Error fetching average ambient temperature", e);
-        }
-
-        // Fetch monthly irradiance data
-        try {
-            String apiUrl = String.format(PVGIS_API_URL, latitude, longitude, angle, aspect);
-            String response = restTemplate.getForObject(apiUrl, String.class);
-            JsonNode rootNode = objectMapper.readTree(response);
-            JsonNode monthlyDataNode = rootNode.path("outputs").path("monthly").path("fixed");
-
-            if (!monthlyDataNode.isArray()) {
-                throw new RuntimeException("Expected an array of monthly data in the response");
-            }
-
-            // Update the irradiance values in the monthlyDataList
-            for (JsonNode monthNode : monthlyDataNode) {
-                int monthIndex = monthNode.path("month").asInt(); // Assuming month is 1-indexed
-                if (monthIndex >= 1 && monthIndex <= 12) {
-                    double HI_d = monthNode.path("H(i)_d").asDouble();
-                    monthlyDataList.get(monthIndex - 1).setIrradiance(HI_d); // Update the correct month
-                }
-            }
-        } catch (Exception e) {
-            logger.error("Error processing PVGIS data", e);
-        }
+        fetchAverageTemperatures(latitude, longitude, monthlyDataList);
+        fetchIrradianceData(latitude, longitude, angle, aspect, monthlyDataList);
 
         return monthlyDataList;
     }
 
+    /**
+     * Fetches optimal angle and aspect values for PV system installation.
+     *
+     * @param latitude The latitude of the location
+     * @param longitude The longitude of the location
+     * @return OptimalValues containing optimal angle and aspect
+     */
     public OptimalValues fetchOptimalValues(double latitude, double longitude) {
         String apiUrl = String.format(OPTIMAL_VALUES_API_URL, latitude, longitude);
         String response = restTemplate.getForObject(apiUrl, String.class);
         return parseOptimalValues(response);
     }
 
-    private OptimalValues parseOptimalValues(String jsonResponse) {
-        try {
-            JsonNode rootNode = objectMapper.readTree(jsonResponse);
-            JsonNode inputsNode = rootNode.path("inputs");
-            JsonNode mountingSystemNode = inputsNode.path("mounting_system").path("fixed");
-
-            Integer optimalAngle = mountingSystemNode.path("slope").path("value").asInt();
-            Integer optimalAspect = mountingSystemNode.path("azimuth").path("value").asInt();
-
-            return new OptimalValues(optimalAngle, optimalAspect);
-        } catch (Exception e) {
-            logger.error("Error parsing optimal values from JSON response", e);
-            return new OptimalValues(null, null);
-        }
-    }
-
+    /**
+     * Retrieves minimum and maximum temperatures for a location based on PVGIS hourly data.
+     *
+     * @param latitude  The latitude of the location
+     * @param longitude The longitude of the location
+     * @return Array containing minimum and maximum temperatures
+     */
     public double[] getMinMaxTemperatures(double latitude, double longitude) {
         double[] minMaxTemperatures = new double[2];
         try {
@@ -137,7 +107,7 @@ public class ProjectLocationService {
             double maxTemp = Double.MIN_VALUE;
             double minTemp = Double.MAX_VALUE;
 
-            // Find min and max temperatures based on hourly data
+            /* Find min and max temperatures from hourly data */
             for (JsonNode hourNode : hourlyDataNode) {
                 double temp = hourNode.path("T2m").asDouble();
                 double globalRadiation = hourNode.path("G(i)").asDouble();
@@ -155,15 +125,117 @@ public class ProjectLocationService {
         return minMaxTemperatures;
     }
 
-    public record OptimalValues(Integer optimalAngle, Integer optimalAspect) {
+    /**
+     * Parses JSON response to extract optimal angle and aspect values.
+     *
+     * @param jsonResponse JSON response from the optimal values API
+     * @return OptimalValues Containing optimal angle and aspect
+     */
+    private OptimalValues parseOptimalValues(String jsonResponse) {
+        try {
+            JsonNode rootNode = objectMapper.readTree(jsonResponse);
+            JsonNode mountingSystemNode = rootNode.path("inputs").path("mounting_system").path("fixed");
+
+            Integer optimalAngle = mountingSystemNode.path("slope").path("value").asInt();
+            Integer optimalAspect = mountingSystemNode.path("azimuth").path("value").asInt();
+
+            return new OptimalValues(optimalAngle, optimalAspect);
+        } catch (Exception e) {
+            logger.error("Error parsing optimal values from JSON response", e);
+            return new OptimalValues(null, null);
+        }
     }
 
+    /**
+     * Initializes a list of monthly data objects with default values.
+     *
+     * @return List of initialized monthly data
+     */
+    private List<Site.MonthlyData> initializeMonthlyData() {
+        List<Site.MonthlyData> monthlyDataList = new ArrayList<>();
+        for (int month = 1; month <= 12; month++) {
+            Site.MonthlyData monthlyData = new Site.MonthlyData();
+            monthlyData.setMonth(month);
+            monthlyData.setIrradiance(0.0);
+            monthlyData.setAmbientTemperature(0.0);
+            monthlyDataList.add(monthlyData);
+        }
+        return monthlyDataList;
+    }
+
+    /**
+     * Fetches average ambient temperatures for a location and updates monthly data.
+     *
+     * @param latitude        The latitude of the location
+     * @param longitude       The longitude of the location
+     * @param monthlyDataList List of monthly data to update
+     */
+    private void fetchAverageTemperatures(double latitude, double longitude, List<Site.MonthlyData> monthlyDataList) {
+        try {
+            String apiUrl = String.format(AVERAGE_TEMP_API_URL, latitude, longitude);
+            String response = restTemplate.getForObject(apiUrl, String.class);
+            JsonNode rootNode = objectMapper.readTree(response);
+            JsonNode temperatureNode = rootNode.path("outputs").path("monthly");
+
+            for (JsonNode monthNode : temperatureNode) {
+                int monthIndex = monthNode.path("month").asInt();
+                if (monthIndex >= 1 && monthIndex <= 12) {
+                    double temp = monthNode.path("T2m").asDouble();
+                    monthlyDataList.get(monthIndex - 1).setAmbientTemperature(temp);
+                }
+            }
+        } catch (Exception e) {
+            logger.error("Error fetching average ambient temperature", e);
+        }
+    }
+
+    /**
+     * Fetches monthly irradiance data for a location and updates monthly data.
+     *
+     * @param latitude The latitude of the location
+     * @param longitude The longitude of the location
+     * @param angle The panel angle
+     * @param aspect The panel aspect
+     * @param monthlyDataList List of monthly data to update
+     */
+    private void fetchIrradianceData(double latitude, double longitude, double angle, double aspect, List<Site.MonthlyData> monthlyDataList) {
+        try {
+            String apiUrl = String.format(PVGIS_API_URL, latitude, longitude, angle, aspect);
+            String response = restTemplate.getForObject(apiUrl, String.class);
+            JsonNode rootNode = objectMapper.readTree(response);
+            JsonNode monthlyDataNode = rootNode.path("outputs").path("monthly").path("fixed");
+
+            for (JsonNode monthNode : monthlyDataNode) {
+                int monthIndex = monthNode.path("month").asInt();
+                if (monthIndex >= 1 && monthIndex <= 12) {
+                    double HI_d = monthNode.path("H(i)_d").asDouble();
+                    monthlyDataList.get(monthIndex - 1).setIrradiance(HI_d);
+                }
+            }
+        } catch (Exception e) {
+            logger.error("Error processing PVGIS data", e);
+        }
+    }
+
+    /**
+     * Fetches site details by project ID.
+     *
+     * @param projectId The ID of the project
+     * @param userId    The ID of the user
+     * @return Site object containing location data
+     */
     public Site getSitesByProjectId(String projectId, String userId) {
         try {
-            return projectService.getProjectById(projectId, userId).getSite(); // Replace with actual repository method
+            return projectService.getProjectById(projectId, userId).getSite();
         } catch (Exception e) {
             logger.error("Error fetching sites for project ID {}: {}", projectId, e.getMessage());
             return null;
         }
+    }
+
+    /**
+     * Record to store optimal angle and aspect values for PV systems.
+     */
+    public record OptimalValues(Integer optimalAngle, Integer optimalAspect) {
     }
 }

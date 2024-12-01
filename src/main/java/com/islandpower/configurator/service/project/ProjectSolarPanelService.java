@@ -15,6 +15,10 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Service for managing solar panels in a project configuration.
+ * Provides methods for selecting suitable solar panels, calculating configuration details, and storing results.
+ */
 @Service
 public class ProjectSolarPanelService {
 
@@ -28,49 +32,61 @@ public class ProjectSolarPanelService {
 
     private static final double T_STC = 25;
 
-    // Fetch suitable solar panels based on project needs
+    /**
+     * Fetches suitable solar panels for a project based on system voltage.
+     * @param projectId The ID of the project
+     * @return List of suitable solar panels
+     */
     public List<SolarPanel> getSuitableSolarPanels(String projectId) {
-        Project project = projectRepository.findById(projectId)
-                .orElseThrow(() -> new RuntimeException("Project not found: " + projectId));
-
-        double systemVoltage = project.getConfigurationModel().getSystemVoltage();
-        // Add filtering logic if necessary based on project properties
-        return solarPanelRepository.findAll(); // Return all solar panels for now
+        return solarPanelRepository.findAll(); // Return all solar panels
     }
 
-    // Calculate and save the solar panel configuration
+    /**
+     * Calculates the solar panel configuration for the project and saves it to the database.
+     * @param projectId The ID of the project
+     * @param solarPanelId The ID of the selected solar panel
+     * @param panelOversizeCoefficient The coefficient for panel oversizing
+     * @param batteryEfficiency The efficiency of the battery
+     * @param cableEfficiency The efficiency of the cables
+     * @param selectedMonths The list of selected months for energy calculations
+     * @param installationType The type of installation (e.g., roof, ground)
+     * @param manufacturerTolerance The tolerance factor for the solar panel manufacturer
+     * @param agingLoss The loss factor due to aging of the panel
+     * @param dirtLoss The loss factor due to dirt accumulation on the panels
+     * @return ProjectSolarPanel The calculated solar panel configuration
+     */
     public ProjectSolarPanel calculateSolarPanelConfiguration(String projectId, String solarPanelId,
                                                               double panelOversizeCoefficient, double batteryEfficiency,
                                                               double cableEfficiency, List<Integer> selectedMonths,
                                                               String installationType, double manufacturerTolerance,
                                                               double agingLoss, double dirtLoss) {
 
-        // Fetch the project
+        /* Fetch the project */
         Project project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new RuntimeException("Project not found: " + projectId));
 
-        // Fetch the selected solar panel
+        /* Fetch the selected solar panel */
         SolarPanel selectedPanel = solarPanelRepository.findById(solarPanelId)
                 .orElseThrow(() -> new RuntimeException("Solar Panel not found: " + solarPanelId));
 
-        // Fetch ConfigurationModel and ensure it's not null
+        /* Fetch ConfigurationModel and ensure it is not null */
         ConfigurationModel configModel = project.getConfigurationModel();
         if (configModel == null) {
             configModel = new ConfigurationModel(); // Initialize ConfigurationModel if null
-            project.setConfigurationModel(configModel); // Set it back to the project
+            project.setConfigurationModel(configModel);
         }
 
-        // Ensure ProjectSolarPanel exists
+        /* Ensure ProjectSolarPanel exists */
         ProjectSolarPanel projectSolarPanel = configModel.getProjectSolarPanel();
         if (projectSolarPanel == null) {
             projectSolarPanel = new ProjectSolarPanel(); // Initialize ProjectSolarPanel if null
-            configModel.setProjectSolarPanel(projectSolarPanel); // Set it back to ConfigurationModel
+            configModel.setProjectSolarPanel(projectSolarPanel);
         }
 
-        // Get total daily energy required for AC and DC appliances
+        /* Get total daily energy required for AC and DC appliances */
         double totalDailyEnergyRequired = project.getConfigurationModel().getProjectInverter().getTotalDailyEnergy();
 
-        // Fetch monthly data from site
+        /* Fetch monthly data from site */
         List<Site.MonthlyData> monthlyDataList = project.getSite().getMonthlyDataList();
         List<ProjectSolarPanel.MonthlySolarData> monthlyCalculations = new ArrayList<>();
 
@@ -79,7 +95,7 @@ public class ProjectSolarPanelService {
         double finalEfficiency = 0.0;
         int monthsCount = monthlyDataList.size();
 
-        // Fetch ProjectBattery configuration
+        /* Fetch ProjectBattery configuration */
         if (project.getConfigurationModel().getProjectBattery() == null) {
             throw new RuntimeException("ProjectBattery configuration not found for project: " + projectId);
         }
@@ -87,39 +103,39 @@ public class ProjectSolarPanelService {
         double maxChargingPower = project.getConfigurationModel().getProjectBattery().getMaxChargingPower();
         double optimalChargingPower = project.getConfigurationModel().getProjectBattery().getOptimalChargingPower();
 
-        // Perform calculations for each selected month
+        /* Perform calculations for each selected month */
         for (Site.MonthlyData monthlyData : monthlyDataList) {
             if (selectedMonths.contains(monthlyData.getMonth())) {
-                double psh = monthlyData.getIrradiance(); // Get irradiance (PSH)
-                double ambientTemperature = monthlyData.getAmbientTemperature(); // Get ambient temperature
+                double psh = monthlyData.getIrradiance();
+                double ambientTemperature = monthlyData.getAmbientTemperature();
 
-                // Calculate energy required from the battery
+                /* Calculate required energy  from the battery */
                 double requiredEnergy = totalDailyEnergyRequired / (batteryEfficiency * cableEfficiency);
 
-                // Calculate required output power from solar panels
+                /* Calculate required output power from solar panels */
                 double requiredPower = (requiredEnergy / psh) * panelOversizeCoefficient;
 
-                // Validate power requirements with battery constraints
+                /* Validate power requirements with battery constraints */
                 String statusMessage = getString(requiredPower, maxChargingPower, optimalChargingPower);
                 project.getConfigurationModel().getProjectSolarPanel().setStatusMessage(statusMessage);
 
-                // Calculate temperature efficiency for solar panels
+                /* Calculate temperature efficiency for solar panels */
                 double tempEfficiencyFactor = calculateTemperatureEfficiency(selectedPanel, ambientTemperature, installationType);
 
-                // Calculate total panel efficiency
+                /* Calculate total panel efficiency */
                 finalEfficiency = calculateTotalEfficiency(tempEfficiencyFactor, manufacturerTolerance, agingLoss, dirtLoss);
 
-                // Calculate derated power of the solar panel
+                /* Calculate derated power of the solar panel */
                 double deratedPower = selectedPanel.getpRated() * finalEfficiency;
 
-                // Calculate the number of solar panels required
+                /* Calculate the number of solar panels required */
                 int numPanelsRequired = (int) Math.ceil(requiredPower / deratedPower);
                 maxPanelsRequired = Math.max(maxPanelsRequired, numPanelsRequired);
 
-                // Calculate the estimated daily energy production by solar panels
+                /* Calculate the estimated daily energy production by solar panels */
                 double estimatedDailySolarEnergy = deratedPower * psh;
 
-                // Add monthly calculation data, including PSH and Ambient Temperature
+                /* Add monthly calculation data */
                 ProjectSolarPanel.MonthlySolarData monthlySolarData = new ProjectSolarPanel.MonthlySolarData(
                         monthlyData.getMonth(),
                         psh,
@@ -137,9 +153,10 @@ public class ProjectSolarPanelService {
             }
         }
 
+        /* Calculate average daily energy production */
         double averageDailyProduction = totalDailyEnergySum / monthsCount;
 
-        // Save the calculated solar panel configuration, including efficiency and loss factors
+        /* Save the calculated solar panel configuration, including efficiency and loss factors */
         projectSolarPanel.setSolarPanelId(solarPanelId);
         projectSolarPanel.setNumberOfPanels(maxPanelsRequired);
         projectSolarPanel.setTotalPowerGenerated(selectedPanel.getpRated() * maxPanelsRequired);
@@ -154,15 +171,19 @@ public class ProjectSolarPanelService {
         projectSolarPanel.setInstallationType(installationType); // Add installationType to the saved configuration
         projectSolarPanel.setMonthlyData(monthlyCalculations);
 
-        // Log the project solar panel configuration
-        logger.info("Calculated solar panel configuration: {}", projectSolarPanel);
-
-        // Save the project back to the repository
+        /* save the project back to the repository */
         projectRepository.save(project);
 
         return projectSolarPanel;
     }
 
+    /**
+     * Validates the power requirements based on the battery constraints.
+     * @param requiredPower The required power to charge the battery
+     * @param maxChargingPower The maximum charging power of the battery
+     * @param optimalChargingPower The optimal charging power of the battery
+     * @return Status message indicating success or error
+     */
     private static String getString(double requiredPower, double maxChargingPower, double optimalChargingPower) {
         String statusMessage = "Configuration calculated successfully.";
         if (requiredPower > maxChargingPower) {
@@ -173,7 +194,13 @@ public class ProjectSolarPanelService {
         return statusMessage;
     }
 
-    // Method to calculate temperature efficiency
+    /**
+     * Calculates the temperature efficiency of the solar panel based on the ambient temperature and installation type.
+     * @param solarPanel The selected solar panel
+     * @param ambientTemperature The ambient temperature
+     * @param installationType The type of installation (e.g., roof, ground)
+     * @return The temperature efficiency factor
+     */
     private double calculateTemperatureEfficiency(SolarPanel solarPanel, double ambientTemperature, String installationType) {
         double tempCoefficientPMax = solarPanel.getTempCoefficientPMax();
         int installationTemperatureIncrease = getInstallationTemperatureIncrease(installationType);
@@ -181,22 +208,37 @@ public class ProjectSolarPanelService {
         return (100 + (ambientTemperature + installationTemperatureIncrease - T_STC) * tempCoefficientPMax) / 100;
     }
 
-    // Method to calculate total efficiency
+    /**
+     * Calculates the total efficiency of the solar panel including temperature, manufacturer tolerance, aging loss, and dirt loss.
+     * @param tempEfficiency The temperature efficiency factor
+     * @param manufacturerTolerance The tolerance factor for the solar panel manufacturer
+     * @param agingLoss The loss factor due to aging of the panel
+     * @param dirtLoss The loss factor due to dirt accumulation on the panels
+     * @return The total efficiency of the panel
+     */
     private double calculateTotalEfficiency(double tempEfficiency, double manufacturerTolerance, double agingLoss, double dirtLoss) {
         return tempEfficiency * manufacturerTolerance * agingLoss * dirtLoss;
     }
 
-    // Fetch the temperature increase based on the installation type
+    /**
+     * Fetches the temperature increase based on the installation type.
+     * @param installationType The type of installation (e.g., ground, roof_angle)
+     * @return The temperature increase (in °C)
+     */
     private int getInstallationTemperatureIncrease(String installationType) {
         return switch (installationType) {
             case "ground", "roof_angle" -> 25;
             case "parallel_greater_150mm" -> 30;
             case "parallel_less_150mm" -> 35;
-            default -> 0; // Default to 25°C for unknown types
+            default -> 0; //default to 25°C for unknown types
         };
     }
 
-    // Method to fetch the solar panel configuration for the project
+    /**
+     * Fetches the solar panel configuration for the specified project.
+     * @param projectId The ID of the project
+     * @return The ProjectSolarPanel configuration for the project
+     */
     public ProjectSolarPanel getProjectSolarPanel(String projectId) {
         Project project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new RuntimeException("Project not found: " + projectId));

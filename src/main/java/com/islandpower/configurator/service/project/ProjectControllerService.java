@@ -18,6 +18,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+/**
+ * Service for managing project controllers.
+ * Provides methods for retrieving, selecting, and configuring controllers for a specific project.
+ */
 @Service
 public class ProjectControllerService {
 
@@ -35,6 +39,13 @@ public class ProjectControllerService {
     private static final double K_CONTROLLER_OVERSIZE = 1.25;
     private static final double T_STC = 25;
 
+    /**
+     * Retrieves a list of suitable controllers for the specified project based on the system voltage and regulator type.
+     *
+     * @param projectId     The ID of the project
+     * @param regulatorType The type of regulator required (e.g., PWM, MPPT)
+     * @return List<Controller> A list of controllers suitable for the project's configuration
+     */
     public List<Controller> getSuitableControllers(String projectId, String regulatorType) {
         Project project = findProjectById(projectId);
         double systemVoltage = project.getConfigurationModel().getSystemVoltage();
@@ -46,6 +57,14 @@ public class ProjectControllerService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Selects a controller for the specified project and configures it based on project and solar panel data.
+     * Updates the project configuration with the selected controller's details and saves the project.
+     *
+     * @param projectId   The ID of the project
+     * @param controllerId The ID of the controller to select
+     * @return ProjectController The configured ProjectController with updated settings
+     */
     public ProjectController selectControllerForProject(String projectId, String controllerId) {
         Project project = findProjectById(projectId);
         Controller controller = findControllerById(controllerId);
@@ -68,19 +87,11 @@ public class ProjectControllerService {
                 .map(ProjectSolarPanel.MonthlySolarData::getDeratedPower)
                 .orElse(0.0);
 
-        logger.info("System Voltage: {}", systemVoltage);
-        logger.info("Ambient Min Temperature: {}", ambientMin);
-        logger.info("Ambient Max Temperature: {}", ambientMax);
-        logger.info("Installation Temperature Increase: {}", installationTemp);
-
-        // Výpočet upravených napětí
+        /* Calculate adjusted voltages for the solar panel */
         double U_oc_adjusted = calculateAdjustedOpenCircuitVoltage(solarPanel, ambientMin, installationTemp);
         double U_mp_adjusted = calculateAdjustedVoltageAtMaxPower(solarPanel, ambientMax, installationTemp);
 
-        logger.info("Adjusted Open Circuit Voltage (Voc): {}", U_oc_adjusted);
-        logger.info("Adjusted Voltage at Max Power (Vmp): {}", U_mp_adjusted);
-
-        // Načtení nebo vytvoření ProjectController
+        /* Get or create a new ProjectController configuration */
         ProjectController projectController = Optional.ofNullable(project.getConfigurationModel().getProjectController())
                 .orElseGet(ProjectController::new);
 
@@ -89,8 +100,9 @@ public class ProjectControllerService {
         projectController.setAdjustedOpenCircuitVoltage(U_oc_adjusted);
         projectController.setAdjustedVoltageAtMaxPower(U_mp_adjusted);
 
+        /* Configure the controller based on its type (PWM x MPPT) */
         if (controller.getType().equalsIgnoreCase("PWM")) {
-            configurePWMController(systemVoltage, controller_ratedPower, solarPanel.getVmp(), I_mp, I_sc, numPanels, controller, projectController);
+            configurePWMController(systemVoltage, controller_ratedPower, solarPanel.getVmp(), I_mp, I_sc, controller, projectController);
         } else if (controller.getType().equalsIgnoreCase("MPPT")) {
             configureMPPTController(systemVoltage, controller_ratedPower, solar_deratedPower, numPanels, U_oc_adjusted, U_mp_adjusted, I_mp, controller, projectController);
         }
@@ -101,6 +113,14 @@ public class ProjectControllerService {
         return projectController;
     }
 
+    /**
+     * Checks if a controller is suitable for the project based on the regulator type and system voltage.
+     *
+     * @param controller The controller to evaluate
+     * @param regulatorType The type of regulator required (e.g., PWM, MPPT)
+     * @param systemVoltage The system voltage of the project
+     * @return boolean True if the controller meets the requirements, false otherwise
+     */
     private boolean isControllerSuitable(Controller controller, String regulatorType, double systemVoltage) {
         boolean suitableType = controller.getType().equalsIgnoreCase(regulatorType);
         boolean suitableMinVoltage = controller.getMinVoltage() == systemVoltage;
@@ -108,25 +128,33 @@ public class ProjectControllerService {
         return suitableType && suitableMinVoltage && suitableMaxVoltage;
     }
 
-    private void configurePWMController(double systemVoltage, double controller_ratedPower, double U_vmp, double I_mp, double I_sc, int numPanels, Controller controller, ProjectController projectController) {
-        // Počet modulů v sérii
+    /**
+     * Configures a PWM controller for the project based on system and panel characteristics.
+     *
+     * @param systemVoltage The system voltage of the project
+     * @param controller_ratedPower The rated power of the controller
+     * @param U_vmp The voltage at maximum power of the solar panel
+     * @param I_mp The current at maximum power of the solar panel
+     * @param I_sc The short-circuit current of the solar panel
+     * @param controller The controller being configured
+     * @param projectController The project controller configuration to update
+     */
+    private void configurePWMController(double systemVoltage, double controller_ratedPower, double U_vmp, double I_mp, double I_sc, Controller controller, ProjectController projectController) {
+        /* Number of modules in series and parallel */
         int n_serial = (int) Math.ceil(systemVoltage / U_vmp);
-        // Počet modulů paralelně
         int n_parallel = (int) Math.ceil(controller_ratedPower / (I_mp * U_vmp));
 
-        logger.info("PWM - Serial Modules: {}, Parallel Modules: {}", n_serial, n_parallel);
-
-        // Výpočet požadovaného proudu
+        /* Calculate required current */
         double requiredCurrent = K_CONTROLLER_OVERSIZE * n_parallel * I_sc;
         projectController.setSeriesModules(n_serial);
         projectController.setParallelModules(n_parallel);
         projectController.setRequiredCurrent(requiredCurrent);
 
-        // Validace
+        /* Validate the configuration */
         boolean isValid = controller.getCurrentRating() >= requiredCurrent;
         projectController.setValid(isValid);
 
-        // Nastavení zprávy
+        /* Set status message to valid or error (if Required current exceeds controller's rating) */
         if (isValid) {
             projectController.setStatusMessage("Configuration is valid.");
         } else {
@@ -138,27 +166,40 @@ public class ProjectControllerService {
         logger.info("PWM - Required Current: {}, Valid: {}", requiredCurrent, isValid);
     }
 
+    /**
+     * Configures an MPPT controller for the project based on system and panel characteristics.
+     *
+     * @param systemVoltage The system voltage of the project
+     * @param controller_ratedPower The rated power of the controller
+     * @param solar_deratedPower The derated power of the solar system
+     * @param numPanels The number of panels in the system
+     * @param U_oc_adjusted The adjusted open-circuit voltage
+     * @param U_mp_adjusted The adjusted voltage at maximum power
+     * @param I_mp The current at maximum power of the solar panel
+     * @param controller The controller being configured
+     * @param projectController The project controller configuration to update
+     */
     private void configureMPPTController(double systemVoltage, double controller_ratedPower, double solar_deratedPower, int numPanels,
                                          double U_oc_adjusted, double U_mp_adjusted, double I_mp,
                                          Controller controller, ProjectController projectController) {
+
+        /* Determine series, parallel module configuration, totalPower and requiredCurrent */
         int maxSerial = (int) Math.floor(controller.getMaxVoltage() / U_oc_adjusted);
         int minSerial = (int) Math.ceil(controller.getMinVoltage() / U_mp_adjusted);
         int n_serial = Math.min(maxSerial, Math.max(minSerial, (int) Math.floor(systemVoltage / U_mp_adjusted)));
         int n_parallel = (int) Math.floor((controller_ratedPower) / (I_mp * U_mp_adjusted));
-
-        logger.info("MPPT - Serial Modules: {}, Parallel Modules: {}", n_serial, n_parallel);
-
         double totalPower = numPanels * solar_deratedPower;
         double requiredCurrent = totalPower / systemVoltage;
 
-        // Kontrola nadměrného dimenzování regulátoru
-        if (controller_ratedPower > 1.5 * totalPower) { // Regulátor má o 50 % vyšší výkon, než je potřeba
+        /* Check for controller sizing */
+        if (controller_ratedPower > 1.5 * totalPower) {
             logger.warn("Controller is overdimensioned. Controller power: {}, System power: {}", controller_ratedPower, totalPower);
             projectController.setStatusMessage(
                     String.format("Warning: Controller is overdimensioned. Controller power (%.2f W) exceeds system needs (%.2f W).",
                             controller_ratedPower, totalPower));
         }
 
+        /* Validate against power and current requirements */
         if (controller_ratedPower <= totalPower) {
             projectController.setStatusMessage(
                     String.format("Error: Controller power (%.2f W) is less than the total required system power (%.2f W).",
@@ -167,7 +208,7 @@ public class ProjectControllerService {
             return;
         }
 
-        // Validace: kontrola maximálního napětí regulátoru
+        /* Check maximum voltage compatibility */
         if (controller.getMaxVoltage() < U_oc_adjusted * n_serial) {
             logger.error("Adjusted open circuit voltage exceeds controller's maximum voltage.");
             projectController.setStatusMessage(
@@ -177,7 +218,7 @@ public class ProjectControllerService {
             return;
         }
 
-        // Validace: kontrola výkonu panelů
+        /* Validate panel power compatibility */
         if (totalPower > systemVoltage * controller.getCurrentRating()) {
             projectController.setStatusMessage(
                     String.format("Error: Derated power (%.2f W) exceeds controller's capacity (%.2f W).",
@@ -193,6 +234,7 @@ public class ProjectControllerService {
             projectController.setStatusMessage("Configuration is valid.");
         }
 
+        /* save */
         projectController.setMaxModulesInSerial(maxSerial);
         projectController.setMinModulesInSerial(minSerial);
         projectController.setSeriesModules(n_serial);
@@ -202,22 +244,40 @@ public class ProjectControllerService {
 
         boolean isValid = controller.getCurrentRating() >= requiredCurrent && controller.getRatedPower() >= totalPower;
         projectController.setValid(isValid);
-
-        if (!isValid) {
-            logger.error("MPPT configuration invalid. Required Current: {}, Required Power: {}", requiredCurrent, totalPower);
-        }
     }
 
+    /**
+     * Calculates the adjusted open-circuit voltage for the solar panel.
+     *
+     * @param solarPanel       The solar panel details
+     * @param ambientMin       The minimum ambient temperature
+     * @param installationTemp The temperature increase due to installation type
+     * @return double The adjusted open-circuit voltage
+     */
     private double calculateAdjustedOpenCircuitVoltage(SolarPanel solarPanel, double ambientMin, double installationTemp) {
         double adjustment = solarPanel.getTempCoefficientVoc() * (ambientMin - T_STC + installationTemp) / 100;
         return solarPanel.getVoc() * (1 + adjustment);
     }
 
+    /**
+     * Calculates the adjusted voltage at maximum power for the solar panel.
+     *
+     * @param solarPanel       The solar panel details
+     * @param ambientMax       The maximum ambient temperature
+     * @param installationTemp The temperature increase due to installation type
+     * @return double The adjusted voltage at maximum power
+     */
     private double calculateAdjustedVoltageAtMaxPower(SolarPanel solarPanel, double ambientMax, double installationTemp) {
         double adjustment = solarPanel.getTempCoefficientPMax() * (ambientMax - T_STC + installationTemp) / 100;
         return solarPanel.getVmp() * (1 + adjustment);
     }
 
+    /**
+     * Retrieves the installation temperature increase based on installation type.
+     *
+     * @param installationType The type of installation (e.g., ground, roof_angle)
+     * @return int The temperature increase in degrees Celsius
+     */
     private int getInstallationTemperatureIncrease(String installationType) {
         return switch (installationType) {
             case "ground", "roof_angle" -> 25;
@@ -227,6 +287,13 @@ public class ProjectControllerService {
         };
     }
 
+    /**
+     * Retrieves the project controller configuration for a specific project.
+     * Returns a new configuration if none exists.
+     *
+     * @param projectId The ID of the project
+     * @return ProjectController The current or new project controller configuration
+     */
     public ProjectController getProjectController(String projectId) {
         Project project = findProjectById(projectId);
         if (project.getConfigurationModel().getProjectController() == null) {
@@ -236,16 +303,36 @@ public class ProjectControllerService {
         return project.getConfigurationModel().getProjectController();
     }
 
+    // Helper methods for retrieving entities...
+
+    /**
+     * Finds a project by its ID.
+     *
+     * @param projectId The ID of the project
+     * @return Project The retrieved project
+     */
     private Project findProjectById(String projectId) {
         return projectRepository.findById(projectId)
                 .orElseThrow(() -> new RuntimeException("Project not found: " + projectId));
     }
 
+    /**
+     * Finds a controller by its ID.
+     *
+     * @param controllerId The ID of the controller
+     * @return Controller The retrieved controller
+     */
     private Controller findControllerById(String controllerId) {
         return controllerRepository.findById(controllerId)
                 .orElseThrow(() -> new RuntimeException("Controller not found: " + controllerId));
     }
 
+    /**
+     * Finds a solar panel by its ID.
+     *
+     * @param solarPanelId The ID of the solar panel
+     * @return SolarPanel The retrieved solar panel
+     */
     private SolarPanel findSolarPanelById(String solarPanelId) {
         return solarPanelRepository.findById(solarPanelId)
                 .orElseThrow(() -> new RuntimeException("Solar panel not found: " + solarPanelId));

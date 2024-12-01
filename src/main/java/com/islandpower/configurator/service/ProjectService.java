@@ -10,6 +10,13 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+/**
+ * Service class for managing projects and their associated operations.
+ * This class provides methods to create, delete, update, and retrieve projects,
+ * along with validating user permissions.
+ *
+ * @version 1.0
+ */
 @Service
 public class ProjectService {
 
@@ -19,7 +26,13 @@ public class ProjectService {
     @Autowired
     private UserRepository userRepository;
 
-    // Create a new project
+    /**
+     * Creates a new project and associates it with a user.
+     *
+     * @param project The project object to create
+     * @param userId  The ID of the user who owns the project
+     * @return Project The newly created project object
+     */
     public Project createProject(Project project, String userId) {
         project.setUserId(userId);
         Project savedProject = projectRepository.save(project);
@@ -32,7 +45,12 @@ public class ProjectService {
         return savedProject;
     }
 
-    // Delete a project
+    /**
+     * Deletes an existing project, ensuring the user has the necessary permissions.
+     *
+     * @param projectId The ID of the project to delete
+     * @param userId    The ID of the user performing the deletion
+     */
     public void deleteProject(String projectId, String userId) {
         Project project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new RuntimeException("Project not found: " + projectId));
@@ -50,19 +68,35 @@ public class ProjectService {
         userRepository.save(user);
     }
 
-    // Get all projects
+    /**
+     * Retrieves all projects in the system.
+     *
+     * @return List<Project> A list of all projects
+     */
     public List<Project> getAllProjects() {
         return projectRepository.findAll();
     }
 
-    // Get projects by user ID
+    /**
+     * Retrieves all projects associated with a specific user.
+     *
+     * @param userId The ID of the user whose projects to retrieve
+     * @return List<Project> A list of projects associated with the user
+     */
     public List<Project> getProjectsByUserId(String userId) {
         OneUser user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found: " + userId));
         return projectRepository.findAllById(user.getProjects());
     }
 
-    // Get a project by its ID
+    /**
+     * Retrieves a project by its ID, ensuring the user has permission to access it.
+     *
+     * @param projectId The ID of the project to retrieve
+     * @param userId    The ID of the user requesting the project
+     * @return Project The requested project
+     * @throws RuntimeException if the project is not found or the user lacks permission
+     */
     public Project getProjectById(String projectId, String userId) {
         Project project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new RuntimeException("Project not found: " + projectId));
@@ -78,7 +112,14 @@ public class ProjectService {
         return project;
     }
 
-    // Update an existing project
+    /**
+     * Updates an existing project, ensuring the user has permission to modify it.
+     *
+     * @param projectId      The ID of the project to update
+     * @param updatedProject The updated project object
+     * @param userId         The ID of the user making the update
+     * @return Project The updated project
+     */
     public Project updateProject(String projectId, Project updatedProject, String userId) {
         Project existingProject = projectRepository.findById(projectId)
                 .orElseThrow(() -> new RuntimeException("Project not found: " + projectId));
@@ -98,6 +139,19 @@ public class ProjectService {
         return projectRepository.save(existingProject);
     }
 
+    /**
+     * Updates the site information for a project, including location data.
+     *
+     * @param projectId            The ID of the project to update
+     * @param userId               The ID of the user performing the update
+     * @param latitude             The latitude of the project location
+     * @param longitude            The longitude of the project location
+     * @param minMaxTemperatures   The minimum and maximum temperatures for the site
+     * @param panelAngle           The angle of the solar panels
+     * @param panelAspect          The aspect (orientation) of the solar panels
+     * @param usedOptimalValues    Whether optimal values were used for the configuration
+     * @param monthlyData          The monthly solar irradiance and temperature data
+     */
     public void updateSiteWithLocationData(String projectId, String userId, double latitude, double longitude,
                                            double[] minMaxTemperatures, int panelAngle, int panelAspect,
                                            boolean usedOptimalValues, List<Site.MonthlyData> monthlyData) {
@@ -130,6 +184,12 @@ public class ProjectService {
         projectRepository.save(project);
     }
 
+    /**
+     * Updates the last completed step in the project.
+     *
+     * @param projectId The ID of the project
+     * @param step      The step number to set as the last completed step
+     */
     public void updateLastCompletedStep(String projectId, int step) {
         Project project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new RuntimeException("Project not found: " + projectId));

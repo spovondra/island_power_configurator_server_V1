@@ -6,18 +6,19 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import java.util.Optional;
 
 /**
- * Repository interface for performing CRUD operations on OneUser entities.
- * This interface extends MongoRepository to provide built-in methods for accessing
- * and managing OneUser documents in a MongoDB database. It also includes a custom method
- * to find a user by their username.
+ * Repository interface for managing OneUser entities in the database.
+ * Extends MongoRepository to provide basic CRUD operations and includes a custom method
+ * for finding a user by their username.
+ *
+ * @version 1.0
  */
 public interface UserRepository extends MongoRepository<OneUser, String> {
 
     /**
      * Finds a user by their username.
      *
-     * @param username The username of the user to find.
-     * @return An Optional containing the user if found, or empty if no user with the given username exists.
+     * @param username The username of the user to be retrieved
+     * @return Optional containing the OneUser entity if found, or empty if no user with the specified username exists
      */
     Optional<OneUser> findByUsername(String username);
 }

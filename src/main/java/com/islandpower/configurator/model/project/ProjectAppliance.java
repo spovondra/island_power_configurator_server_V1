@@ -2,28 +2,24 @@ package com.islandpower.configurator.model.project;
 
 /**
  * Model representing aggregated appliance data in a project.
- * <p>
  * This class stores total energy and peak power consumption for AC and DC appliances.
  * It is used to calculate the overall power and energy requirements of the project.
- * </p>
  *
  * @version 1.0
  */
 public class ProjectAppliance {
 
-    private double totalAcPower; // Total AC energy consumption
-    private double totalDcPower; // Total DC energy consumption
-    private double totalAcEnergy; // Total AC energy consumption
-    private double totalDcEnergy; // Total DC energy consumption
-    private double totalAcPeakPower; // Total peak power for AC
-    private double totalDcPeakPower; // Total peak power for DC
-
-    // Getters and Setters
+    private double totalAcPower; // total AC power consumption in watts
+    private double totalDcPower; // total DC power consumption in watts
+    private double totalAcEnergy; // total AC energy consumption in kilowatt-hours (kWh)
+    private double totalDcEnergy; // total DC energy consumption in kilowatt-hours (kWh)
+    private double totalAcPeakPower; // total peak power for AC appliances in watts
+    private double totalDcPeakPower; // total peak power for DC appliances in watts
 
     /**
      * Retrieves the total AC power consumption.
      *
-     * @return double - the total AC power in Watts
+     * @return double The total AC power in watts
      */
     public double getTotalAcPower() {
         return totalAcPower;
@@ -32,7 +28,7 @@ public class ProjectAppliance {
     /**
      * Updates the total AC power consumption.
      *
-     * @param totalAcPower - the new total AC power in Watts
+     * @param totalAcPower The new total AC power in watts
      */
     public void setTotalAcPower(double totalAcPower) {
         this.totalAcPower = totalAcPower;
@@ -41,7 +37,7 @@ public class ProjectAppliance {
     /**
      * Retrieves the total DC power consumption.
      *
-     * @return double - the total DC power in Watts
+     * @return double The total DC power in watts
      */
     public double getTotalDcPower() {
         return totalDcPower;
@@ -50,7 +46,7 @@ public class ProjectAppliance {
     /**
      * Updates the total DC power consumption.
      *
-     * @param totalDcPower - the new total DC power in Watts
+     * @param totalDcPower The new total DC power in watts
      */
     public void setTotalDcPower(double totalDcPower) {
         this.totalDcPower = totalDcPower;
@@ -59,7 +55,7 @@ public class ProjectAppliance {
     /**
      * Retrieves the total AC energy consumption.
      *
-     * @return double - the total AC energy in kWh
+     * @return double The total AC energy in kilowatt-hours (kWh)
      */
     public double getTotalAcEnergy() {
         return totalAcEnergy;
@@ -68,7 +64,7 @@ public class ProjectAppliance {
     /**
      * Updates the total AC energy consumption.
      *
-     * @param totalAcEnergy - the new total AC energy in kWh
+     * @param totalAcEnergy The new total AC energy in kilowatt-hours (kWh)
      */
     public void setTotalAcEnergy(double totalAcEnergy) {
         this.totalAcEnergy = totalAcEnergy;
@@ -77,7 +73,7 @@ public class ProjectAppliance {
     /**
      * Retrieves the total DC energy consumption.
      *
-     * @return double - the total DC energy in kWh
+     * @return double The total DC energy in kilowatt-hours (kWh)
      */
     public double getTotalDcEnergy() {
         return totalDcEnergy;
@@ -86,7 +82,7 @@ public class ProjectAppliance {
     /**
      * Updates the total DC energy consumption.
      *
-     * @param totalDcEnergy - the new total DC energy in kWh
+     * @param totalDcEnergy The new total DC energy in kilowatt-hours (kWh)
      */
     public void setTotalDcEnergy(double totalDcEnergy) {
         this.totalDcEnergy = totalDcEnergy;
@@ -95,7 +91,7 @@ public class ProjectAppliance {
     /**
      * Retrieves the total peak power for AC appliances.
      *
-     * @return double - the total AC peak power in Watts
+     * @return double The total AC peak power in watts
      */
     public double getTotalAcPeakPower() {
         return totalAcPeakPower;
@@ -104,7 +100,7 @@ public class ProjectAppliance {
     /**
      * Updates the total peak power for AC appliances.
      *
-     * @param totalAcPeakPower - the new total AC peak power in Watts
+     * @param totalAcPeakPower The new total AC peak power in watts
      */
     public void setTotalAcPeakPower(double totalAcPeakPower) {
         this.totalAcPeakPower = totalAcPeakPower;
@@ -113,7 +109,7 @@ public class ProjectAppliance {
     /**
      * Retrieves the total peak power for DC appliances.
      *
-     * @return double - the total DC peak power in Watts
+     * @return double The total DC peak power in watts
      */
     public double getTotalDcPeakPower() {
         return totalDcPeakPower;
@@ -122,7 +118,7 @@ public class ProjectAppliance {
     /**
      * Updates the total peak power for DC appliances.
      *
-     * @param totalDcPeakPower - the new total DC peak power in Watts
+     * @param totalDcPeakPower The new total DC peak power in watts
      */
     public void setTotalDcPeakPower(double totalDcPeakPower) {
         this.totalDcPeakPower = totalDcPeakPower;

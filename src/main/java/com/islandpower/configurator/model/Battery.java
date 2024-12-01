@@ -4,10 +4,8 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 /**
  * Represents a battery used in the system, including its technical specifications and performance parameters.
- * <p>
  * This model defines the attributes of a battery, such as its capacity, voltage, depth of discharge (DOD),
  * and efficiency, along with pricing and charging parameters.
- * </p>
  *
  * @version 1.0
  */

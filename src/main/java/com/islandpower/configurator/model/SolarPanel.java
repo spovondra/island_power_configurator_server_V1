@@ -4,9 +4,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 /**
  * Represents a solar panel used in the system.
- * <p>
  * This class defines the panel's specifications, including power ratings, voltage, current, and efficiency attributes.
- * <p>
  *
  * @version 1.0
  */

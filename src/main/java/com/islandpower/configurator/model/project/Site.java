@@ -4,32 +4,27 @@ import java.util.List;
 
 /**
  * Represents the geographical and environmental details of a site in a solar energy project.
- * <p>
  * This class includes information about the site's coordinates, temperature ranges,
  * panel orientation, and monthly solar irradiance and temperature data.
- * </p>
  *
  * @version 1.0
  */
 public class Site {
 
-    private double latitude; // Latitude coordinate of the site
-    private double longitude; // Longitude coordinate of the site
-    private double minTemperature; // Minimum temperature at the site
-    private double maxTemperature; // Maximum temperature at the site
-    private int panelAngle; // Angle of the solar panels
-    private int panelAspect; // Aspect (orientation) of the solar panels
-    private boolean usedOptimalValues; // Indicates if optimal values are used for calculations
+    private double latitude; // latitude coordinate of the site
+    private double longitude; // longitude coordinate of the site
+    private double minTemperature; // minimum temperature at the site
+    private double maxTemperature; // maximum temperature at the site
+    private int panelAngle; // angle of the solar panels
+    private int panelAspect; // aspect (orientation) of the solar panels
+    private boolean usedOptimalValues; // indicates if optimal values are used for calculations
 
-    /**
-     * List of monthly solar data, including irradiance and ambient temperature.
-     */
-    private List<MonthlyData> monthlyDataList;
+    private List<MonthlyData> monthlyDataList; // list of monthly solar data, including irradiance and ambient temperature
 
     /**
      * Retrieves the latitude of the site.
      *
-     * @return double - the latitude of the site
+     * @return double The latitude of the site
      */
     public double getLatitude() {
         return latitude;
@@ -38,7 +33,7 @@ public class Site {
     /**
      * Updates the latitude of the site.
      *
-     * @param latitude - the new latitude of the site
+     * @param latitude The new latitude of the site
      */
     public void setLatitude(double latitude) {
         this.latitude = latitude;
@@ -47,7 +42,7 @@ public class Site {
     /**
      * Retrieves the longitude of the site.
      *
-     * @return double - the longitude of the site
+     * @return double The longitude of the site
      */
     public double getLongitude() {
         return longitude;
@@ -56,7 +51,7 @@ public class Site {
     /**
      * Updates the longitude of the site.
      *
-     * @param longitude - the new longitude of the site
+     * @param longitude The new longitude of the site
      */
     public void setLongitude(double longitude) {
         this.longitude = longitude;
@@ -65,7 +60,7 @@ public class Site {
     /**
      * Retrieves the minimum temperature at the site.
      *
-     * @return double - the minimum temperature
+     * @return double The minimum temperature
      */
     public double getMinTemperature() {
         return minTemperature;
@@ -74,7 +69,7 @@ public class Site {
     /**
      * Updates the minimum temperature at the site.
      *
-     * @param minTemperature - the new minimum temperature
+     * @param minTemperature The new minimum temperature
      */
     public void setMinTemperature(double minTemperature) {
         this.minTemperature = minTemperature;
@@ -83,7 +78,7 @@ public class Site {
     /**
      * Retrieves the maximum temperature at the site.
      *
-     * @return double - the maximum temperature
+     * @return double The maximum temperature
      */
     public double getMaxTemperature() {
         return maxTemperature;
@@ -92,7 +87,7 @@ public class Site {
     /**
      * Updates the maximum temperature at the site.
      *
-     * @param maxTemperature - the new maximum temperature
+     * @param maxTemperature The new maximum temperature
      */
     public void setMaxTemperature(double maxTemperature) {
         this.maxTemperature = maxTemperature;
@@ -101,7 +96,7 @@ public class Site {
     /**
      * Retrieves the angle of the solar panels.
      *
-     * @return int - the panel angle
+     * @return int The panel angle
      */
     public int getPanelAngle() {
         return panelAngle;
@@ -110,7 +105,7 @@ public class Site {
     /**
      * Updates the angle of the solar panels.
      *
-     * @param panelAngle - the new panel angle
+     * @param panelAngle The new panel angle
      */
     public void setPanelAngle(int panelAngle) {
         this.panelAngle = panelAngle;
@@ -119,7 +114,7 @@ public class Site {
     /**
      * Retrieves the aspect (orientation) of the solar panels.
      *
-     * @return int - the panel aspect
+     * @return int The panel aspect
      */
     public int getPanelAspect() {
         return panelAspect;
@@ -128,7 +123,7 @@ public class Site {
     /**
      * Updates the aspect (orientation) of the solar panels.
      *
-     * @param panelAspect - the new panel aspect
+     * @param panelAspect The new panel aspect
      */
     public void setPanelAspect(int panelAspect) {
         this.panelAspect = panelAspect;
@@ -137,7 +132,7 @@ public class Site {
     /**
      * Indicates whether optimal values are used for the site configuration.
      *
-     * @return boolean - true if optimal values are used; false otherwise
+     * @return boolean True if optimal values are used; false otherwise
      */
     public boolean isUsedOptimalValues() {
         return usedOptimalValues;
@@ -146,7 +141,7 @@ public class Site {
     /**
      * Sets whether optimal values are used for the site configuration.
      *
-     * @param usedOptimalValues - true to use optimal values; false otherwise
+     * @param usedOptimalValues True to use optimal values; false otherwise
      */
     public void setUsedOptimalValues(boolean usedOptimalValues) {
         this.usedOptimalValues = usedOptimalValues;
@@ -155,7 +150,7 @@ public class Site {
     /**
      * Retrieves the list of monthly solar data for the site.
      *
-     * @return List<MonthlyData> - the monthly solar data
+     * @return List<MonthlyData> The monthly solar data
      */
     public List<MonthlyData> getMonthlyDataList() {
         return monthlyDataList;
@@ -164,7 +159,7 @@ public class Site {
     /**
      * Updates the list of monthly solar data for the site.
      *
-     * @param monthlyDataList - the new list of monthly data
+     * @param monthlyDataList The new list of monthly data
      */
     public void setMonthlyDataList(List<MonthlyData> monthlyDataList) {
         this.monthlyDataList = monthlyDataList;
@@ -175,14 +170,14 @@ public class Site {
      */
     public static class MonthlyData {
 
-        private int month; // Month number (1-12)
-        private double irradiance; // Solar irradiance (Wh/m²/day)
-        private double ambientTemperature; // Ambient temperature (°C)
+        private int month; // month number (1-12)
+        private double irradiance; // solar irradiance (Wh/m²/day)
+        private double ambientTemperature; // ambient temperature (degrees Celsius)
 
         /**
          * Retrieves the month number.
          *
-         * @return int - the month number (1-12)
+         * @return int The month number (1-12)
          */
         public int getMonth() {
             return month;
@@ -191,7 +186,7 @@ public class Site {
         /**
          * Updates the month number.
          *
-         * @param month - the new month number (1-12)
+         * @param month The new month number (1-12)
          */
         public void setMonth(int month) {
             this.month = month;
@@ -200,7 +195,7 @@ public class Site {
         /**
          * Retrieves the solar irradiance for the month.
          *
-         * @return double - the solar irradiance in Wh/m²/day
+         * @return double The solar irradiance in Wh/m²/day
          */
         public double getIrradiance() {
             return irradiance;
@@ -209,7 +204,7 @@ public class Site {
         /**
          * Updates the solar irradiance for the month.
          *
-         * @param irradiance - the new solar irradiance in Wh/m²/day
+         * @param irradiance The new solar irradiance in Wh/m²/day
          */
         public void setIrradiance(double irradiance) {
             this.irradiance = irradiance;
@@ -218,7 +213,7 @@ public class Site {
         /**
          * Retrieves the ambient temperature for the month.
          *
-         * @return double - the ambient temperature in °C
+         * @return double The ambient temperature in degrees Celsius
          */
         public double getAmbientTemperature() {
             return ambientTemperature;
@@ -227,7 +222,7 @@ public class Site {
         /**
          * Updates the ambient temperature for the month.
          *
-         * @param ambientTemperature - the new ambient temperature in °C
+         * @param ambientTemperature The new ambient temperature in degrees Celsius
          */
         public void setAmbientTemperature(double ambientTemperature) {
             this.ambientTemperature = ambientTemperature;

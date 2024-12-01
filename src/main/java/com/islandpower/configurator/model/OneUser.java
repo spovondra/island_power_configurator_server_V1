@@ -8,10 +8,8 @@ import java.util.List;
 
 /**
  * Represents a user in the system.
- * <p>
  * This class stores user information, including authentication details, roles, and project associations.
  * It is mapped to a MongoDB collection named "users".
- * <p>
  *
  * @version 1.0
  */

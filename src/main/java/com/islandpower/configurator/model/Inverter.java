@@ -4,10 +4,8 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 /**
  * Represents an inverter used in the system, including its power ratings, efficiency, and pricing.
- * <p>
  * This model defines the inverter's attributes, including continuous power ratings for different temperatures,
  * maximum power, voltage, and efficiency.
- * <p>
  *
  * @version 1.0
  */

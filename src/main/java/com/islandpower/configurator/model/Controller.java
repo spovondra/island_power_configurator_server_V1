@@ -4,9 +4,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 /**
  * Represents a solar charge controller, including its technical specifications and performance parameters.
- * <p>
  * This model defines the attributes of a controller, such as its rated power, voltage range, type, and efficiency.
- * <p>
  *
  * @version 1.0
  */

@@ -2,24 +2,22 @@ package com.islandpower.configurator.model.project;
 
 /**
  * Model representing the inverter configuration in a project.
- * <p>
  * This class defines attributes related to the selected inverter,
  * including its temperature settings and energy calculations.
- * </p>
  *
  * @version 1.0
  */
 public class ProjectInverter {
 
-    private String inverterId; // ID of the selected inverter
-    private double inverterTemperature; // Installation temperature of the inverter
-    private double totalAdjustedAcEnergy; // Adjusted AC Load
-    private double totalDailyEnergy; // Total Daily Energy
+    private String inverterId; // id of the selected inverter
+    private double inverterTemperature; // installation temperature of the inverter in degrees Celsius
+    private double totalAdjustedAcEnergy; // adjusted AC load in kilowatt-hours (kWh)
+    private double totalDailyEnergy; // total daily energy consumption in kilowatt-hours (kWh)
 
     /**
      * Retrieves the ID of the selected inverter.
      *
-     * @return String - the ID of the selected inverter
+     * @return String The ID of the selected inverter
      */
     public String getInverterId() {
         return inverterId;
@@ -28,7 +26,7 @@ public class ProjectInverter {
     /**
      * Updates the ID of the selected inverter.
      *
-     * @param inverterId - the new inverter ID
+     * @param inverterId The new inverter ID
      */
     public void setInverterId(String inverterId) {
         this.inverterId = inverterId;
@@ -37,7 +35,7 @@ public class ProjectInverter {
     /**
      * Retrieves the installation temperature of the inverter.
      *
-     * @return double - the installation temperature in degrees Celsius
+     * @return double The installation temperature in degrees Celsius
      */
     public double getInverterTemperature() {
         return inverterTemperature;
@@ -46,7 +44,7 @@ public class ProjectInverter {
     /**
      * Updates the installation temperature of the inverter.
      *
-     * @param inverterTemperature - the new installation temperature in degrees Celsius
+     * @param inverterTemperature The new installation temperature in degrees Celsius
      */
     public void setInverterTemperature(double inverterTemperature) {
         this.inverterTemperature = inverterTemperature;
@@ -55,7 +53,7 @@ public class ProjectInverter {
     /**
      * Retrieves the total adjusted AC energy consumption.
      *
-     * @return double - the adjusted AC load in kilowatt-hours (kWh)
+     * @return double The adjusted AC load in kilowatt-hours (kWh)
      */
     public double getTotalAdjustedAcEnergy() {
         return totalAdjustedAcEnergy;
@@ -64,7 +62,7 @@ public class ProjectInverter {
     /**
      * Updates the total adjusted AC energy consumption.
      *
-     * @param totalAdjustedAcEnergy - the new adjusted AC load in kilowatt-hours (kWh)
+     * @param totalAdjustedAcEnergy The new adjusted AC load in kilowatt-hours (kWh)
      */
     public void setTotalAdjustedAcEnergy(double totalAdjustedAcEnergy) {
         this.totalAdjustedAcEnergy = totalAdjustedAcEnergy;
@@ -73,7 +71,7 @@ public class ProjectInverter {
     /**
      * Retrieves the total daily energy consumption.
      *
-     * @return double - the total daily energy consumption in kilowatt-hours (kWh)
+     * @return double The total daily energy consumption in kilowatt-hours (kWh)
      */
     public double getTotalDailyEnergy() {
         return totalDailyEnergy;
@@ -82,7 +80,7 @@ public class ProjectInverter {
     /**
      * Updates the total daily energy consumption.
      *
-     * @param totalDailyEnergy - the new total daily energy consumption in kilowatt-hours (kWh)
+     * @param totalDailyEnergy The new total daily energy consumption in kilowatt-hours (kWh)
      */
     public void setTotalDailyEnergy(double totalDailyEnergy) {
         this.totalDailyEnergy = totalDailyEnergy;

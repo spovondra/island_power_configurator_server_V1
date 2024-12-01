@@ -54,7 +54,7 @@ public class ProjectInverterController {
         String username = jwtUtilService.extractUsernameFromToken(request);
         String userId = jwtUtilService.retrieveUserIdByUsername(username);
         logger.info("User {} (ID: {}) is attempting to remove inverter with ID: {} from project with ID: {}", username, userId, inverterId, projectId);
-        projectInverterService.removeInverter(projectId, inverterId);
+        projectInverterService.removeInverter(projectId);
         logger.info("Inverter with ID: {} was successfully removed from project with ID: {} by user {} (ID: {})", inverterId, projectId, username, userId);
     }
 

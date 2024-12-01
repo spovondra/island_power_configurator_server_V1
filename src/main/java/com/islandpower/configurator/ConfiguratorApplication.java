@@ -14,7 +14,7 @@ public class ConfiguratorApplication {
 	/**
 	 * Starts the Spring Boot application.
 	 *
-	 * @param args command-line arguments
+	 * @param args Command-line arguments
 	 */
 	public static void main(String[] args) {
 		SpringApplication.run(ConfiguratorApplication.class, args);

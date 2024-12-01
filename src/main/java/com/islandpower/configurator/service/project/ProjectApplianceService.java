@@ -13,16 +13,28 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+/**
+ * Service for managing appliances in a project.
+ * Provides methods for adding, updating, removing appliances, and recalculating energy requirements.
+ */
 @Service
 public class ProjectApplianceService {
 
     @Autowired
     private ProjectRepository projectRepository;
 
-    // Přidání nebo aktualizace spotřebiče v projektu
+    /**
+     * Adds or updates an appliance in the specified project.
+     * If the appliance ID is null or empty, a new UUID is generated.
+     * Recalculates energy requirements after the update.
+     *
+     * @param projectId The ID of the project
+     * @param appliance The appliance to add or update
+     * @return Project The updated project
+     */
     public Project addOrUpdateAppliance(String projectId, Appliance appliance) {
         Project project = projectRepository.findById(projectId)
-                .orElseThrow(() -> new RuntimeException("Projekt nebyl nalezen: " + projectId));
+                .orElseThrow(() -> new RuntimeException("Project not found: " + projectId));
 
         List<Appliance> appliances = project.getAppliances();
         if (appliances == null) {
@@ -30,42 +42,54 @@ public class ProjectApplianceService {
             project.setAppliances(appliances);
         }
 
-        // Zajištění ID spotřebiče
+        /* Ensure the appliance has a unique ID */
         if (appliance.getId() == null || appliance.getId().isEmpty()) {
             appliance.setId(UUID.randomUUID().toString());
         }
 
+        /* Check if the appliance already exists and replace it */
         Optional<Appliance> existingAppliance = appliances.stream()
                 .filter(a -> a.getId().equals(appliance.getId()))
                 .findFirst();
 
-        if (existingAppliance.isPresent()) {
-            appliances.remove(existingAppliance.get());
-        }
+        existingAppliance.ifPresent(appliances::remove);
         appliances.add(appliance);
 
-        // Přepočet energie
+        /* Recalculate energy requirements */
         calculateEnergy(project);
 
         return projectRepository.save(project);
     }
 
-    // Odstranění spotřebiče z projektu
+    /**
+     * Removes an appliance from the specified project.
+     * Recalculates energy requirements after the appliance is removed.
+     *
+     * @param projectId   The ID of the project
+     * @param applianceId The ID of the appliance to remove
+     */
     public void removeAppliance(String projectId, String applianceId) {
         Project project = projectRepository.findById(projectId)
-                .orElseThrow(() -> new RuntimeException("Projekt nebyl nalezen: " + projectId));
+                .orElseThrow(() -> new RuntimeException("Project not found: " + projectId));
 
         List<Appliance> appliances = project.getAppliances();
         if (appliances != null) {
             appliances.removeIf(appliance -> appliance.getId().equals(applianceId));
         }
 
+        /* Recalculate energy requirements */
         calculateEnergy(project);
 
         projectRepository.save(project);
     }
 
-    // Výpočet celkové energie projektu
+    /**
+     * Recalculates the energy requirements for the specified project.
+     * Computes total AC/DC power, energy, and peak power for appliances.
+     * Updates the recommended system voltage based on total daily energy.
+     *
+     * @param project The project for which to calculate energy
+     */
     private void calculateEnergy(Project project) {
         ConfigurationModel configModel = project.getConfigurationModel();
         if (configModel == null) {
@@ -81,29 +105,29 @@ public class ProjectApplianceService {
 
         double totalAcPower = 0;
         double totalDcPower = 0;
-        double totalAcEnergyDaily = 0; // Celková denní energie AC
-        double totalDcEnergyDaily = 0; // Celková denní energie DC
+        double totalAcEnergyDaily = 0;
+        double totalDcEnergyDaily = 0;
         double totalAcPeakPower = 0;
         double totalDcPeakPower = 0;
 
         List<Appliance> appliances = project.getAppliances();
         if (appliances != null) {
             for (Appliance appliance : appliances) {
-                // Výpočet týdenní energie: E_week = P_appliance ⋅ t_hours ⋅ t_days
+                /* Calculate weekly energy: E_week = P * t_hours * t_days */
                 double energyWeekly = appliance.getPower() * appliance.getHours() * appliance.getDays();
 
-                // Výpočet denní energie: E_day = E_week / 7
+                /* Calculate daily energy: E_day = E_week / 7 */
                 double energyDaily = energyWeekly / 7;
 
-                // Uložení denní energie do spotřebiče
+                /* Update energy for each appliance */
                 appliance.setEnergy(energyDaily * appliance.getQuantity());
 
-                // Třídění podle typu spotřebiče
-                if (appliance.getType() != null && appliance.getType().equals("AC")) {
+                /* Categorize appliances by their type (AC or DC) */
+                if ("AC".equals(appliance.getType())) {
                     totalAcPower += appliance.getPower() * appliance.getQuantity();
                     totalAcEnergyDaily += energyDaily * appliance.getQuantity();
                     totalAcPeakPower += appliance.getPeakPower() * appliance.getQuantity();
-                } else if (appliance.getType() != null && appliance.getType().equals("DC")) {
+                } else if ("DC".equals(appliance.getType())) {
                     totalDcPower += appliance.getPower() * appliance.getQuantity();
                     totalDcEnergyDaily += energyDaily * appliance.getQuantity();
                     totalDcPeakPower += appliance.getPeakPower() * appliance.getQuantity();
@@ -111,6 +135,7 @@ public class ProjectApplianceService {
             }
         }
 
+        /* Update configuration model with calculated values */
         projectAppliance.setTotalAcPower(totalAcPower);
         projectAppliance.setTotalDcPower(totalDcPower);
         projectAppliance.setTotalAcEnergy(totalAcEnergyDaily);
@@ -118,13 +143,22 @@ public class ProjectApplianceService {
         projectAppliance.setTotalAcPeakPower(totalAcPeakPower);
         projectAppliance.setTotalDcPeakPower(totalDcPeakPower);
 
-        // Doporučené systémové napětí na základě celkové denní energie: E_daily_total = suma E_day_i
+        /* Set the recommended system voltage based on total daily energy */
         configModel.setRecommendedSystemVoltage(calculateRecommendedSystemVoltage(totalAcEnergyDaily + totalDcEnergyDaily));
     }
 
-    // Výpočet doporučeného systémového napětí
+    /**
+     * Calculates the recommended system voltage based on total daily energy consumption.
+     * <p>
+     * 12V for energy < 1000 Wh,
+     * 24V for energy between 1000 and 3000 Wh,
+     * 48V for energy > 3000 Wh
+     * <p>
+     *
+     * @param totalEnergyDaily The total daily energy consumption
+     * @return double The recommended system voltage
+     */
     private double calculateRecommendedSystemVoltage(double totalEnergyDaily) {
-        // Doporučení napětí na základě celkové denní energie
         if (totalEnergyDaily < 1000) {
             return 12;
         } else if (totalEnergyDaily < 3000) {

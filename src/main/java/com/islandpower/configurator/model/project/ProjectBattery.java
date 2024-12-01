@@ -2,39 +2,36 @@ package com.islandpower.configurator.model.project;
 
 /**
  * Model representing the battery configuration in a project.
- * <p>
  * This class defines attributes for battery specifications, configurations, and
  * calculated values, such as the number of series and parallel batteries, adjusted capacity,
  * and operational parameters.
- * </p>
  *
  * @version 1.0
  */
 public class ProjectBattery {
 
-    private String batteryId; // ID of the selected battery
-    private String type; // Battery type (e.g., Li-ion, Lead Acid)
-    private int temperature; // Operating temperature (°C)
-    private double batteryCapacityDod; // Adjusted capacity for depth of discharge (Ah)
-    private int parallelBatteries; // Number of parallel-connected batteries
-    private int seriesBatteries; // Number of series-connected batteries
-    private double requiredBatteryCapacity; // Required battery capacity (Ah)
-    private double batteryAutonomy; // Autonomy in days
-    private double totalAvailableCapacity; // Total available capacity (Ah)
-    private double operationalDays; // Number of operational days calculated
-    private double maxChargingPower; // Maximum charging power (W)
-    private double optimalChargingPower; // Optimal charging power (W)
+    private String batteryId; // id of the selected battery
+    private String type; // battery type (e.g., Li-ion, Lead Acid)
+    private int temperature; // operating temperature in degrees Celsius
+    private double batteryCapacityDod; // adjusted capacity for depth of discharge in ampere-hours (Ah)
+    private int parallelBatteries; // number of parallel-connected batteries
+    private int seriesBatteries; // number of series-connected batteries
+    private double requiredBatteryCapacity; // required battery capacity in ampere-hours (Ah)
+    private double batteryAutonomy; // autonomy in days
+    private double totalAvailableCapacity; // total available capacity in ampere-hours (Ah)
+    private double operationalDays; // number of operational days calculated
+    private double maxChargingPower; // maximum charging power in watts (W)
+    private double optimalChargingPower; // optimal charging power in watts (W)
 
     /**
      * Default constructor for ProjectBattery.
      */
-    public ProjectBattery() {
-    }
+    public ProjectBattery() {}
 
     /**
      * Retrieves the ID of the battery.
      *
-     * @return String - the ID of the battery
+     * @return String The ID of the battery
      */
     public String getBatteryId() {
         return batteryId;
@@ -43,7 +40,7 @@ public class ProjectBattery {
     /**
      * Updates the ID of the battery.
      *
-     * @param batteryId - the new ID of the battery
+     * @param batteryId The new ID of the battery
      */
     public void setBatteryId(String batteryId) {
         this.batteryId = batteryId;
@@ -52,7 +49,7 @@ public class ProjectBattery {
     /**
      * Retrieves the type of the battery.
      *
-     * @return String - the type of the battery
+     * @return String The type of the battery
      */
     public String getType() {
         return type;
@@ -61,7 +58,7 @@ public class ProjectBattery {
     /**
      * Updates the type of the battery.
      *
-     * @param type - the new type of the battery
+     * @param type The new type of the battery
      */
     public void setType(String type) {
         this.type = type;
@@ -70,7 +67,7 @@ public class ProjectBattery {
     /**
      * Retrieves the operating temperature of the battery.
      *
-     * @return int - the operating temperature (°C)
+     * @return int The operating temperature in degrees Celsius
      */
     public int getTemperature() {
         return temperature;
@@ -79,25 +76,25 @@ public class ProjectBattery {
     /**
      * Updates the operating temperature of the battery.
      *
-     * @param temperature - the new operating temperature (°C)
+     * @param temperature The new operating temperature in degrees Celsius
      */
     public void setTemperature(int temperature) {
         this.temperature = temperature;
     }
 
     /**
-     * Retrieves the battery capacity adjusted for depth of discharge (DoD).
+     * Retrieves the battery capacity adjusted for depth of discharge.
      *
-     * @return double - the adjusted battery capacity (Ah)
+     * @return double The adjusted battery capacity in ampere-hours (Ah)
      */
     public double getBatteryCapacityDod() {
         return batteryCapacityDod;
     }
 
     /**
-     * Updates the battery capacity adjusted for depth of discharge (DoD).
+     * Updates the battery capacity adjusted for depth of discharge.
      *
-     * @param batteryCapacityDod - the new adjusted battery capacity (Ah)
+     * @param batteryCapacityDod The new adjusted battery capacity in ampere-hours (Ah)
      */
     public void setBatteryCapacityDod(double batteryCapacityDod) {
         this.batteryCapacityDod = batteryCapacityDod;
@@ -106,7 +103,7 @@ public class ProjectBattery {
     /**
      * Retrieves the number of parallel-connected batteries.
      *
-     * @return int - the number of parallel batteries
+     * @return int The number of parallel batteries
      */
     public int getParallelBatteries() {
         return parallelBatteries;
@@ -115,7 +112,7 @@ public class ProjectBattery {
     /**
      * Updates the number of parallel-connected batteries.
      *
-     * @param parallelBatteries - the new number of parallel batteries
+     * @param parallelBatteries The new number of parallel batteries
      */
     public void setParallelBatteries(int parallelBatteries) {
         this.parallelBatteries = parallelBatteries;
@@ -124,7 +121,7 @@ public class ProjectBattery {
     /**
      * Retrieves the number of series-connected batteries.
      *
-     * @return int - the number of series batteries
+     * @return int The number of series batteries
      */
     public int getSeriesBatteries() {
         return seriesBatteries;
@@ -133,7 +130,7 @@ public class ProjectBattery {
     /**
      * Updates the number of series-connected batteries.
      *
-     * @param seriesBatteries - the new number of series batteries
+     * @param seriesBatteries The new number of series batteries
      */
     public void setSeriesBatteries(int seriesBatteries) {
         this.seriesBatteries = seriesBatteries;
@@ -142,7 +139,7 @@ public class ProjectBattery {
     /**
      * Retrieves the required battery capacity for the project.
      *
-     * @return double - the required capacity (Ah)
+     * @return double The required battery capacity in ampere-hours (Ah)
      */
     public double getRequiredBatteryCapacity() {
         return requiredBatteryCapacity;
@@ -151,7 +148,7 @@ public class ProjectBattery {
     /**
      * Updates the required battery capacity for the project.
      *
-     * @param requiredBatteryCapacity - the new required capacity (Ah)
+     * @param requiredBatteryCapacity The new required battery capacity in ampere-hours (Ah)
      */
     public void setRequiredBatteryCapacity(double requiredBatteryCapacity) {
         this.requiredBatteryCapacity = requiredBatteryCapacity;
@@ -160,7 +157,7 @@ public class ProjectBattery {
     /**
      * Retrieves the battery autonomy in days.
      *
-     * @return double - the autonomy in days
+     * @return double The autonomy in days
      */
     public double getBatteryAutonomy() {
         return batteryAutonomy;
@@ -169,7 +166,7 @@ public class ProjectBattery {
     /**
      * Updates the battery autonomy in days.
      *
-     * @param batteryAutonomy - the new autonomy in days
+     * @param batteryAutonomy The new autonomy in days
      */
     public void setBatteryAutonomy(double batteryAutonomy) {
         this.batteryAutonomy = batteryAutonomy;
@@ -178,7 +175,7 @@ public class ProjectBattery {
     /**
      * Retrieves the total available battery capacity.
      *
-     * @return double - the total available capacity (Ah)
+     * @return double The total available capacity in ampere-hours (Ah)
      */
     public double getTotalAvailableCapacity() {
         return totalAvailableCapacity;
@@ -187,7 +184,7 @@ public class ProjectBattery {
     /**
      * Updates the total available battery capacity.
      *
-     * @param totalAvailableCapacity - the new total capacity (Ah)
+     * @param totalAvailableCapacity The new total available capacity in ampere-hours (Ah)
      */
     public void setTotalAvailableCapacity(double totalAvailableCapacity) {
         this.totalAvailableCapacity = totalAvailableCapacity;
@@ -196,7 +193,7 @@ public class ProjectBattery {
     /**
      * Retrieves the calculated operational days.
      *
-     * @return double - the calculated operational days
+     * @return double The calculated operational days
      */
     public double getOperationalDays() {
         return operationalDays;
@@ -205,7 +202,7 @@ public class ProjectBattery {
     /**
      * Updates the calculated operational days.
      *
-     * @param operationalDays - the new operational days
+     * @param operationalDays The new calculated operational days
      */
     public void setOperationalDays(double operationalDays) {
         this.operationalDays = operationalDays;
@@ -214,7 +211,7 @@ public class ProjectBattery {
     /**
      * Retrieves the maximum charging power for the battery.
      *
-     * @return double - the maximum charging power (W)
+     * @return double The maximum charging power in watts (W)
      */
     public double getMaxChargingPower() {
         return maxChargingPower;
@@ -223,7 +220,7 @@ public class ProjectBattery {
     /**
      * Updates the maximum charging power for the battery.
      *
-     * @param maxChargingPower - the new maximum charging power (W)
+     * @param maxChargingPower The new maximum charging power in watts (W)
      */
     public void setMaxChargingPower(double maxChargingPower) {
         this.maxChargingPower = maxChargingPower;
@@ -232,7 +229,7 @@ public class ProjectBattery {
     /**
      * Retrieves the optimal charging power for the battery.
      *
-     * @return double - the optimal charging power (W)
+     * @return double The optimal charging power in watts (W)
      */
     public double getOptimalChargingPower() {
         return optimalChargingPower;
@@ -241,7 +238,7 @@ public class ProjectBattery {
     /**
      * Updates the optimal charging power for the battery.
      *
-     * @param optimalChargingPower - the new optimal charging power (W)
+     * @param optimalChargingPower The new optimal charging power in watts (W)
      */
     public void setOptimalChargingPower(double optimalChargingPower) {
         this.optimalChargingPower = optimalChargingPower;
