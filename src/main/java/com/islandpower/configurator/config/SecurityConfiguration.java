@@ -55,7 +55,6 @@ public class SecurityConfiguration {
 
                     /* endpoints accessible to everyone (public) */
                     registry.requestMatchers(
-                            "/api/location/**",
                             "/api/auth/register/**",
                             "/api/auth/login/**",
                             "/api/auth/refresh-token/**"
