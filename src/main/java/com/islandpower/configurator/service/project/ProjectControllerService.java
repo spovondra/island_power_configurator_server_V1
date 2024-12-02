@@ -205,7 +205,6 @@ public class ProjectControllerService {
                     String.format("Error: Controller power (%.2f W) is less than the total required system power (%.2f W).",
                             controller_ratedPower, totalPower));
             projectController.setValid(false);
-            return;
         }
 
         /* Check maximum voltage compatibility */
@@ -215,7 +214,6 @@ public class ProjectControllerService {
                     String.format("Error: Adjusted open circuit voltage (%.2f V) exceeds controller's maximum voltage (%.2f V).",
                             U_oc_adjusted * n_serial, controller.getMaxVoltage()));
             projectController.setValid(false);
-            return;
         }
 
         /* Validate panel power compatibility */
@@ -224,7 +222,7 @@ public class ProjectControllerService {
                     String.format("Error: Derated power (%.2f W) exceeds controller's capacity (%.2f W).",
                             totalPower, systemVoltage * controller.getCurrentRating()));
             projectController.setValid(false);
-            return;
+
         } else if (totalPower > 0.9 * systemVoltage * controller.getCurrentRating()) {
             logger.warn("Derated power is close to controller's maximum capacity.");
             projectController.setStatusMessage(
@@ -302,8 +300,6 @@ public class ProjectControllerService {
         }
         return project.getConfigurationModel().getProjectController();
     }
-
-    // Helper methods for retrieving entities...
 
     /**
      * Finds a project by its ID.
