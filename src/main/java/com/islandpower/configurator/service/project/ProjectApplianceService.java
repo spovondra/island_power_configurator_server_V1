@@ -42,12 +42,12 @@ public class ProjectApplianceService {
             project.setAppliances(appliances);
         }
 
-        /* Ensure the appliance has a unique ID */
+        /* ensure the appliance has a unique ID */
         if (appliance.getId() == null || appliance.getId().isEmpty()) {
             appliance.setId(UUID.randomUUID().toString());
         }
 
-        /* Check if the appliance already exists and replace it */
+        /* check if the appliance already exists and replace it */
         Optional<Appliance> existingAppliance = appliances.stream()
                 .filter(a -> a.getId().equals(appliance.getId()))
                 .findFirst();
@@ -55,7 +55,7 @@ public class ProjectApplianceService {
         existingAppliance.ifPresent(appliances::remove);
         appliances.add(appliance);
 
-        /* Recalculate energy requirements */
+        /* recalculate energy requirements */
         calculateEnergy(project);
 
         return projectRepository.save(project);
@@ -113,16 +113,16 @@ public class ProjectApplianceService {
         List<Appliance> appliances = project.getAppliances();
         if (appliances != null) {
             for (Appliance appliance : appliances) {
-                /* Calculate weekly energy: E_week = P * t_hours * t_days */
+                /* Calculate weekly energy */
                 double energyWeekly = appliance.getPower() * appliance.getHours() * appliance.getDays();
 
-                /* Calculate daily energy: E_day = E_week / 7 */
+                /* Calc daily energy */
                 double energyDaily = energyWeekly / 7;
 
-                /* Update energy for each appliance */
+                /* update energy for each appliance */
                 appliance.setEnergy(energyDaily * appliance.getQuantity());
 
-                /* Categorize appliances by their type (AC or DC) */
+                /* categorize appliances by their type*/
                 if ("AC".equals(appliance.getType())) {
                     totalAcPower += appliance.getPower() * appliance.getQuantity();
                     totalAcEnergyDaily += energyDaily * appliance.getQuantity();
@@ -143,7 +143,7 @@ public class ProjectApplianceService {
         projectAppliance.setTotalAcPeakPower(totalAcPeakPower);
         projectAppliance.setTotalDcPeakPower(totalDcPeakPower);
 
-        /* Set the recommended system voltage based on total daily energy */
+        /* set the recommended system voltage based on total daily energy */
         configModel.setRecommendedSystemVoltage(calculateRecommendedSystemVoltage(totalAcEnergyDaily + totalDcEnergyDaily));
     }
 

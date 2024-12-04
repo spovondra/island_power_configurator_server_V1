@@ -14,7 +14,7 @@ public class Appliance {
 
     private String id; // unique identifier for the appliance
     private String name; // name of the appliance
-    private String type; // type of the appliance (AC or DC)
+    private String type; // type of the appliance (AC x DC)
     private int quantity; // number of units of the appliance
     private double power; // power consumption of the appliance in watts
     private double hours; // number of hours the appliance is used per day
@@ -68,7 +68,7 @@ public class Appliance {
     }
 
     /**
-     * Updates the type of the appliance (AC or DC).
+     * Updates the type of the appliance (AC x DC).
      *
      * @param type The new type of the appliance
      */

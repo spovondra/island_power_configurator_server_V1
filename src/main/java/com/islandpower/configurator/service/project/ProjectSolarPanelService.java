@@ -38,7 +38,7 @@ public class ProjectSolarPanelService {
      * @return List of suitable solar panels
      */
     public List<SolarPanel> getSuitableSolarPanels(String projectId) {
-        return solarPanelRepository.findAll(); // Return all solar panels
+        return solarPanelRepository.findAll();
     }
 
     /**
@@ -61,32 +61,32 @@ public class ProjectSolarPanelService {
                                                               String installationType, double manufacturerTolerance,
                                                               double agingLoss, double dirtLoss) {
 
-        /* Fetch the project */
+        /* fetch the project */
         Project project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new RuntimeException("Project not found: " + projectId));
 
-        /* Fetch the selected solar panel */
+        /* fetch the selected solar panel */
         SolarPanel selectedPanel = solarPanelRepository.findById(solarPanelId)
                 .orElseThrow(() -> new RuntimeException("Solar Panel not found: " + solarPanelId));
 
-        /* Fetch ConfigurationModel and ensure it is not null */
+        /* fetch ConfigurationModel and ensure it is not null */
         ConfigurationModel configModel = project.getConfigurationModel();
         if (configModel == null) {
             configModel = new ConfigurationModel(); // Initialize ConfigurationModel if null
             project.setConfigurationModel(configModel);
         }
 
-        /* Ensure ProjectSolarPanel exists */
+        /* rnsure ProjectSolarPanel exists */
         ProjectSolarPanel projectSolarPanel = configModel.getProjectSolarPanel();
         if (projectSolarPanel == null) {
             projectSolarPanel = new ProjectSolarPanel(); // Initialize ProjectSolarPanel if null
             configModel.setProjectSolarPanel(projectSolarPanel);
         }
 
-        /* Get total daily energy required for AC and DC appliances */
+        /* get total daily energy required for AC and DC appliances */
         double totalDailyEnergyRequired = project.getConfigurationModel().getProjectInverter().getTotalDailyEnergy();
 
-        /* Fetch monthly data from site */
+        /* fetch monthly data from site */
         List<Site.MonthlyData> monthlyDataList = project.getSite().getMonthlyDataList();
         List<ProjectSolarPanel.MonthlySolarData> monthlyCalculations = new ArrayList<>();
 
@@ -95,7 +95,7 @@ public class ProjectSolarPanelService {
         double finalEfficiency = 0.0;
         int monthsCount = monthlyDataList.size();
 
-        /* Fetch ProjectBattery configuration */
+        /* fetch ProjectBattery configuration */
         if (project.getConfigurationModel().getProjectBattery() == null) {
             throw new RuntimeException("ProjectBattery configuration not found for project: " + projectId);
         }
@@ -103,39 +103,39 @@ public class ProjectSolarPanelService {
         double maxChargingPower = project.getConfigurationModel().getProjectBattery().getMaxChargingPower();
         double optimalChargingPower = project.getConfigurationModel().getProjectBattery().getOptimalChargingPower();
 
-        /* Perform calculations for each selected month */
+        /* perform calculations for each selected month */
         for (Site.MonthlyData monthlyData : monthlyDataList) {
             if (selectedMonths.contains(monthlyData.getMonth())) {
                 double psh = monthlyData.getIrradiance();
                 double ambientTemperature = monthlyData.getAmbientTemperature();
 
-                /* Calculate required energy  from the battery */
+                /* calculate required energy  from the battery */
                 double requiredEnergy = totalDailyEnergyRequired / (batteryEfficiency * cableEfficiency);
 
-                /* Calculate required output power from solar panels */
+                /* calculate required output power from solar panels */
                 double requiredPower = (requiredEnergy / psh) * panelOversizeCoefficient;
 
-                /* Validate power requirements with battery constraints */
+                /* validate power requirements with battery constraints */
                 String statusMessage = getString(requiredPower, maxChargingPower, optimalChargingPower);
                 project.getConfigurationModel().getProjectSolarPanel().setStatusMessage(statusMessage);
 
-                /* Calculate temperature efficiency for solar panels */
+                /* calculate temperature efficiency for solar panels */
                 double tempEfficiencyFactor = calculateTemperatureEfficiency(selectedPanel, ambientTemperature, installationType);
 
-                /* Calculate total panel efficiency */
+                /* calculate total panel efficiency */
                 finalEfficiency = calculateTotalEfficiency(tempEfficiencyFactor, manufacturerTolerance, agingLoss, dirtLoss);
 
-                /* Calculate derated power of the solar panel */
+                /* calculate derated power of the solar panel */
                 double deratedPower = selectedPanel.getpRated() * finalEfficiency;
 
-                /* Calculate the number of solar panels required */
+                /* calculate the number of solar panels required */
                 int numPanelsRequired = (int) Math.ceil(requiredPower / deratedPower);
                 maxPanelsRequired = Math.max(maxPanelsRequired, numPanelsRequired);
 
-                /* Calculate the estimated daily energy production by solar panels */
+                /* calculate the estimated daily energy production by solar panels */
                 double estimatedDailySolarEnergy = deratedPower * psh;
 
-                /* Add monthly calculation data */
+                /* add monthly calculation data */
                 ProjectSolarPanel.MonthlySolarData monthlySolarData = new ProjectSolarPanel.MonthlySolarData(
                         monthlyData.getMonth(),
                         psh,
@@ -153,14 +153,14 @@ public class ProjectSolarPanelService {
             }
         }
 
-        /* Calculate average daily energy production */
+        /* calculate average daily energy production */
         double averageDailyProduction = totalDailyEnergySum / monthsCount;
 
-        /* Save the calculated solar panel configuration, including efficiency and loss factors */
+        /* save the calculated solar panel configuration, including efficiency and loss factors */
         projectSolarPanel.setSolarPanelId(solarPanelId);
         projectSolarPanel.setNumberOfPanels(maxPanelsRequired);
         projectSolarPanel.setTotalPowerGenerated(selectedPanel.getpRated() * maxPanelsRequired);
-        projectSolarPanel.setEfficiencyLoss(1 - finalEfficiency); // Store efficiency loss as 1 - final efficiency
+        projectSolarPanel.setEfficiencyLoss(1 - finalEfficiency);
         projectSolarPanel.setEstimatedDailyEnergyProduction(averageDailyProduction);
         projectSolarPanel.setPanelOversizeCoefficient(panelOversizeCoefficient);
         projectSolarPanel.setBatteryEfficiency(batteryEfficiency);
@@ -168,7 +168,7 @@ public class ProjectSolarPanelService {
         projectSolarPanel.setManufacturerTolerance(manufacturerTolerance);
         projectSolarPanel.setAgingLoss(agingLoss);
         projectSolarPanel.setDirtLoss(dirtLoss);
-        projectSolarPanel.setInstallationType(installationType); // Add installationType to the saved configuration
+        projectSolarPanel.setInstallationType(installationType);
         projectSolarPanel.setMonthlyData(monthlyCalculations);
 
         /* save the project back to the repository */
@@ -198,7 +198,7 @@ public class ProjectSolarPanelService {
      * Calculates the temperature efficiency of the solar panel based on the ambient temperature and installation type.
      * @param solarPanel The selected solar panel
      * @param ambientTemperature The ambient temperature
-     * @param installationType The type of installation (e.g., roof, ground)
+     * @param installationType The type of installation
      * @return The temperature efficiency factor
      */
     private double calculateTemperatureEfficiency(SolarPanel solarPanel, double ambientTemperature, String installationType) {

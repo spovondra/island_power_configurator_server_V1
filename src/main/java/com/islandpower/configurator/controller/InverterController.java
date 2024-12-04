@@ -59,7 +59,7 @@ public class InverterController {
      * Retrieves an inverter by its ID.
      *
      * @param id The ID of the inverter to retrieve
-     * @return {@code ResponseEntity<Inverter>} The inverter object with HTTP OK status, or NOT_FOUND if not present
+     * @return {@code ResponseEntity<Inverter>} The inverter object with HTTP OK status, or NOT_FOUND
      */
     @GetMapping("/{id}")
     public ResponseEntity<Inverter> getInverterById(@PathVariable String id) {
@@ -72,7 +72,7 @@ public class InverterController {
      *
      * @param id The ID of the inverter to update
      * @param inverter The updated inverter object
-     * @return {@code ResponseEntity<Inverter>} The updated inverter with HTTP OK status, or NOT_FOUND if not present
+     * @return {@code ResponseEntity<Inverter>} The updated inverter with HTTP OK status, or NOT_FOUND
      */
     @PutMapping("/{id}")
     public ResponseEntity<Inverter> updateInverter(@PathVariable String id, @RequestBody Inverter inverter) {

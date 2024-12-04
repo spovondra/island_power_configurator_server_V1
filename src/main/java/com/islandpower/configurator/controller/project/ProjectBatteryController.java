@@ -40,7 +40,6 @@ public class ProjectBatteryController {
     public void removeBattery(@PathVariable String projectId, HttpServletRequest request) {
         String username = jwtUtilService.extractUsernameFromToken(request);
         String userId = jwtUtilService.retrieveUserIdByUsername(username);
-        logger.info("User {} (ID: {}) is attempting to remove battery from project with ID: {}", username, userId, projectId);
         projectBatteryService.removeBattery(projectId);
         logger.info("Battery was successfully removed from project with ID: {} by user {} (ID: {})", projectId, username, userId);
     }

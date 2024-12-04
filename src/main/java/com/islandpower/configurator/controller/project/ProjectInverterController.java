@@ -51,7 +51,6 @@ public class ProjectInverterController {
     public void removeInverter(@PathVariable String projectId, @PathVariable String inverterId, HttpServletRequest request) {
         String username = jwtUtilService.extractUsernameFromToken(request);
         String userId = jwtUtilService.retrieveUserIdByUsername(username);
-        logger.info("User {} (ID: {}) is attempting to remove inverter with ID: {} from project with ID: {}", username, userId, inverterId, projectId);
         projectInverterService.removeInverter(projectId);
         logger.info("Inverter with ID: {} was successfully removed from project with ID: {} by user {} (ID: {})", inverterId, projectId, username, userId);
     }
@@ -60,7 +59,7 @@ public class ProjectInverterController {
      * Retrieves the system voltage and recommended system voltage for a project.
      *
      * @param projectId The ID of the project
-     * @return {@code ResponseEntity<Map<String, Double>>} A map containing system voltage and recommended system voltage
+     * @return {@code ResponseEntity<Map<String, Double>>} A map containing system voltage and recommmended system voltage
      */
     @GetMapping("/voltage")
     public ResponseEntity<Map<String, Double>> getVoltage(@PathVariable String projectId) {
@@ -116,7 +115,7 @@ public class ProjectInverterController {
         double totalAppliancePower = configModel.getProjectAppliance().getTotalAcPower();
         double totalPeakAppliancePower = configModel.getProjectAppliance().getTotalAcPeakPower();
 
-        /*  get suitable inverters based on the provided inputs */
+        /*  get suitable inverters based on the provided inputs*/
         List<Inverter> suitableInverters = projectInverterService.getSuitableInverters(
                 systemVoltage, temperature, totalAppliancePower, totalPeakAppliancePower);
 

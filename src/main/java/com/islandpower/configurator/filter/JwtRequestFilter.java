@@ -20,9 +20,6 @@ import java.io.IOException;
 
 /**
  * Filter to validate JWT tokens and set the authentication in the security context.
- * This filter intercepts incoming HTTP requests, extracts the JWT token, validates it,
- * and sets the authentication in the security context if valid. It ensures that the
- * application is protected by verifying the user's identity using the JWT.
  */
 @Component
 public class JwtRequestFilter extends OncePerRequestFilter {
@@ -46,16 +43,16 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain chain)
             throws ServletException, IOException {
 
-        /* Extract JWT from the Authorization header */
+        /* extract JWT from the Authorization header */
         String jwt = extractJwtFromRequest(request);
 
         if (jwt != null) {
             try {
                 String username = jwtUtil.extractUsername(jwt); // extract username from JWT
-                processAuthentication(request, jwt, username); // process authentication
+                processAuthentication(request, jwt, username); //process authentication
             } catch (TokenExpiredException e) {
                 handleJwtError(response, HttpServletResponse.SC_UNAUTHORIZED, "JWT token has expired. Please log in again.");
-                return; //sop further processing
+                return; //stop further processing
             } catch (RuntimeException e) {
                 handleJwtError(response, HttpServletResponse.SC_BAD_REQUEST, "Invalid JWT token.");
                 return; // stop further processing
@@ -90,7 +87,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
-            /*  validate the token and set the authentication in the context of security if it is valid */
+            /*  validate the token and set the authentication in the context of security (if it is valid) */
             if (jwtUtil.validateToken(jwt, userDetails)) {
                 UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
                         userDetails, null, userDetails.getAuthorities());

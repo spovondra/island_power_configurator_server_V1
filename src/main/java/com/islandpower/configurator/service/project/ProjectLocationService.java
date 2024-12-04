@@ -46,13 +46,16 @@ public class ProjectLocationService {
      * @param useOptimalValues Indicates whether to use optimal values for angle and aspect
      */
     public void processLocationData(String projectId, String userId, double latitude, double longitude, int angle, int aspect, boolean useOptimalValues) {
+        // retrieve min and max temperatures for the selected location
         double[] minMaxTemperatures = getMinMaxTemperatures(latitude, longitude);
 
         if (useOptimalValues) {
+            /*fetch optimal panel angle and aspect if user selected that options */
             OptimalValues optimalValues = fetchOptimalValues(latitude, longitude);
             List<Site.MonthlyData> monthlyHI_dList = calculatePVGISData(latitude, longitude, optimalValues.optimalAngle(), optimalValues.optimalAspect());
             projectService.updateSiteWithLocationData(projectId, userId, latitude, longitude, minMaxTemperatures, optimalValues.optimalAngle(), optimalValues.optimalAspect(), useOptimalValues, monthlyHI_dList);
         } else {
+            /* use user-provided angle and aspect for calculations */
             List<Site.MonthlyData> monthlyHI_dList = calculatePVGISData(latitude, longitude, angle, aspect);
             projectService.updateSiteWithLocationData(projectId, userId, latitude, longitude, minMaxTemperatures, angle, aspect, false, monthlyHI_dList);
         }
@@ -70,6 +73,7 @@ public class ProjectLocationService {
     public List<Site.MonthlyData> calculatePVGISData(double latitude, double longitude, double angle, double aspect) {
         List<Site.MonthlyData> monthlyDataList = initializeMonthlyData();
 
+        /* fetch and update average temperatures and iraddiance data */
         fetchAverageTemperatures(latitude, longitude, monthlyDataList);
         fetchIrradianceData(latitude, longitude, angle, aspect, monthlyDataList);
 
@@ -107,11 +111,11 @@ public class ProjectLocationService {
             double maxTemp = Double.MIN_VALUE;
             double minTemp = Double.MAX_VALUE;
 
-            /* Find min and max temperatures from hourly data */
+            /* find min and max temperatures from obtained hourly data */
             for (JsonNode hourNode : hourlyDataNode) {
                 double temp = hourNode.path("T2m").asDouble();
                 double globalRadiation = hourNode.path("G(i)").asDouble();
-                if (globalRadiation > 50.0) {
+                if (globalRadiation > 50.0) { //filter only relevant data where radiation is sufficient
                     maxTemp = Math.max(maxTemp, temp);
                     minTemp = Math.min(minTemp, temp);
                 }
@@ -120,7 +124,7 @@ public class ProjectLocationService {
             minMaxTemperatures[0] = minTemp;
             minMaxTemperatures[1] = maxTemp;
         } catch (Exception e) {
-            logger.error("Error fetching weather data", e);
+            logger.error("Error while fetching weather data", e);
         }
         return minMaxTemperatures;
     }
@@ -136,12 +140,12 @@ public class ProjectLocationService {
             JsonNode rootNode = objectMapper.readTree(jsonResponse);
             JsonNode mountingSystemNode = rootNode.path("inputs").path("mounting_system").path("fixed");
 
+            /* extract optimal slope (angle) and azimuth (aspect) values */
             Integer optimalAngle = mountingSystemNode.path("slope").path("value").asInt();
             Integer optimalAspect = mountingSystemNode.path("azimuth").path("value").asInt();
 
             return new OptimalValues(optimalAngle, optimalAspect);
         } catch (Exception e) {
-            logger.error("Error parsing optimal values from JSON response", e);
             return new OptimalValues(null, null);
         }
     }
@@ -166,8 +170,8 @@ public class ProjectLocationService {
     /**
      * Fetches average ambient temperatures for a location and updates monthly data.
      *
-     * @param latitude        The latitude of the location
-     * @param longitude       The longitude of the location
+     * @param latitude The latitude of the location
+     * @param longitude The longitude of the location
      * @param monthlyDataList List of monthly data to update
      */
     private void fetchAverageTemperatures(double latitude, double longitude, List<Site.MonthlyData> monthlyDataList) {
@@ -177,6 +181,7 @@ public class ProjectLocationService {
             JsonNode rootNode = objectMapper.readTree(response);
             JsonNode temperatureNode = rootNode.path("outputs").path("monthly");
 
+            /* iterate through monthly temperature data */
             for (JsonNode monthNode : temperatureNode) {
                 int monthIndex = monthNode.path("month").asInt();
                 if (monthIndex >= 1 && monthIndex <= 12) {
@@ -205,6 +210,7 @@ public class ProjectLocationService {
             JsonNode rootNode = objectMapper.readTree(response);
             JsonNode monthlyDataNode = rootNode.path("outputs").path("monthly").path("fixed");
 
+            /* iterate through monthly temperature data */
             for (JsonNode monthNode : monthlyDataNode) {
                 int monthIndex = monthNode.path("month").asInt();
                 if (monthIndex >= 1 && monthIndex <= 12) {
@@ -221,20 +227,19 @@ public class ProjectLocationService {
      * Fetches site details by project ID.
      *
      * @param projectId The ID of the project
-     * @param userId    The ID of the user
+     * @param userId The ID of the user
      * @return Site object containing location data
      */
     public Site getSitesByProjectId(String projectId, String userId) {
         try {
             return projectService.getProjectById(projectId, userId).getSite();
         } catch (Exception e) {
-            logger.error("Error fetching sites for project ID {}: {}", projectId, e.getMessage());
             return null;
         }
     }
 
     /**
-     * Record to store optimal angle and aspect values for PV systems.
+     * Record to store optimal angle and aspect values for PV systems (simplified storage).
      */
     public record OptimalValues(Integer optimalAngle, Integer optimalAspect) {
     }

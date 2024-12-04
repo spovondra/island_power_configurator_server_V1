@@ -2,25 +2,22 @@ package com.islandpower.configurator.model.project;
 
 /**
  * Model representing the controller configuration in a project.
- * This class defines attributes related to the configuration of a controller,
- * including its type, required electrical properties, module arrangements,
- * and validity status.
  *
  * @version 1.0
  */
 public class ProjectController {
 
     private String controllerId; // id of the selected controller
-    private String type; // controller type (PWM, MPPT)
-    private double requiredCurrent; // required current for the controller in amperes (A)
+    private String type; // controller type (PWM x MPPT)
+    private double requiredCurrent; // required current for the controller in amperes
     private double requiredPower; // required power for the controller in watts (W)
     private int seriesModules; // number of modules in series
     private int parallelModules; // number of modules in parallel
     private int maxModulesInSerial; // maximum number of modules in series
     private int minModulesInSerial; // minimum number of modules in series
     private boolean isValid; // indicates if the controller configuration is valid
-    private double adjustedOpenCircuitVoltage; // adjusted open-circuit voltage for MPPT in volts (V)
-    private double adjustedVoltageAtMaxPower; // adjusted voltage at maximum power for MPPT in volts (V)
+    private double adjustedOpenCircuitVoltage; // adjusted open-circuit voltage for MPPT in volts
+    private double adjustedVoltageAtMaxPower; // adjusted voltage at maximum power for MPPT in volts
     private String statusMessage; // status message for the configuration
 
     /**
@@ -62,7 +59,7 @@ public class ProjectController {
     /**
      * Retrieves the required current for the controller.
      *
-     * @return double The required current in amperes (A)
+     * @return double The required current in amperes
      */
     public double getRequiredCurrent() {
         return requiredCurrent;
@@ -71,7 +68,7 @@ public class ProjectController {
     /**
      * Updates the required current for the controller.
      *
-     * @param requiredCurrent The new required current in amperes (A)
+     * @param requiredCurrent The new required current in amperes
      */
     public void setRequiredCurrent(double requiredCurrent) {
         this.requiredCurrent = requiredCurrent;
@@ -80,7 +77,7 @@ public class ProjectController {
     /**
      * Retrieves the required power for the controller.
      *
-     * @return double The required power in watts (W)
+     * @return double The required power in watts
      */
     public double getRequiredPower() {
         return requiredPower;
@@ -89,7 +86,7 @@ public class ProjectController {
     /**
      * Updates the required power for the controller.
      *
-     * @param requiredPower The new required power in watts (W)
+     * @param requiredPower The new required power in watts
      */
     public void setRequiredPower(double requiredPower) {
         this.requiredPower = requiredPower;
@@ -188,7 +185,7 @@ public class ProjectController {
     /**
      * Retrieves the adjusted open-circuit voltage for MPPT controllers.
      *
-     * @return double The adjusted open-circuit voltage in volts (V)
+     * @return double The adjusted open-circuit voltage in volts
      */
     public double getAdjustedOpenCircuitVoltage() {
         return adjustedOpenCircuitVoltage;
@@ -197,7 +194,7 @@ public class ProjectController {
     /**
      * Updates the adjusted open-circuit voltage for MPPT controllers.
      *
-     * @param adjustedOpenCircuitVoltage The new adjusted open-circuit voltage in volts (V)
+     * @param adjustedOpenCircuitVoltage The new adjusted open-circuit voltage in volts
      */
     public void setAdjustedOpenCircuitVoltage(double adjustedOpenCircuitVoltage) {
         this.adjustedOpenCircuitVoltage = adjustedOpenCircuitVoltage;
@@ -206,7 +203,7 @@ public class ProjectController {
     /**
      * Retrieves the adjusted voltage at maximum power for MPPT controllers.
      *
-     * @return double The adjusted voltage at maximum power in volts (V)
+     * @return double The adjusted voltage at maximum power in volts
      */
     public double getAdjustedVoltageAtMaxPower() {
         return adjustedVoltageAtMaxPower;
@@ -215,7 +212,7 @@ public class ProjectController {
     /**
      * Updates the adjusted voltage at maximum power for MPPT controllers.
      *
-     * @param adjustedVoltageAtMaxPower The new adjusted voltage at maximum power in volts (V)
+     * @param adjustedVoltageAtMaxPower The new adjusted voltage at maximum power in volts
      */
     public void setAdjustedVoltageAtMaxPower(double adjustedVoltageAtMaxPower) {
         this.adjustedVoltageAtMaxPower = adjustedVoltageAtMaxPower;

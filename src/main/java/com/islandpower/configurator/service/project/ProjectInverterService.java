@@ -152,7 +152,7 @@ public class ProjectInverterService {
     private static ProjectInverter getProjectInverter(String projectId, String inverterId, Project project) {
         ConfigurationModel configModel = project.getConfigurationModel();
         if (configModel == null) {
-            throw new IllegalArgumentException("Configuration model not found for project: " + projectId);
+            throw new IllegalArgumentException("Configuration model not found for project with id: " + projectId);
         }
 
         ProjectInverter projectInverter = configModel.getProjectInverter();
@@ -177,15 +177,13 @@ public class ProjectInverterService {
         double totalDailyDCEnergy = configModel.getProjectAppliance().getTotalDcEnergy();
         double totalDailyACEnergy = configModel.getProjectAppliance().getTotalAcEnergy();
 
+        /* calc adjusted AC energy and total daily energy considering inverter efficiency */
         double inverterEfficiency = selectedInverter.getEfficiency() / 100.0;
         double totalAdjustedAcEnergy = totalDailyACEnergy / inverterEfficiency;
         double totalDailyEnergy = totalDailyDCEnergy + totalAdjustedAcEnergy;
 
         projectInverter.setTotalAdjustedAcEnergy(totalAdjustedAcEnergy);
         projectInverter.setTotalDailyEnergy(totalDailyEnergy);
-
-        logger.info("Project [{}]: Adjusted AC energy: {}, Total daily energy: {}",
-                project.getId(), totalAdjustedAcEnergy, totalDailyEnergy);
     }
 
     /**

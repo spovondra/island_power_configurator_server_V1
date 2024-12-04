@@ -114,15 +114,15 @@ public class OneUserDetailService implements UserDetailsService {
      */
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        /* Find user by username */
+        /*find user by username */
         Optional<OneUser> user = userRepository.findByUsername(username);
         if (user.isPresent()) {
             OneUser userObj = user.get();
             return User.builder()
                     .username(userObj.getUsername())
                     .password(userObj.getPassword())
-                    .roles(getRoles(userObj)) //set user roles
-                    .build(); //build and return UserDetails object
+                    .roles(getRoles(userObj))
+                    .build();
         } else {
             throw new UsernameNotFoundException(username);
         }

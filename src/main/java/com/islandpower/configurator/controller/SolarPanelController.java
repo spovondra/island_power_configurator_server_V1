@@ -59,7 +59,7 @@ public class SolarPanelController {
      * Retrieves a solar panel by its ID.
      *
      * @param id The ID of the solar panel to retrieve
-     * @return {@link ResponseEntity} containing the {@link SolarPanel} with HTTP OK status, or NOT_FOUND if not present
+     * @return {@link ResponseEntity} containing the {@link SolarPanel} with HTTP OK status, or NOT_FOUND
      */
     @GetMapping("/{id}")
     public ResponseEntity<SolarPanel> getSolarPanelById(@PathVariable String id) {
@@ -73,7 +73,7 @@ public class SolarPanelController {
      *
      * @param id The ID of the solar panel to update
      * @param solarPanel The updated solar panel object
-     * @return {@link ResponseEntity} containing the updated {@link SolarPanel} with HTTP OK status, or NOT_FOUND if not present
+     * @return {@link ResponseEntity} containing the updated {@link SolarPanel} with HTTP OK status, or NOT_FOUND
      */
     @PutMapping("/{id}")
     public ResponseEntity<SolarPanel> updateSolarPanel(@PathVariable String id, @RequestBody SolarPanel solarPanel) {

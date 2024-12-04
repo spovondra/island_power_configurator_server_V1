@@ -42,15 +42,13 @@ public class ProjectControllerService {
     /**
      * Retrieves a list of suitable controllers for the specified project based on the system voltage and regulator type.
      *
-     * @param projectId     The ID of the project
-     * @param regulatorType The type of regulator required (e.g., PWM, MPPT)
+     * @param projectId The ID of the project
+     * @param regulatorType The type of regulator required
      * @return {@code List<Controller>} A list of controllers suitable for the project's configuration
      */
     public List<Controller> getSuitableControllers(String projectId, String regulatorType) {
         Project project = findProjectById(projectId);
         double systemVoltage = project.getConfigurationModel().getSystemVoltage();
-
-        logger.info("Fetching suitable controllers for project ID: {}, regulator type: {}", projectId, regulatorType);
 
         return controllerRepository.findAll().stream()
                 .filter(controller -> isControllerSuitable(controller, regulatorType, systemVoltage))
@@ -91,7 +89,7 @@ public class ProjectControllerService {
         double U_oc_adjusted = calculateAdjustedOpenCircuitVoltage(solarPanel, ambientMin, installationTemp);
         double U_mp_adjusted = calculateAdjustedVoltageAtMaxPower(solarPanel, ambientMax, installationTemp);
 
-        /* Get or create a new ProjectController configuration */
+        /* get or create a new ProjectController configuration */
         ProjectController projectController = Optional.ofNullable(project.getConfigurationModel().getProjectController())
                 .orElseGet(ProjectController::new);
 
@@ -100,7 +98,7 @@ public class ProjectControllerService {
         projectController.setAdjustedOpenCircuitVoltage(U_oc_adjusted);
         projectController.setAdjustedVoltageAtMaxPower(U_mp_adjusted);
 
-        /* Configure the controller based on its type (PWM x MPPT) */
+        /* configure the controller based on its type */
         if (controller.getType().equalsIgnoreCase("PWM")) {
             configurePWMController(systemVoltage, controller_ratedPower, solarPanel.getVmp(), I_mp, I_sc, controller, projectController);
         } else if (controller.getType().equalsIgnoreCase("MPPT")) {
@@ -117,7 +115,7 @@ public class ProjectControllerService {
      * Checks if a controller is suitable for the project based on the regulator type and system voltage.
      *
      * @param controller The controller to evaluate
-     * @param regulatorType The type of regulator required (e.g., PWM, MPPT)
+     * @param regulatorType The type of regulator required
      * @param systemVoltage The system voltage of the project
      * @return boolean True if the controller meets the requirements, false otherwise
      */
@@ -140,21 +138,23 @@ public class ProjectControllerService {
      * @param projectController The project controller configuration to update
      */
     private void configurePWMController(double systemVoltage, double controller_ratedPower, double U_vmp, double I_mp, double I_sc, Controller controller, ProjectController projectController) {
-        /* Number of modules in series and parallel */
+        /* number of modules in series and parallel */
         int n_serial = (int) Math.ceil(systemVoltage / U_vmp);
         int n_parallel = (int) Math.ceil(controller_ratedPower / (I_mp * U_vmp));
 
-        /* Calculate required current */
+        /* calculate required current */
         double requiredCurrent = K_CONTROLLER_OVERSIZE * n_parallel * I_sc;
+
+        /* set modules and required current */
         projectController.setSeriesModules(n_serial);
         projectController.setParallelModules(n_parallel);
         projectController.setRequiredCurrent(requiredCurrent);
 
-        /* Validate the configuration */
+        /* validate the configuration */
         boolean isValid = controller.getCurrentRating() >= requiredCurrent;
         projectController.setValid(isValid);
 
-        /* Set status message to valid or error (if Required current exceeds controller's rating) */
+        /* det status message to valid or error (if required current exceeds controller's rating) */
         if (isValid) {
             projectController.setStatusMessage("Configuration is valid.");
         } else {
@@ -183,7 +183,7 @@ public class ProjectControllerService {
                                          double U_oc_adjusted, double U_mp_adjusted, double I_mp,
                                          Controller controller, ProjectController projectController) {
 
-        /* Determine series, parallel module configuration, totalPower and requiredCurrent */
+        /* calculate series, parallel module configuration, totalPower and requiredCurrent */
         int maxSerial = (int) Math.floor(controller.getMaxVoltage() / U_oc_adjusted);
         int minSerial = (int) Math.ceil(controller.getMinVoltage() / U_mp_adjusted);
         int n_serial = Math.min(maxSerial, Math.max(minSerial, (int) Math.floor(systemVoltage / U_mp_adjusted)));
@@ -191,42 +191,42 @@ public class ProjectControllerService {
         double totalPower = numPanels * solar_deratedPower;
         double requiredCurrent = totalPower / systemVoltage;
 
-        /* Check for controller sizing */
+        /* check controller sizing */
         if (controller_ratedPower > 1.5 * totalPower) {
-            logger.warn("Controller is overdimensioned. Controller power: {}, System power: {}", controller_ratedPower, totalPower);
+            logger.warn("Controller is overdimensioned.: controller power: {}, System power: {}", controller_ratedPower, totalPower);
             projectController.setStatusMessage(
-                    String.format("Warning: Controller is overdimensioned. Controller power (%.2f W) exceeds system needs (%.2f W).",
+                    String.format("Warning: controller is overdimensioned. Controller power (%.2f W) exceeds system needs (%.2f W).",
                             controller_ratedPower, totalPower));
         }
 
-        /* Validate against power and current requirements */
+        /* validate against power and current requirements */
         if (controller_ratedPower <= totalPower) {
             projectController.setStatusMessage(
-                    String.format("Error: Controller power (%.2f W) is less than the total required system power (%.2f W).",
+                    String.format("Error: controller power (%.2f W) is less than the total required system power (%.2f W).",
                             controller_ratedPower, totalPower));
             projectController.setValid(false);
         }
 
-        /* Check maximum voltage compatibility */
+        /* check maximum voltage compatibility */
         if (controller.getMaxVoltage() < U_oc_adjusted * n_serial) {
             logger.error("Adjusted open circuit voltage exceeds controller's maximum voltage.");
             projectController.setStatusMessage(
-                    String.format("Error: Adjusted open circuit voltage (%.2f V) exceeds controller's maximum voltage (%.2f V).",
+                    String.format("Error: adjusted open circuit voltage (%.2f V) exceeds controller's maximum voltage (%.2f V).",
                             U_oc_adjusted * n_serial, controller.getMaxVoltage()));
             projectController.setValid(false);
         }
 
-        /* Validate panel power compatibility */
+        /* validated panel power compatibility */
         if (totalPower > systemVoltage * controller.getCurrentRating()) {
             projectController.setStatusMessage(
-                    String.format("Error: Derated power (%.2f W) exceeds controller's capacity (%.2f W).",
+                    String.format("Error: derated power (%.2f W) exceeds controller's capacity (%.2f W).",
                             totalPower, systemVoltage * controller.getCurrentRating()));
             projectController.setValid(false);
 
         } else if (totalPower > 0.9 * systemVoltage * controller.getCurrentRating()) {
             logger.warn("Derated power is close to controller's maximum capacity.");
             projectController.setStatusMessage(
-                    String.format("Warning: Derated power (%.2f W) is close to controller's maximum capacity (%.2f W).",
+                    String.format("Warning: derated power (%.2f W) is close to controller's maximum capacity (%.2f W).",
                             totalPower, systemVoltage * controller.getCurrentRating()));
         } else {
             projectController.setStatusMessage("Configuration is valid.");
@@ -247,8 +247,8 @@ public class ProjectControllerService {
     /**
      * Calculates the adjusted open-circuit voltage for the solar panel.
      *
-     * @param solarPanel       The solar panel details
-     * @param ambientMin       The minimum ambient temperature
+     * @param solarPanel The solar panel details
+     * @param ambientMin The minimum ambient temperature
      * @param installationTemp The temperature increase due to installation type
      * @return double The adjusted open-circuit voltage
      */
@@ -260,8 +260,8 @@ public class ProjectControllerService {
     /**
      * Calculates the adjusted voltage at maximum power for the solar panel.
      *
-     * @param solarPanel       The solar panel details
-     * @param ambientMax       The maximum ambient temperature
+     * @param solarPanel The solar panel details
+     * @param ambientMax The maximum ambient temperature
      * @param installationTemp The temperature increase due to installation type
      * @return double The adjusted voltage at maximum power
      */

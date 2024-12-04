@@ -37,7 +37,7 @@ public class ComponentController {
     /**
      * Retrieves all components of a specified type.
      *
-     * @param type The type of component (e.g., "solar-panels", "controllers", etc.)
+     * @param type The type of component
      * @return {@code ResponseEntity<List<?>>} A list of all components of the specified type
      */
     @GetMapping("/{type}")
@@ -56,7 +56,7 @@ public class ComponentController {
      *
      * @param type The type of component
      * @param id The ID of the component
-     * @return {@code ResponseEntity<?>} The component or a NOT_FOUND status if it does not exist
+     * @return {@code ResponseEntity<?>} The component or a NOT_FOUND status
      */
     @GetMapping("/{type}/{id}")
     public ResponseEntity<?> getComponentById(@PathVariable String type, @PathVariable String id) {
@@ -74,7 +74,7 @@ public class ComponentController {
      *
      * @param type The type of component
      * @param componentData The data for the new component
-     * @return {@code ResponseEntity<?>} The created component or a BAD_REQUEST status if the type is invalid
+     * @return {@code ResponseEntity<?>} The created component or a BAD_REQUEST status
      */
     @PostMapping("/{type}")
     public ResponseEntity<?> createComponent(@PathVariable String type, @RequestBody Object componentData) {
@@ -93,7 +93,7 @@ public class ComponentController {
      * @param type The type of component
      * @param id The ID of the component
      * @param componentData The new data for the component
-     * @return {@code ResponseEntity<?>} The updated component or a NOT_FOUND status if it does not exist
+     * @return {@code ResponseEntity<?>} The updated component or a NOT_FOUND status
      */
     @PutMapping("/{type}/{id}")
     public ResponseEntity<?> updateComponent(@PathVariable String type, @PathVariable String id, @RequestBody Object componentData) {
@@ -111,7 +111,7 @@ public class ComponentController {
      *
      * @param type The type of component
      * @param id The ID of the component
-     * @return {@code ResponseEntity<Void>} A NO_CONTENT status if successful or NOT_FOUND if it does not exist
+     * @return {@code ResponseEntity<Void>} A NO_CONTENT status if successful or NOT_FOUND
      */
     @DeleteMapping("/{type}/{id}")
     public ResponseEntity<Void> deleteComponent(@PathVariable String type, @PathVariable String id) {
@@ -143,7 +143,7 @@ public class ComponentController {
      * @param componentData The updated data for the component
      * @param repository The repository managing the component type
      * @param <T> The type of the component
-     * @return {@code ResponseEntity<?>} The updated component with HTTP OK status, or NOT_FOUND if not found
+     * @return {@code ResponseEntity<?>} The updated component with HTTP OK status, or NOT_FOUND
      */
     private <T> ResponseEntity<?> updateComponent(String id, T componentData, MongoRepository<T, String> repository) {
         return repository.findById(id)
@@ -160,7 +160,7 @@ public class ComponentController {
      * @param id The ID of the component to delete
      * @param repository The repository managing the component type
      * @param <T> The type of the component
-     * @return {@code ResponseEntity<Void>} HTTP NO_CONTENT status if deletion is successful, or NOT_FOUND if not found
+     * @return {@code ResponseEntity<Void>} HTTP NO_CONTENT status if deletion is successful, or NOT_FOUND
      */
     private <T> ResponseEntity<Void> deleteComponent(String id, MongoRepository<T, String> repository) {
         return repository.findById(id)
@@ -176,7 +176,7 @@ public class ComponentController {
      */
     private interface UpdatableComponent {
         /**
-         * Updates the component's data with the provided object.
+         * Updates the components data with the provided object.
          *
          * @param data The new data to update the component
          */

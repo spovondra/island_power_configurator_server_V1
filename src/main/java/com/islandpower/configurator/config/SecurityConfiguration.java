@@ -35,7 +35,7 @@ public class SecurityConfiguration {
     private OneUserDetailService userDetailService;
 
     /**
-     * JWT filter for validating JWT tokens in incoming requests
+     * JWT filter for validating JWT tokens
      */
     @Autowired
     private JwtRequestFilter jwtRequestFilter;
@@ -106,7 +106,7 @@ public class SecurityConfiguration {
      * Provides the PasswordEncoder bean.
      * <p>
      * This method configures a password encoder using BCrypt for hashing passwords,
-     * ensuring that user passwords are securely hashed before their storage.
+     * ensuring that passwords ar securely hashed before their storage.
      *
      * @return PasswordEncoder The PasswordEncoder instance
      */

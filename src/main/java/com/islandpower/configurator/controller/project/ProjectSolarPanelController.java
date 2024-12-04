@@ -49,24 +49,24 @@ public class ProjectSolarPanelController {
             @PathVariable String projectId,
             @RequestBody Map<String, Object> requestBody) {
 
-        // Extract solar panel ID
+        /* extract solar panel ID */
         String solarPanelId = (String) requestBody.get("solarPanelId");
 
-        // Extract efficiency and loss parameters with defaults
+        /* extract efficiency and loss parameters with defaults */
         double panelOversizeCoefficient = extractDoubleFromRequest(requestBody, "panelOversizeCoefficient");
         double batteryEfficiency = extractDoubleFromRequest(requestBody, "batteryEfficiency");
         double cableEfficiency = extractDoubleFromRequest(requestBody, "cableEfficiency");
 
-        // Extract selected months
+        /* extract selected months */
         List<Integer> selectedMonths = extractIntegerListFromRequest(requestBody);
 
-        // Extract other configuration parameters
+        /* extract other configuration parameters */
         String installationType = (String) requestBody.get("installationType");
         double manufacturerTolerance = extractDoubleFromRequest(requestBody, "manufacturerTolerance");
         double agingLoss = extractDoubleFromRequest(requestBody, "agingLoss");
         double dirtLoss = extractDoubleFromRequest(requestBody, "dirtLoss");
 
-        // Calculate and save the solar panel configuration
+        /* calculate and store the solar panel configuration */
         ProjectSolarPanel projectSolarPanel = projectSolarPanelService.calculateSolarPanelConfiguration(
                 projectId, solarPanelId, panelOversizeCoefficient, batteryEfficiency, cableEfficiency,
                 selectedMonths, installationType, manufacturerTolerance, agingLoss, dirtLoss);
@@ -101,7 +101,7 @@ public class ProjectSolarPanelController {
      * Utility method to extract a list of integers from the request body.
      *
      * @param requestBody The request body as a map
-     * @return List of integers representing selected months or an empty list if the key is absent
+     * @return List of integers representing selected months or an empty list
      */
     private List<Integer> extractIntegerListFromRequest(Map<String, Object> requestBody) {
         List<?> rawList = (List<?>) requestBody.get("selectedMonths");

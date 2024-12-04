@@ -11,11 +11,11 @@ import com.islandpower.configurator.model.*;
  */
 public class SummaryDto {
 
-    private Project project; // the project details
-    private Inverter inverter; // the associated inverter details
-    private Battery battery; // the associated battery details
-    private SolarPanel solarPanel; // the associated solar panel details
-    private Controller controller; // the associated controller details
+    private Project project;
+    private Inverter inverter;
+    private Battery battery;
+    private SolarPanel solarPanel;
+    private Controller controller;
 
     /**
      * Constructs a new SummaryDto with the specified project and component details.

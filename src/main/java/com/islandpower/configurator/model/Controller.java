@@ -13,12 +13,12 @@ public class Controller {
 
     private String id; // unique identifier for the controller
     private String name; // name of the controller
-    private double ratedPower; // rated power of the controller in watts (W)
-    private double currentRating; // maximum current rating of the controller in amperes (A)
-    private double maxVoltage; // maximum input voltage of the controller in volts (V)
-    private double minVoltage; // minimum input voltage of the controller in volts (V)
-    private String type; // type of the controller (e.g., PWM, MPPT)
-    private double efficiency; // efficiency of the controller in percentage (e.g., 95 for 95%)
+    private double ratedPower; // rated power of the controller in watts
+    private double currentRating; // maximum current rating of the controller in amperes
+    private double maxVoltage; // maximum input voltage of the controller in volts
+    private double minVoltage; // minimum input voltage of the controller in volts
+    private String type; // type of the controller
+    private double efficiency; // efficiency of the controller in percentage
 
     /**
      * Constructs a Controller object with specified parameters.
@@ -153,7 +153,7 @@ public class Controller {
     }
 
     /**
-     * Retrieves the type of the controller (e.g., PWM, MPPT).
+     * Retrieves the type of the controller
      *
      * @return String The type of the controller
      */
@@ -162,7 +162,7 @@ public class Controller {
     }
 
     /**
-     * Updates the type of the controller (e.g., PWM, MPPT).
+     * Updates the type of the controller
      *
      * @param type The new type of the controller
      */

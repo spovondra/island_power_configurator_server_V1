@@ -18,7 +18,7 @@ public class Inverter {
     private double continuousPower40C; // continuous power rating at 40°C (Watts)
     private double continuousPower65C; // continuous power rating at 65°C (Watts)
     private double maxPower; // maximum power rating of the inverter (Watts)
-    private double efficiency; // efficiency of the inverter as a percentage (e.g., 95 for 95%)
+    private double efficiency; // efficiency of the inverter as a percentage
     private int voltage; // operating voltage of the inverter (Volts)
     private double price; // price of the inverter in the local currency
 

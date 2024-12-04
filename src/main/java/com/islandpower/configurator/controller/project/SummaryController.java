@@ -10,10 +10,8 @@ import org.springframework.web.bind.annotation.*;
 
 /**
  * Controller for retrieving project summaries.
- * <p>
  * Provides an endpoint for fetching summarized data of a specific project,
  * including relevant details processed by the summary service.
- * </p>
  *
  * @version 1.0
  */
@@ -45,9 +43,9 @@ public class SummaryController {
      */
     @GetMapping("/{projectId}/summary")
     public ResponseEntity<SummaryDto> getProjectSummary(@PathVariable String projectId, HttpServletRequest request) {
-        String username = jwtUtilService.extractUsernameFromToken(request); // extract username from the JWT token (from the request)
-        String userId = jwtUtilService.retrieveUserIdByUsername(username); //retrieve the user ID
-        SummaryDto summaryDto = summaryService.getProjectSummary(projectId, userId); // Retrieve the project summary data
+        String username = jwtUtilService.extractUsernameFromToken(request);
+        String userId = jwtUtilService.retrieveUserIdByUsername(username);
+        SummaryDto summaryDto = summaryService.getProjectSummary(projectId, userId);
         return ResponseEntity.ok(summaryDto);
     }
 }

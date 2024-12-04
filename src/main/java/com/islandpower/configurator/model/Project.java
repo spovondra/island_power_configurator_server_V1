@@ -9,7 +9,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import java.util.List;
 
 /**
- * Represents a project in the system.
+ * Represents a project in the App.
  * This class contains information about the project, including its name, associated user, site details,
  * appliances, configuration, and tracking of the last completed step in the setup process.
  *

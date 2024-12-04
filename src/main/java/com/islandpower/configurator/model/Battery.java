@@ -14,14 +14,14 @@ public class Battery {
 
     private String id; // unique identifier for the battery
     private String name; // name of the battery
-    private String type; // battery type (e.g., Li-ion, LiFePO4, Lead Acid)
-    private int capacity; // capacity of the battery in ampere-hours (Ah)
+    private String type; // battery type
+    private int capacity; // capacity of the battery in ampere-hours
     private int voltage; // voltage of the battery in volts (V)
-    private double dod; // depth of discharge (DOD) as a fraction (e.g., 0.8 for 80%)
+    private double dod; // depth of discharge (DOD) as a fraction
     private double price; // price of the battery in the local currency
-    private double optimalChargingCurrent; // optimal charging current in amperes (A)
-    private double maxChargingCurrent; // maximum charging current in amperes (A)
-    private double efficiency; // efficiency of the battery as a percentage (e.g., 95 for 95%)
+    private double optimalChargingCurrent; // optimal charging current in amperes
+    private double maxChargingCurrent; // maximum charging current in amperes
+    private double efficiency; // efficiency of the battery as a percentage
 
     /**
      * Retrieves the unique identifier of the battery.
@@ -62,7 +62,7 @@ public class Battery {
     /**
      * Retrieves the type of the battery.
      *
-     * @return String The type of the battery (e.g., Li-ion, LiFePO4, Lead Acid)
+     * @return String The type of the battery
      */
     public String getType() {
         return type;

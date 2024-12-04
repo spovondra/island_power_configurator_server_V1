@@ -14,19 +14,19 @@ import org.springframework.stereotype.Service;
 public class SummaryService {
 
     @Autowired
-    private ProjectService projectService; // Service for project-related operations
+    private ProjectService projectService; //service for project-related operations
 
     @Autowired
-    private InverterService inverterService; // Service for inverter-related operations
+    private InverterService inverterService; //service for inverter-related operations
 
     @Autowired
-    private BatteryService batteryService; // Service for battery-related operations
+    private BatteryService batteryService; // service for battery-related operations
 
     @Autowired
-    private SolarPanelService solarPanelService; // Service for solar panel-related operations
+    private SolarPanelService solarPanelService; // service for solar panel-related operations
 
     @Autowired
-    private ControllerService controllerService; // Service for  controller-related operations
+    private ControllerService controllerService; // service for  controller-related operations
 
     /**
      * Retrieves the project summary by fetching the project's key components.
@@ -38,18 +38,18 @@ public class SummaryService {
      * @throws RuntimeException If any component (inverter, battery, solar panel, controller) is not found
      */
     public SummaryDto getProjectSummary(String projectId, String userId) {
-        /* Fetch project details */
+        /* fetch project details */
         Project project = projectService.getProjectById(projectId, userId);
 
-        /* Retrieve the inverter details */
+        /* retrieve the inverter details */
         Inverter inverter = inverterService.getInverterById(project.getConfigurationModel().getProjectInverter().getInverterId())
                 .orElseThrow(() -> new RuntimeException("Inverter not found"));
 
-        /* Retrieve the battery details */
+        /* retrieve the battery details */
         Battery battery = batteryService.getBatteryById(project.getConfigurationModel().getProjectBattery().getBatteryId())
                 .orElseThrow(() -> new RuntimeException("Battery not found"));
 
-        /* Retrieve the solar panel details */
+        /* retrieve the solar panel details */
         SolarPanel solarPanel = solarPanelService.getSolarPanelById(project.getConfigurationModel().getProjectSolarPanel().getSolarPanelId())
                 .orElseThrow(() -> new RuntimeException("Solar panel not found"));
 

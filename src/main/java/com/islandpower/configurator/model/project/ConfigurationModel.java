@@ -9,7 +9,7 @@ package com.islandpower.configurator.model.project;
  */
 public class ConfigurationModel {
 
-    private ProjectAppliance projectAppliance; // aggregated appliance data for the project
+    private ProjectAppliance projectAppliance; // aggregated appliances
     private double systemVoltage; // system voltage of the project
     private double recommendedSystemVoltage; // recommended system voltage based on configuration
     private ProjectInverter projectInverter; // selected inverter configuration

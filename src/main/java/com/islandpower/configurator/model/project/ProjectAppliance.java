@@ -11,8 +11,8 @@ public class ProjectAppliance {
 
     private double totalAcPower; // total AC power consumption in watts
     private double totalDcPower; // total DC power consumption in watts
-    private double totalAcEnergy; // total AC energy consumption in kilowatt-hours (kWh)
-    private double totalDcEnergy; // total DC energy consumption in kilowatt-hours (kWh)
+    private double totalAcEnergy; // total AC energy consumption in kilowatt-hours
+    private double totalDcEnergy; // total DC energy consumption in kilowatt-hours
     private double totalAcPeakPower; // total peak power for AC appliances in watts
     private double totalDcPeakPower; // total peak power for DC appliances in watts
 
@@ -55,7 +55,7 @@ public class ProjectAppliance {
     /**
      * Retrieves the total AC energy consumption.
      *
-     * @return double The total AC energy in kilowatt-hours (kWh)
+     * @return double The total AC energy in kWh
      */
     public double getTotalAcEnergy() {
         return totalAcEnergy;
@@ -64,7 +64,7 @@ public class ProjectAppliance {
     /**
      * Updates the total AC energy consumption.
      *
-     * @param totalAcEnergy The new total AC energy in kilowatt-hours (kWh)
+     * @param totalAcEnergy The new total AC energy in kWh
      */
     public void setTotalAcEnergy(double totalAcEnergy) {
         this.totalAcEnergy = totalAcEnergy;
@@ -73,7 +73,7 @@ public class ProjectAppliance {
     /**
      * Retrieves the total DC energy consumption.
      *
-     * @return double The total DC energy in kilowatt-hours (kWh)
+     * @return double The total DC energy in kWh
      */
     public double getTotalDcEnergy() {
         return totalDcEnergy;
@@ -82,7 +82,7 @@ public class ProjectAppliance {
     /**
      * Updates the total DC energy consumption.
      *
-     * @param totalDcEnergy The new total DC energy in kilowatt-hours (kWh)
+     * @param totalDcEnergy The new total DC energy in kWh
      */
     public void setTotalDcEnergy(double totalDcEnergy) {
         this.totalDcEnergy = totalDcEnergy;

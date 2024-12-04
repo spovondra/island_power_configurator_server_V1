@@ -11,17 +11,17 @@ package com.islandpower.configurator.model.project;
 public class ProjectBattery {
 
     private String batteryId; // id of the selected battery
-    private String type; // battery type (e.g., Li-ion, Lead Acid)
+    private String type; // battery type
     private int temperature; // operating temperature in degrees Celsius
-    private double batteryCapacityDod; // adjusted capacity for depth of discharge in ampere-hours (Ah)
+    private double batteryCapacityDod; // adjusted capacity for depth of discharge in ampere-hours
     private int parallelBatteries; // number of parallel-connected batteries
     private int seriesBatteries; // number of series-connected batteries
-    private double requiredBatteryCapacity; // required battery capacity in ampere-hours (Ah)
+    private double requiredBatteryCapacity; // required battery capacity in ampere-hours
     private double batteryAutonomy; // autonomy in days
-    private double totalAvailableCapacity; // total available capacity in ampere-hours (Ah)
+    private double totalAvailableCapacity; // total available capacity in ampere-hours
     private double operationalDays; // number of operational days calculated
-    private double maxChargingPower; // maximum charging power in watts (W)
-    private double optimalChargingPower; // optimal charging power in watts (W)
+    private double maxChargingPower; // maximum charging power in watts
+    private double optimalChargingPower; // optimal charging power in watts
 
     /**
      * Default constructor for ProjectBattery.
@@ -85,7 +85,7 @@ public class ProjectBattery {
     /**
      * Retrieves the battery capacity adjusted for depth of discharge.
      *
-     * @return double The adjusted battery capacity in ampere-hours (Ah)
+     * @return double The adjusted battery capacity in ampere-hours
      */
     public double getBatteryCapacityDod() {
         return batteryCapacityDod;
@@ -94,7 +94,7 @@ public class ProjectBattery {
     /**
      * Updates the battery capacity adjusted for depth of discharge.
      *
-     * @param batteryCapacityDod The new adjusted battery capacity in ampere-hours (Ah)
+     * @param batteryCapacityDod The new adjusted battery capacity in ampere-hours
      */
     public void setBatteryCapacityDod(double batteryCapacityDod) {
         this.batteryCapacityDod = batteryCapacityDod;
@@ -139,7 +139,7 @@ public class ProjectBattery {
     /**
      * Retrieves the required battery capacity for the project.
      *
-     * @return double The required battery capacity in ampere-hours (Ah)
+     * @return double The required battery capacity in ampere-hours
      */
     public double getRequiredBatteryCapacity() {
         return requiredBatteryCapacity;
@@ -148,7 +148,7 @@ public class ProjectBattery {
     /**
      * Updates the required battery capacity for the project.
      *
-     * @param requiredBatteryCapacity The new required battery capacity in ampere-hours (Ah)
+     * @param requiredBatteryCapacity The new required battery capacity in ampere-hours
      */
     public void setRequiredBatteryCapacity(double requiredBatteryCapacity) {
         this.requiredBatteryCapacity = requiredBatteryCapacity;
@@ -175,7 +175,7 @@ public class ProjectBattery {
     /**
      * Retrieves the total available battery capacity.
      *
-     * @return double The total available capacity in ampere-hours (Ah)
+     * @return double The total available capacity in ampere-hours
      */
     public double getTotalAvailableCapacity() {
         return totalAvailableCapacity;
@@ -184,7 +184,7 @@ public class ProjectBattery {
     /**
      * Updates the total available battery capacity.
      *
-     * @param totalAvailableCapacity The new total available capacity in ampere-hours (Ah)
+     * @param totalAvailableCapacity The new total available capacity in ampere-hours
      */
     public void setTotalAvailableCapacity(double totalAvailableCapacity) {
         this.totalAvailableCapacity = totalAvailableCapacity;
@@ -211,7 +211,7 @@ public class ProjectBattery {
     /**
      * Retrieves the maximum charging power for the battery.
      *
-     * @return double The maximum charging power in watts (W)
+     * @return double The maximum charging power in watts
      */
     public double getMaxChargingPower() {
         return maxChargingPower;
@@ -220,7 +220,7 @@ public class ProjectBattery {
     /**
      * Updates the maximum charging power for the battery.
      *
-     * @param maxChargingPower The new maximum charging power in watts (W)
+     * @param maxChargingPower The new maximum charging power in watts
      */
     public void setMaxChargingPower(double maxChargingPower) {
         this.maxChargingPower = maxChargingPower;
@@ -229,7 +229,7 @@ public class ProjectBattery {
     /**
      * Retrieves the optimal charging power for the battery.
      *
-     * @return double The optimal charging power in watts (W)
+     * @return double The optimal charging power in watts
      */
     public double getOptimalChargingPower() {
         return optimalChargingPower;
@@ -238,7 +238,7 @@ public class ProjectBattery {
     /**
      * Updates the optimal charging power for the battery.
      *
-     * @param optimalChargingPower The new optimal charging power in watts (W)
+     * @param optimalChargingPower The new optimal charging power in watts
      */
     public void setOptimalChargingPower(double optimalChargingPower) {
         this.optimalChargingPower = optimalChargingPower;

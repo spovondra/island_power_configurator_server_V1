@@ -4,8 +4,8 @@ import com.islandpower.configurator.model.Battery;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 /**
- * Repository interface for performing CRUD operations on Battery documents in MongoDB.
- * This interface extends MongoRepository to provide built-in methods for data access.
+ * Repository interface for managing Battery entities in the database.
+ *  * Extends MongoRepository to provide basic CRUD operations and custom queries.
  *
  * @version 1.0
  */

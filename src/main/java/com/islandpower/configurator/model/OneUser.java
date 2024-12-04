@@ -19,7 +19,7 @@ public class OneUser {
     private String id; // unique identifier for the user
     private String username; // username used for authentication
     private String password; // encoded password for secure authentication
-    private String role; // role of the user within the system (e.g., admin, user)
+    private String role; // role of the user within the system
     private String firstName; // first name of the user
     private String lastName; // last name of the user
     private String email; // email address of the user

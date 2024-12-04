@@ -11,8 +11,8 @@ public class ProjectInverter {
 
     private String inverterId; // id of the selected inverter
     private double inverterTemperature; // installation temperature of the inverter in degrees Celsius
-    private double totalAdjustedAcEnergy; // adjusted AC load in kilowatt-hours (kWh)
-    private double totalDailyEnergy; // total daily energy consumption in kilowatt-hours (kWh)
+    private double totalAdjustedAcEnergy; // adjusted AC load in kilowatt-hours
+    private double totalDailyEnergy; // total daily energy consumption in kilowatt-hours
 
     /**
      * Retrieves the ID of the selected inverter.
@@ -53,7 +53,7 @@ public class ProjectInverter {
     /**
      * Retrieves the total adjusted AC energy consumption.
      *
-     * @return double The adjusted AC load in kilowatt-hours (kWh)
+     * @return double The adjusted AC load in kilowatt-hours
      */
     public double getTotalAdjustedAcEnergy() {
         return totalAdjustedAcEnergy;
@@ -62,7 +62,7 @@ public class ProjectInverter {
     /**
      * Updates the total adjusted AC energy consumption.
      *
-     * @param totalAdjustedAcEnergy The new adjusted AC load in kilowatt-hours (kWh)
+     * @param totalAdjustedAcEnergy The new adjusted AC load in kilowatt-hours
      */
     public void setTotalAdjustedAcEnergy(double totalAdjustedAcEnergy) {
         this.totalAdjustedAcEnergy = totalAdjustedAcEnergy;
@@ -71,7 +71,7 @@ public class ProjectInverter {
     /**
      * Retrieves the total daily energy consumption.
      *
-     * @return double The total daily energy consumption in kilowatt-hours (kWh)
+     * @return double The total daily energy consumption in kilowatt-hours
      */
     public double getTotalDailyEnergy() {
         return totalDailyEnergy;
@@ -80,7 +80,7 @@ public class ProjectInverter {
     /**
      * Updates the total daily energy consumption.
      *
-     * @param totalDailyEnergy The new total daily energy consumption in kilowatt-hours (kWh)
+     * @param totalDailyEnergy The new total daily energy consumption in kilowatt-hours
      */
     public void setTotalDailyEnergy(double totalDailyEnergy) {
         this.totalDailyEnergy = totalDailyEnergy;

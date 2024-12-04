@@ -46,7 +46,7 @@ public class JwtUtilService {
      * @throws RuntimeException If no user is found for the given username
      */
     public String retrieveUserIdByUsername(String username) {
-        /* Fetch user details by username */
+        /* fetch user details by username */
         Optional<OneUser> user = userDetailsService.getUserByUsername(username);
         if (user.isPresent()) {
             return user.get().getId(); //return the user ID (if the user exists)

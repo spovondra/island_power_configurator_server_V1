@@ -152,7 +152,7 @@ public class JwtUtil {
     }
 
     /**
-     * Checks if the given JWT refresh token is refreshable (not expired).
+     * Checks if the given JWT refresh token is refreshable (but not expired!!).
      *
      * @param token The JWT refresh token
      * @return Boolean True if the refresh token is not expired, false otherwise

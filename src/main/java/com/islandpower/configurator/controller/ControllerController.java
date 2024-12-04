@@ -59,7 +59,7 @@ public class ControllerController {
      * Retrieves a controller by its ID.
      *
      * @param id The ID of the controller to retrieve
-     * @return {@code ResponseEntity<Controller>} The controller object with HTTP OK status, or NOT_FOUND if not present
+     * @return {@code ResponseEntity<Controller>} The controller object with HTTP OK status, or NOT_FOUND
      */
     @GetMapping("/{id}")
     public ResponseEntity<Controller> getControllerById(@PathVariable String id) {
@@ -72,7 +72,7 @@ public class ControllerController {
      *
      * @param id The ID of the controller to update
      * @param controller The updated controller object
-     * @return {@code ResponseEntity<Controller>} The updated controller with HTTP OK status, or NOT_FOUND if not present
+     * @return {@code ResponseEntity<Controller>} The updated controller with HTTP OK status, or NOT_FOUND
      */
     @PutMapping("/{id}")
     public ResponseEntity<Controller> updateController(@PathVariable String id, @RequestBody Controller controller) {

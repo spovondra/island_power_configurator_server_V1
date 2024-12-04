@@ -59,7 +59,7 @@ public class BatteryController {
      * Retrieves a battery by its ID.
      *
      * @param id The ID of the battery to retrieve
-     * @return {@code ResponseEntity<Battery>} The battery object with HTTP OK status, or 404 if not found
+     * @return {@code ResponseEntity<Battery>} The battery object with HTTP OK status, or 404
      */
     @GetMapping("/{id}")
     public ResponseEntity<Battery> getBatteryById(@PathVariable String id) {
@@ -72,7 +72,7 @@ public class BatteryController {
      *
      * @param id The ID of the battery to update
      * @param battery The updated {@link Battery} object
-     * @return {@code ResponseEntity<Battery>} The updated battery with HTTP OK status, or 404 if not found
+     * @return {@code ResponseEntity<Battery>} The updated battery with HTTP OK status, or 404
      */
     @PutMapping("/{id}")
     public ResponseEntity<Battery> updateBattery(@PathVariable String id, @RequestBody Battery battery) {

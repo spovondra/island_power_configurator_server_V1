@@ -3,7 +3,7 @@ package com.islandpower.configurator.model.project;
 import java.util.List;
 
 /**
- * Represents the geographical and environmental details of a site in a solar energy project.
+ * Represents the geographical details of a site.
  * This class includes information about the site's coordinates, temperature ranges,
  * panel orientation, and monthly solar irradiance and temperature data.
  *

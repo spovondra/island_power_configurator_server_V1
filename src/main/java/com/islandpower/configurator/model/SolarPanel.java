@@ -10,7 +10,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
  */
 @Document(collection = "solarPanels")
 public class SolarPanel {
-    private String id; // panel identifier (e.g., "panel1")
+    private String id; // panel identifier
     private String manufacturer; // manufacturer of the panel
     private String name; // name of the panel
     private double pRated; // rated power in watts

@@ -59,7 +59,7 @@ public class ProjectBatteryService {
      * Retrieves a list of suitable batteries based on system voltage and battery technology type.
      *
      * @param projectId The ID of the project
-     * @param technology The technology type of the batteries (e.g., Li-ion, LiFePO4)
+     * @param technology The technology type of the batteries
      * @return List of {@link com.islandpower.configurator.model.Battery} objects
      */
     public List<Battery> getSuitableBatteries(String projectId, String technology) {
@@ -177,9 +177,6 @@ public class ProjectBatteryService {
         projectBattery.setOptimalChargingPower(optimalChargingPower);
 
         projectRepository.save(project);
-
-        logger.info("Battery configuration calculated: project {}, battery {}, parallel {}, series {}, requiredCapacity {}, operationalDays {}, maxChargingPower {}, optimalChargingPower {}",
-                projectId, batteryId, parallelBatteries, seriesBatteries, requiredCapacity, operationalDays, maxChargingPower, optimalChargingPower);
 
         return projectBattery;
     }

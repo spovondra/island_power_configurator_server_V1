@@ -55,7 +55,6 @@ public class ProjectApplianceController {
     public void removeAppliance(@PathVariable String projectId, @PathVariable String applianceId, HttpServletRequest request) {
         String username = jwtUtilService.extractUsernameFromToken(request);
         String userId = jwtUtilService.retrieveUserIdByUsername(username);
-        logger.info("User {} (ID: {}) is attempting to remove appliance with ID: {} from project with ID: {}", username, userId, applianceId, projectId);
         projectApplianceService.removeAppliance(projectId, applianceId);
         logger.info("Appliance with ID: {} was successfully removed from project with ID: {} by user {} (ID: {})", applianceId, projectId, username, userId);
     }
